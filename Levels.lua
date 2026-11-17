@@ -8,10 +8,21 @@ local MAX_AGE, MAX_ENTRIES = 14 * 86400, 3000
 
 local function Store() return ns.db.levels end
 
+local shortIndex = {} -- first name -> { [fullKey] = true }
+
+local function IndexShort(key)
+	local short = Ambiguate(key, "short"):lower()
+	shortIndex[short] = shortIndex[short] or {}
+	shortIndex[short][key] = true
+end
+
 local function Set(name, realm, level)
 	if type(level) ~= "number" or level <= 0 then return end
 	local key = ns.Normalize(name, realm)
-	if key then Store()[key] = { l = level, t = time() } end
+	if key then
+		Store()[key] = { l = level, t = time() }
+		IndexShort(key)
+	end
 end
 
 local function FromUnit(unit)
@@ -21,9 +32,42 @@ local function FromUnit(unit)
 	if ns.Usable(name, realm, level) then Set(name, realm, level) end
 end
 
+-- Ask the game directly (friends list, group) for a player we don't know yet.
+local function LiveLevel(key)
+	local short = Ambiguate(key, "short")
+	if C_FriendList and C_FriendList.GetFriendInfo then
+		for _, n in ipairs({ key, short }) do
+			local ok, info = pcall(C_FriendList.GetFriendInfo, n)
+			if ok and type(info) == "table" and type(info.level) == "number" and info.level > 0 then
+				return info.level
+			end
+		end
+	end
+	for _, n in ipairs({ key, short }) do
+		if UnitExists(n) and UnitIsPlayer(n) then
+			local lv = UnitLevel(n)
+			if ns.Usable(lv) and type(lv) == "number" and lv > 0 then return lv end
+		end
+	end
+end
+
 function ns:LevelOf(key)
-	local e = key and Store()[key]
-	return e and e.l
+	if not key then return nil end
+	local e = Store()[key]
+	if e then return e.l end
+	local live = LiveLevel(key)
+	if live then Store()[key] = { l = live, t = time() }; IndexShort(key); return live end
+	-- different name format (e.g. with/without surname): use the first name if it is unique
+	local keys = shortIndex[Ambiguate(key, "short"):lower()]
+	if keys then
+		local only
+		for k in pairs(keys) do
+			if only then return nil end
+			only = k
+		end
+		local o = only and Store()[only]
+		return o and o.l
+	end
 end
 
 local function ScanGroup()
@@ -56,6 +100,15 @@ local function ScanWho()
 	end
 end
 
+local lastRoster = 0
+local function RequestGuildRoster()
+	if GetTime() - lastRoster < 10 then return end
+	lastRoster = GetTime()
+	if C_GuildInfo and C_GuildInfo.GuildRoster then pcall(C_GuildInfo.GuildRoster) end
+	if C_FriendList and C_FriendList.ShowFriends then pcall(C_FriendList.ShowFriends) end
+end
+ns.RequestLevelRefresh = RequestGuildRoster
+
 local function Prune()
 	local cutoff, list = time() - MAX_AGE, {}
 	for k, e in pairs(Store()) do
@@ -75,7 +128,10 @@ end
 ev:SetScript("OnEvent", function(_, event, unit)
 	if not ns.db then return end
 	local ok = pcall(function()
-		if event == "PLAYER_LOGIN" then Prune(); ScanGroup(); ScanGuild(); ScanFriends()
+		if event == "PLAYER_LOGIN" then
+			Prune()
+			for k in pairs(Store()) do IndexShort(k) end
+			ScanGroup(); ScanGuild(); ScanFriends()
 		elseif event == "GROUP_ROSTER_UPDATE" then ScanGroup()
 		elseif event == "PLAYER_TARGET_CHANGED" then FromUnit("target")
 		elseif event == "UPDATE_MOUSEOVER_UNIT" then FromUnit("mouseover")
@@ -102,12 +158,37 @@ local function LevelColor(level)
 	return "|cffb0b0b0"
 end
 
+local function BNetLevel(data)
+	local id = tonumber(data:match("|k:(%d+)") or data:match("^[^:]*:(%d+)"))
+	if not id or not C_BattleNet or not C_BattleNet.GetAccountInfoByID then return nil end
+	local ok, acc = pcall(C_BattleNet.GetAccountInfoByID, id)
+	local g = ok and acc and acc.gameAccountInfo
+	local lv = g and g.characterLevel
+	if type(lv) == "number" and lv > 0 then
+		if g.characterName then Set(g.characterName, g.realmName, lv) end
+		return lv
+	end
+end
+
+local function AddBNetLevels(text)
+	return (text:gsub("(|HBNplayer:(.-)|h)%[(.-)%]|h", function(open, data, inner)
+		if inner:find("^|c%x+%d+|r:") then return nil end
+		local level = BNetLevel(data)
+		if not level then return nil end
+		return open .. "[" .. LevelColor(level) .. level .. "|r:" .. inner .. "]|h"
+	end))
+end
+
 local function AddLevels(text)
+	if text:find("|HBNplayer:", 1, true) then text = AddBNetLevels(text) end
 	return (text:gsub("(|Hplayer:([^|]*)|h)%[(.-)%]|h", function(open, data, inner)
 		if inner:find("^|c%x+%d+|r:") then return nil end -- already has a level
 		local name = data:match("^([^:]+)")
 		local level = name and ns:LevelOf(ns.Normalize(name))
-		if not level then return nil end
+		if not level then
+			RequestGuildRoster() -- someone new: refresh the lists so the next line knows them
+			return nil
+		end
 		return open .. "[" .. LevelColor(level) .. level .. "|r:" .. inner .. "]|h"
 	end))
 end
@@ -120,7 +201,7 @@ ns.OnChatFrame(function(frame)
 	frame.AddMessage = function(self, text, ...)
 		-- never touch secret (restricted) messages
 		if ns.S and ns.S.showLevels and type(text) == "string" and not ns.IsSecret(text)
-			and text:find("|Hplayer:", 1, true) then
+			and (text:find("|Hplayer:", 1, true) or text:find("|HBNplayer:", 1, true)) then
 			local ok, out = pcall(AddLevels, text)
 			if ok and out then text = out end
 		end

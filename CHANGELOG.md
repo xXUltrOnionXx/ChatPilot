@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+- Fix: Stufe wird jetzt auch bei „ist online“-Meldungen angezeigt – auch für Battle.net-Freunde, neue Freunde und Spieler, die mal mit und mal ohne Nachnamen auftauchen
+- Gilden- und Freundesliste werden bei unbekannten Spielern automatisch aktualisiert
+
 ## 1.3.0
 - Neuer Name: **ChatPilot Forever**
 - Werbe-Spam-Filter (Gold, Boosts, Echtgeld, Webseiten) – Freunde, Gilde und Gruppe werden nie gefiltert

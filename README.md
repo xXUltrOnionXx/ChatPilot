@@ -4,15 +4,6 @@
 
 *English below.*
 
-
-![ChatPilot Forever](media/01-hero.png)
-
-| | |
-|---|---|
-| ![@-mention suggestions](media/02-autocomplete.png) | ![Mention alerts](media/03-mentions.png) |
-| ![Missed whispers](media/04-whispers.png) | ![Chat helpers](media/05-chat-helpers.png) |
-| ![Settings](media/06-settings.png) | ![Languages & feedback](media/07-feedback-languages.png) |
-
 ## 🌍 Sprachen
 ChatPilot passt sich automatisch der Sprache deines WoW-Clients an:
 Englisch · Deutsch · Français · Español (ES/MX) · Italiano · Português (BR) · Русский · 한국어 · 简体中文 · 繁體中文
