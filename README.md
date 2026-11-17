@@ -16,7 +16,7 @@ Mit GitHub-Konto – bitte über die Vorlagen:
 - 💡 **[Idee vorschlagen](https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template=feature_request.yml)**
 - ⭐ **[Feedback / Lob](https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template=feedback.yml)**
 
-Im Spiel geht's noch einfacher: `/chatpilot feedback` erstellt einen fertigen Bericht (mit Versionen und Einstellungen) und zeigt den passenden Link.
+Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben → **Senden**. Du bekommst **einen fertig ausgefüllten Link**: Strg+C, im Browser einfügen, auf Absenden klicken – fertig.
 
 ## Funktionen
 

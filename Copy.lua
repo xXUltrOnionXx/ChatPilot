@@ -10,6 +10,13 @@ local copy
 
 local function CreateCopy()
 	local f = UI.Window("ChatPilotCopy", L.COPY_TITLE, 600, 380)
+	-- search (chat mode only)
+	f.search = UI.Input(f.content, 300, L.SEARCH_PLACEHOLDER)
+	f.search:SetPoint("TOPLEFT", 14, -12)
+	f.search:SetPoint("RIGHT", f.content, "RIGHT", -14, 0)
+	f.searchCount = UI.Text(f.search, "GameFontHighlightSmall", C.muted)
+	f.searchCount:SetPoint("RIGHT", -10, 0)
+
 	local box = CreateFrame("Frame", nil, f.content)
 	box:SetPoint("TOPLEFT", 14, -14)
 	box:SetPoint("BOTTOMRIGHT", -14, 52)
@@ -55,11 +62,30 @@ local function CreateCopy()
 	done:SetScript("OnClick", function() f:Hide() end)
 
 	f.eb, f.scroll, f.box = eb, scroll, box
+
+	local function ApplySearch()
+		if not f.lines then return end
+		local q = strtrim(f.search.eb:GetText() or ""):lower()
+		local out = {}
+		for _, line in ipairs(f.lines) do
+			if q == "" or line:lower():find(q, 1, true) then out[#out + 1] = line end
+		end
+		f.content_text = table.concat(out, "\n")
+		eb:SetText(f.content_text)
+		f.searchCount:SetText(q ~= "" and ("%d / %d"):format(#out, #f.lines) or "")
+		C_Timer.After(0, function() scroll:SetVerticalScroll(scroll:GetVerticalScrollRange()) end)
+	end
+	f.search.eb:HookScript("OnTextChanged", ApplySearch)
+	f.search.eb:SetScript("OnEnterPressed", function() eb:SetFocus(); eb:HighlightText() end)
 	return f
 end
 
-function ns:ShowCopy(text, title, small)
+function ns:ShowCopy(text, title, small, lines)
 	copy = copy or CreateCopy()
+	copy.lines = lines
+	copy.search:SetShown(lines ~= nil)
+	copy.box:SetPoint("TOPLEFT", 14, lines and -48 or -14)
+	if lines then copy.search.eb:SetText("") end
 	copy.title:SetText(title or L.COPY_TITLE)
 	copy:SetHeight(small and 170 or 420)
 	copy.hint:SetText(small and L.COPY_HINT_SMALL or L.COPY_HINT)
@@ -67,8 +93,10 @@ function ns:ShowCopy(text, title, small)
 	copy.eb:SetText(text)
 	copy:Show()
 	copy:Raise()
-	copy.eb:SetFocus()
-	copy.eb:HighlightText()
+	if not lines then
+		copy.eb:SetFocus()
+		copy.eb:HighlightText()
+	end
 	C_Timer.After(0, function()
 		copy.scroll.child:SetHeight(math.max(copy.eb:GetHeight(), 10))
 		copy.scroll:SetVerticalScroll(small and 0 or copy.scroll:GetVerticalScrollRange())
@@ -86,7 +114,8 @@ function ns:CopyChat(frame)
 			lines[#lines + 1] = ns.StripEscapes(text)
 		end
 	end
-	self:ShowCopy(table.concat(lines, "\n"), L.COPY_CHAT_TITLE)
+	self:ShowCopy(table.concat(lines, "\n"), L.COPY_CHAT_TITLE, false, lines)
+	if copy and copy.search then copy.search.eb:SetFocus() end
 end
 
 -------------------------------------------------------------------------------

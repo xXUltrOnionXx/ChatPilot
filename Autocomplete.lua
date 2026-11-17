@@ -18,6 +18,19 @@ local WHISPER_CMDS = {
 }
 
 local state         -- active suggestion state or nil
+
+-- During Blizzard's chat restrictions (e.g. boss encounters) addons must not
+-- change the input box. Then ChatPilot simply stays out of the way.
+local function Restricted()
+	return C_ChatInfo and C_ChatInfo.InChatMessagingLockdown and C_ChatInfo.InChatMessagingLockdown() or false
+end
+
+-- WoW: Forever names have two parts ("First-Surname"). Show the second part
+-- in the list so players with the same first name can be told apart.
+local function SecondName(key)
+	local rest = key and key:match("^[^-]+%-(.+)$")
+	return rest
+end
 local hooked = {}
 
 -------------------------------------------------------------------------------
@@ -103,7 +116,8 @@ function ns.RenderPopup()
 			r.name:SetTextColor(1, 1, 1)
 		else
 			SetClassIcon(r.icon, item.c)
-			r.name:SetText(item.short)
+			local second = SecondName(item.key)
+			r.name:SetText(second and (item.short .. " |cff8a94a6" .. second .. "|r") or item.short)
 			local c = item.c and RAID_CLASS_COLORS and RAID_CLASS_COLORS[item.c]
 			if c then r.name:SetTextColor(c.r, c.g, c.b) else r.name:SetTextColor(1, 1, 1) end
 		end
@@ -168,6 +182,7 @@ end
 
 local function Update(box)
 	if not ns.S then return end
+	if Restricted() then return HidePopup() end
 	local mode, startPos, partial, whisper = GetContext(box)
 	if not mode then return HidePopup() end
 
@@ -194,7 +209,7 @@ end
 
 function Accept(index)
 	local st = state
-	if not st then return end
+	if not st or Restricted() then return HidePopup() end
 	local item = st.items[index or st.index]
 	if not item then return end
 	local box, text, cursor = st.box, st.text, st.cursor
@@ -205,7 +220,15 @@ function Accept(index)
 	elseif st.whisper then
 		insert = item.key
 	else
-		insert = (ns.S.keepAt and "@" or "") .. item.short
+		local name = item.short
+		-- same first name twice in the list? then insert the full name
+		for _, other in ipairs(st.items) do
+			if other ~= item and other.short == item.short and SecondName(item.key) then
+				name = item.key:gsub("%-", " ")
+				break
+			end
+		end
+		insert = (ns.S.keepAt and "@" or "") .. name
 	end
 	local after = text:sub(cursor + 1)
 	if after:sub(1, 1) ~= " " then insert = insert .. " " end
@@ -262,6 +285,7 @@ function ns.HookEditBox(box)
 
 	box:HookScript("OnArrowPressed", function(self, key)
 		if not Active(self) then return end
+		if Restricted() then return HidePopup() end
 		if key == "UP" or key == "DOWN" then
 			local n = #state.items
 			if key == "UP" then

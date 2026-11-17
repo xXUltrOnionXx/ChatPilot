@@ -3,6 +3,10 @@
 ## 1.3.0
 - Neue Sprachen passend zu allen WoW-Regionen: Englisch, Deutsch, Französisch, Spanisch (Spanien & Mexiko), Italienisch, Portugiesisch (Brasilien), Russisch, Koreanisch, Chinesisch (vereinfacht & traditionell)
 - ChatPilot erkennt die Sprache deines WoW-Clients automatisch
+- Feedback mit einem einzigen Link: Das Addon füllt das Formular vorab aus – Strg+C, im Browser einfügen, Absenden. Nichts mehr doppelt schreiben
+- Chat durchsuchen im Kopierfenster
+- @-Vorschläge zeigen den Nachnamen (WoW: Forever), bei gleichem Vornamen wird der volle Name eingefügt
+- Keine Eingabefeld-Änderungen während Blizzards Chat-Einschränkungen (Bosskämpfe)
 
 ## 1.2.1
 - Update-Hinweis im Spiel: Nutzt jemand aus Gilde oder Gruppe eine neuere ChatPilot-Version, bekommst du einmal eine Meldung (ohne Internet, unsichtbare Addon-Nachrichten, nicht in Instanzen)
