@@ -137,7 +137,10 @@ end
 
 local function Layout(bar)
 	local frame = bar.chatFrame
-	local list = bar.order
+	local list = {}
+	for _, b in ipairs(bar.order) do
+		if b ~= bar.whispers or ns.S.whispers then list[#list + 1] = b end
+	end
 	bar:ClearAllPoints()
 	if ns.S.buttonsTop then
 		bar:SetSize(#list * SIZE + (#list - 1) * GAP, SIZE)
@@ -156,15 +159,34 @@ local function Layout(bar)
 	end
 end
 
+local function AddBadge(b)
+	b.badge = CreateFrame("Frame", nil, b)
+	b.badge:SetSize(15, 13)
+	b.badge:SetPoint("TOPRIGHT", 5, 5)
+	b.badge:SetFrameLevel(b:GetFrameLevel() + 2)
+	UI.Fill(b.badge, C.orange, "OVERLAY")
+	b.badge.text = b.badge:CreateFontString(nil, "OVERLAY", _G.SystemFont_Tiny and "SystemFont_Tiny" or "GameFontHighlightSmall")
+	b.badge.text:SetPoint("CENTER", 0, 0)
+	b.badge.text:SetTextColor(unpack(C.dark))
+	b.badge:Hide()
+end
+
+local function SetBadge(b, n)
+	b.badge:SetShown(n > 0)
+	b.badge.text:SetText(n > 9 and "9+" or tostring(n))
+end
+
 function ns:UpdateChatButtons()
 	local unread = self.unread or 0
 	for _, bar in ipairs(bars) do
 		bar:SetShown(self.S.copyButton)
 		Layout(bar)
 		local m = bar.mentions
-		m.badge:SetShown(unread > 0)
-		m.badge.text:SetText(unread > 9 and "9+" or tostring(unread))
+		SetBadge(m, unread)
 		m.icon:SetTextColor(unpack(unread > 0 and C.orange or C.accent))
+		local w = bar.whispers
+		w:SetShown(self.S.whispers)
+		SetBadge(w, self.S.whispers and self.WhisperUnread and self:WhisperUnread() or 0)
 	end
 end
 
@@ -184,16 +206,16 @@ ns.OnChatFrame(function(frame)
 	m.icon:SetPoint("CENTER", 0, 1)
 	m.icon:SetText("@")
 	m.icon:SetTextColor(unpack(C.accent))
-	m.badge = CreateFrame("Frame", nil, m)
-	m.badge:SetSize(15, 13)
-	m.badge:SetPoint("TOPRIGHT", 5, 5)
-	m.badge:SetFrameLevel(m:GetFrameLevel() + 2)
-	UI.Fill(m.badge, C.orange, "OVERLAY")
-	m.badge.text = m.badge:CreateFontString(nil, "OVERLAY", _G.SystemFont_Tiny and "SystemFont_Tiny" or "GameFontHighlightSmall")
-	m.badge.text:SetPoint("CENTER", 0, 0)
-	m.badge.text:SetTextColor(unpack(C.dark))
-	m.badge:Hide()
+	AddBadge(m)
 	bar.mentions = m
+
+	local w = BarButton(bar, L.BTN_WHISPERS, function() ns:ToggleWhispers() end)
+	w.icon = w:CreateTexture(nil, "ARTWORK")
+	w.icon:SetSize(16, 16)
+	w.icon:SetPoint("CENTER")
+	w.icon:SetTexture("Interface\\ChatFrame\\UI-ChatWhisperIcon")
+	AddBadge(w)
+	bar.whispers = w
 
 	local copyBtn = BarButton(bar, L.COPY_BUTTON_TIP, function() ns:CopyChat(frame) end)
 	copyBtn.icon = copyBtn:CreateTexture(nil, "ARTWORK")
@@ -201,7 +223,7 @@ ns.OnChatFrame(function(frame)
 	copyBtn.icon:SetPoint("CENTER")
 	copyBtn.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
 
-	bar.order = { gear, m, copyBtn }
+	bar.order = { gear, m, w, copyBtn }
 	bars[#bars + 1] = bar
 	if ns.S then ns:UpdateChatButtons() end
 end)

@@ -19,6 +19,8 @@ ns.defaults = {
 	urls = true,
 	copyButton = true,
 	buttonsTop = false,
+	whispers = true,
+	whisperSummary = true,
 	abbrevTips = true,
 	markForeign = true,
 	hideForeign = false,
@@ -290,6 +292,7 @@ f:SetScript("OnEvent", function(_, event, ...)
 			db.names = db.names or {}
 			db.mentions = db.mentions or {}
 			db.feedback = db.feedback or {}
+			db.whispers = db.whispers or {}
 			CopyDefaults(ns.defaults, db.settings)
 			ns.db, ns.S = db, db.settings
 

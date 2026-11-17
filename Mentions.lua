@@ -53,14 +53,17 @@ fade:SetScript("OnFinished", function() toast:Hide() end)
 
 toast:SetScript("OnClick", function()
 	toast:Hide()
-	ns:ShowMentions()
+	if toast.onClick then toast.onClick() end
 end)
 toast:SetScript("OnEnter", function() fade:Stop(); toast:SetAlpha(1) end)
 toast:SetScript("OnLeave", function() fade:Play() end)
 
-local function ShowToast(author, label, msg)
-	toast.title:SetText(L.MENTION_TOAST:format(author, label))
-	toast.text:SetText(msg)
+-- Generic toast: title, text, click handler, stripe colour.
+function ns:ShowToast(title, text, onClick, color)
+	stripe:SetColorTexture(unpack(color or C.orange))
+	toast.onClick = onClick
+	toast.title:SetText(title)
+	toast.text:SetText(text or "")
 	fade:Stop()
 	toast:SetAlpha(1)
 	toast:Show()
@@ -91,7 +94,9 @@ function ns:Alert(event, msg, author, channelName, guid)
 		PlaySound((SOUNDKIT and SOUNDKIT.TELL_MESSAGE) or 3081, "Master")
 	end
 	if S.mentionFlash and FlashClientIcon then FlashClientIcon() end
-	if S.mentionToast then ShowToast(who, label, plain) end
+	if S.mentionToast then
+		self:ShowToast(L.MENTION_TOAST:format(who, label), plain, function() ns:ShowMentions() end)
+	end
 	if self.mentionsFrame and self.mentionsFrame:IsShown() then
 		self:FillMentions()
 	else

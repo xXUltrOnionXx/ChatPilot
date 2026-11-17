@@ -6,6 +6,7 @@
 - Gut sichtbare Knöpfe direkt neben dem Chatfenster (untereinander, auf Höhe des Eingabefelds): Zahnrad (Einstellungen), @ (Erwähnungen mit Zähler für ungelesene) und Kopieren – wahlweise auch in einer Reihe über dem Chat
 - Eintrag im Addon-Menü an der Minimap
 - Erwähnungs-, Kopier- und Feedback-Fenster im neuen Design
+- Verpasste Flüsternachrichten: Brief-Knopf mit Zähler, Gesprächsfenster mit Antworten-Knopf, Zusammenfassung nach AFK oder Kampf (/chatpilot whispers)
 - Anonymes Feedback ohne Anmeldung über ein Online-Formular (zusätzlich zu GitHub)
 - Fehler behoben: Fenster ließen sich nicht mit dem X schließen
 

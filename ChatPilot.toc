@@ -23,6 +23,7 @@ Core.lua
 Autocomplete.lua
 Filter.lua
 Mentions.lua
+Whispers.lua
 Copy.lua
 Feedback.lua
 Options.lua

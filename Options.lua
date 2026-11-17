@@ -227,6 +227,23 @@ local function BuildMentions(content)
 	return sf
 end
 
+local function BuildWhispers(content)
+	local sf, c = NewPage(content)
+	local y = PageHeader(c, L.PAGE_WHISPERS, L.PAGE_WHISPERS_SUB)
+	y = ToggleRow(c, y, "whispers", nil, function() ns:UpdateChatButtons() end)
+	y = ToggleRow(c, y, "whisperSummary", "whispers")
+	local open = UI.Button(c, L.WH_OPEN, 200, 30, "accent")
+	open:SetPoint("TOPLEFT", 24, y - 8)
+	open:SetScript("OnClick", function() ns:ShowWhispers() end)
+	local hint = UI.Text(c, "GameFontHighlightSmall", C.muted)
+	hint:SetPoint("TOPLEFT", open, "BOTTOMLEFT", 0, -12)
+	hint:SetPoint("RIGHT", c, "RIGHT", -24, 0)
+	hint:SetSpacing(3)
+	hint:SetText(L.WH_HINT)
+	c:SetHeight(-y + 120)
+	return sf
+end
+
 local function BuildChat(content)
 	local sf, c = NewPage(content)
 	local y = PageHeader(c, L.PAGE_CHAT, L.PAGE_CHAT_SUB)
@@ -328,12 +345,14 @@ local function Build()
 
 	BuildTyping(content)
 	BuildMentions(content)
+	BuildWhispers(content)
 	BuildChat(content)
 	BuildAbout(content)
 	NavButton(sidebar, 1, L.PAGE_TYPING)
 	NavButton(sidebar, 2, L.PAGE_MENTIONS)
-	NavButton(sidebar, 3, L.PAGE_CHAT)
-	NavButton(sidebar, 4, L.PAGE_ABOUT)
+	NavButton(sidebar, 3, L.PAGE_WHISPERS)
+	NavButton(sidebar, 4, L.PAGE_CHAT)
+	NavButton(sidebar, 5, L.PAGE_ABOUT)
 
 	local hint = UI.Text(sidebar, "GameFontHighlightSmall", C.muted)
 	hint:SetPoint("BOTTOMLEFT", 20, 16)
@@ -405,6 +424,8 @@ SlashCmdList.CHATPILOT = function(input)
 		ns:ToggleOptions()
 	elseif cmd == "mentions" or cmd == "m" then
 		ns:ShowMentions()
+	elseif cmd == "whispers" or cmd == "w" then
+		ns:ShowWhispers()
 	elseif cmd == "copy" then
 		ns:CopyChat()
 	elseif cmd == "feedback" or cmd == "fb" then

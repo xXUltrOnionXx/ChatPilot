@@ -37,6 +37,12 @@ Im Spiel geht's noch einfacher: `/chatpilot feedback` erstellt einen fertigen Be
 - **Spam-Filter:** Wer in öffentlichen Kanälen (Handel, Suche nach Gruppe …) innerhalb von 90 Sekunden dasselbe noch mal schreibt, wird nur einmal angezeigt.
 - **Tipp:** Eigene Stichwörter funktionieren auch als Suchalarm, z. B. `BRD` oder `Ony` – dann wirst du benachrichtigt, sobald jemand eine Gruppe dafür sucht.
 
+### Verpasste Flüsternachrichten
+- Unbeantwortete Flüsternachrichten werden am **Brief-Knopf** neben dem Chat gezählt.
+- Ein Fenster zeigt alle Gespräche; **Antworten** öffnet dein Eingabefeld mit dem richtigen Namen (abschicken tust du selbst).
+- Kommst du aus dem **AFK** oder einem **Kampf** zurück, siehst du, wer dir geschrieben hat.
+- Während Bosskämpfen kann das Spiel den Text verbergen – dann zählt ChatPilot die Nachricht nur und verweist auf den Chat.
+
 ### Sonstiges
 - **Anklickbare Links:** Internetadressen im Chat werden blau. Ein Klick öffnet ein Fenster, aus dem du den Link mit Strg+C kopierst.
 - **Chat kopieren:** kleiner Knopf oben rechts an jedem Chatfenster.
@@ -45,6 +51,7 @@ Im Spiel geht's noch einfacher: `/chatpilot feedback` erstellt einen fertigen Be
 ## Bedienung
 - **Zahnrad** direkt rechts neben dem Chatfenster → Einstellungen (Knöpfe wahlweise auch über dem Chat)
 - **@** daneben → Erwähnungs-Verlauf (orange Zahl = ungelesene Erwähnungen)
+- **Brief** → verpasste Flüsternachrichten
 - **Notiz-Symbol** → Chat kopieren
 - Oder über das **Addon-Menü an der Minimap**, `/chatpilot` bzw. Spieloptionen → AddOns → ChatPilot
 
@@ -53,6 +60,7 @@ Im Spiel geht's noch einfacher: `/chatpilot feedback` erstellt einen fertigen Be
 |---|---|
 | `/chatpilot` oder `/cpilot` | Einstellungen öffnen |
 | `/chatpilot mentions` | Erwähnungs-Verlauf |
+| `/chatpilot whispers` | Verpasste Flüsternachrichten |
 | `/chatpilot copy` | Aktuellen Chat kopieren |
 | `/chatpilot feedback` | Feedback geben |
 | `/chatpilot add <Wort>` / `del <Wort>` / `list` | Stichwörter verwalten |
