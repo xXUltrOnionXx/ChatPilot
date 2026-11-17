@@ -23,6 +23,7 @@ ns.defaults = {
 	buttonBackground = true,
 	textSize = 14,
 	textBold = false,
+	expanded = {},
 	whispers = true,
 	whisperSummary = true,
 	versionCheck = true,

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.3
+- Einstellungen aufgeräumt: Unteroptionen sind jetzt aufklappbar (Pfeil mit Anzahl der Unterpunkte), ebenso die Karten für Stichwörter, Textbausteine und Schrift. Der Zustand wird gespeichert
+
 ## 1.3.2
 - Schrift in Flüster-, Erwähnungs- und Kopierfenster einstellbar: Größe (10–20) und Normal/Fett, mit Vorschau (Einstellungen → Flüstern)
 - Schöneres, flaches Design: kein Schriftschatten mehr auf Knöpfen und Texten in den ChatPilot-Fenstern

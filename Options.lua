@@ -9,6 +9,113 @@ local rows = {}   -- toggle rows (for refresh / dependencies)
 local pages, navButtons = {}, {}
 
 -------------------------------------------------------------------------------
+-- Flow layout with collapsible sub-menus
+-- Every page is a list of items stacked from top to bottom. Items can belong
+-- to a parent (row or card); they are only shown while the parent is expanded.
+-------------------------------------------------------------------------------
+local flows = {}
+
+local function IsExpanded(f)
+	local key = rawget(f, "expandKey")
+	return key and ns.S.expanded and ns.S.expanded[key] and true or false
+end
+
+local function Relayout(flow)
+	local y = flow.y0
+	for _, it in ipairs(flow.items) do
+		local p = it.parent
+		local vis = not p or (rawget(p, "flowVisible") and IsExpanded(p))
+		it.f.flowVisible = vis
+		it.f:SetShown(vis)
+		if vis then
+			local h = it.height and it.height() or it.f:GetHeight()
+			it.f:SetHeight(h)
+			it.f:ClearAllPoints()
+			it.f:SetPoint("TOPLEFT", flow.child, "TOPLEFT", 24 + it.indent, y)
+			it.f:SetPoint("RIGHT", flow.child, "RIGHT", -24, 0)
+			y = y - h - it.gap
+		end
+	end
+	flow.child:SetHeight(-y + 24)
+end
+
+local function RelayoutAll() for _, fl in ipairs(flows) do Relayout(fl) end end
+ns.RelayoutOptions = RelayoutAll
+ns._optionFlows = flows -- for tests
+
+local function NewFlow(child, y0)
+	local flow = { child = child, y0 = y0, items = {} }
+	flows[#flows + 1] = flow
+	return flow
+end
+
+local function FlowAdd(flow, frame, parent, opts)
+	opts = opts or {}
+	flow.items[#flow.items + 1] = {
+		f = frame, parent = parent, height = opts.height,
+		indent = opts.indent or (parent and 24 or 0), gap = opts.gap or 6,
+	}
+	frame:SetParent(flow.child)
+	frame.flow = flow
+end
+
+local function SetExpanded(f, value)
+	ns.S.expanded = ns.S.expanded or {}
+	ns.S.expanded[f.expandKey] = value and true or nil
+	if type(rawget(f, "chevron")) == "table" then f.chevron:SetExpanded(value) end
+	Relayout(f.flow)
+end
+
+local function ToggleExpanded(f) SetExpanded(f, not IsExpanded(f)) end
+
+-- Small arrow button: > (collapsed) or v (expanded)
+local function Chevron(parent)
+	local b = CreateFrame("Button", nil, parent)
+	b:SetSize(28, 28)
+	local hl = UI.Fill(b, C.rowHover)
+	hl:SetAlpha(0)
+	b.l1 = b:CreateTexture(nil, "OVERLAY")
+	b.l2 = b:CreateTexture(nil, "OVERLAY")
+	for _, t in ipairs({ b.l1, b.l2 }) do
+		t:SetColorTexture(unpack(C.accent))
+		t:SetSize(9, 2)
+	end
+	function b:SetExpanded(open)
+		self.l1:ClearAllPoints(); self.l2:ClearAllPoints()
+		if open then -- v
+			self.l1:SetPoint("CENTER", -3, 0); self.l1:SetRotation(math.rad(-45))
+			self.l2:SetPoint("CENTER", 3, 0); self.l2:SetRotation(math.rad(45))
+		else -- >
+			self.l1:SetPoint("CENTER", 0, 3); self.l1:SetRotation(math.rad(-45))
+			self.l2:SetPoint("CENTER", 0, -3); self.l2:SetRotation(math.rad(45))
+		end
+	end
+	b:SetScript("OnEnter", function() hl:SetAlpha(1) end)
+	b:SetScript("OnLeave", function() hl:SetAlpha(0) end)
+	b:SetExpanded(false)
+	return b
+end
+
+-- Turns a row or card into a collapsible parent (arrow + number of sub-items).
+local function MakeExpandable(f, anchorTo, xOff)
+	if type(rawget(f, "subCount")) == "number" then
+		f.subCount = f.subCount + 1
+		f.countText:SetText(f.subCount)
+		return
+	end
+	f.expandKey = f.key
+	f.subCount = 1
+	f.chevron = Chevron(f)
+	f.chevron:SetPoint("RIGHT", anchorTo or f, anchorTo and "LEFT" or "RIGHT", xOff or -12, 0)
+	f.chevron:SetScript("OnClick", function() ToggleExpanded(f) end)
+	f.countText = UI.Text(f, "GameFontHighlightSmall", C.muted)
+	f.countText:SetPoint("RIGHT", f.chevron, "LEFT", -2, 0)
+	f.countText:SetText("1")
+	if f.desc then f.desc:SetPoint("RIGHT", f, "RIGHT", -130, 0) end
+	f.chevron:SetExpanded(IsExpanded(f))
+end
+
+-------------------------------------------------------------------------------
 -- Building blocks
 -------------------------------------------------------------------------------
 local function PageHeader(child, title, subtitle)
@@ -28,19 +135,19 @@ local function RefreshRows()
 		local on = not r.dep or ns.S[r.dep]
 		r.toggle:SetEnabled(on and true or false)
 		r:SetAlpha(on and 1 or 0.45)
+		if type(rawget(r, "chevron")) == "table" then r.chevron:SetExpanded(IsExpanded(r)) end
 	end
 end
 
-local function ToggleRow(child, y, key, dep, onChange)
-	local indent = dep and 24 or 0
-	local r = CreateFrame("Frame", nil, child)
-	r:SetPoint("TOPLEFT", 24 + indent, y)
-	r:SetPoint("RIGHT", child, "RIGHT", -24, 0)
+-- Toggle row. parentRow = row it belongs to (shown as collapsible sub-menu).
+local function ToggleRow(flow, key, parentRow, onChange)
+	local r = CreateFrame("Frame", nil, flow.child)
 	r:SetHeight(52)
 	r.bg = UI.Fill(r, C.row)
-	if dep then
+	if parentRow then
 		local bar = r:CreateTexture(nil, "ARTWORK")
-		bar:SetColorTexture(unpack(C.border))
+		bar:SetColorTexture(unpack(C.accent))
+		bar:SetAlpha(0.6)
 		bar:SetPoint("TOPLEFT")
 		bar:SetPoint("BOTTOMLEFT")
 		bar:SetWidth(2)
@@ -66,16 +173,52 @@ local function ToggleRow(child, y, key, dep, onChange)
 	r:SetScript("OnLeave", function() r.bg:SetColorTexture(unpack(C.row)) end)
 	r:SetScript("OnMouseUp", function() if r.toggle:IsEnabled() then r.toggle:Click() end end)
 
-	r.key, r.dep = key, dep
+	r.key = key
+	r.dep = parentRow and parentRow.key
 	rows[#rows + 1] = r
-	return y - 58
+	FlowAdd(flow, r, parentRow)
+	if parentRow then MakeExpandable(parentRow, parentRow.toggle, -14) end
+	return r
 end
 
-local function Section(child, y, text)
-	local t = UI.Text(child, "GameFontNormalSmall", C.accent)
-	t:SetPoint("TOPLEFT", 24, y - 8)
-	t:SetText(text:upper())
-	return y - 30
+-- Card with a clickable header (title + description) that collapses its body.
+local function Card(flow, id, title, desc, parentRow)
+	local card = CreateFrame("Frame", nil, flow.child)
+	UI.Fill(card, C.row)
+	card.expandKey = id
+	card.fullHeight = 120
+	local header = CreateFrame("Button", nil, card)
+	header:SetPoint("TOPLEFT")
+	header:SetPoint("TOPRIGHT")
+	header:SetHeight(50)
+	header:SetScript("OnClick", function() ToggleExpanded(card) end)
+	local t = UI.Text(header, "GameFontHighlight")
+	t:SetPoint("TOPLEFT", 14, -12)
+	t:SetText(title)
+	card.desc = UI.Text(header, "GameFontHighlightSmall", C.muted)
+	card.desc:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -5)
+	card.desc:SetPoint("RIGHT", card, "RIGHT", -60, 0)
+	card.desc:SetWordWrap(false)
+	card.desc:SetText(desc)
+	card.chevron = Chevron(card)
+	card.chevron:SetPoint("TOPRIGHT", -12, -11)
+	card.chevron:SetScript("OnClick", function() ToggleExpanded(card) end)
+	card.chevron:SetExpanded(IsExpanded(card))
+	card.body = CreateFrame("Frame", nil, card)
+	card.body:SetPoint("TOPLEFT", 0, -50)
+	card.body:SetPoint("BOTTOMRIGHT")
+	FlowAdd(flow, card, parentRow, { height = function()
+		local open = IsExpanded(card)
+		card.body:SetShown(open)
+		return open and card.fullHeight or 50
+	end })
+	if parentRow then MakeExpandable(parentRow, parentRow.toggle, -14) end
+	return card
+end
+
+local function SetCardHeight(card, h)
+	card.fullHeight = h
+	if card.flow then Relayout(card.flow) end
 end
 
 -------------------------------------------------------------------------------
@@ -124,7 +267,7 @@ local function LayoutChips()
 	end
 	local h = (#words == 0) and 20 or (-y + 24)
 	area:SetHeight(h)
-	kwCard:SetHeight(110 + h)
+	SetCardHeight(kwCard, 50 + 44 + h + 14)
 end
 
 local function AddKeywords(text)
@@ -138,23 +281,12 @@ local function AddKeywords(text)
 	LayoutChips()
 end
 
-local function KeywordCard(child, y)
-	local card = CreateFrame("Frame", nil, child)
-	card:SetPoint("TOPLEFT", 24, y)
-	card:SetPoint("RIGHT", child, "RIGHT", -24, 0)
-	card:SetHeight(140)
-	UI.Fill(card, C.row)
-	local t = UI.Text(card, "GameFontHighlight")
-	t:SetPoint("TOPLEFT", 14, -12)
-	t:SetText(L.KW_TITLE)
-	local d = UI.Text(card, "GameFontHighlightSmall", C.muted)
-	d:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -5)
-	d:SetPoint("RIGHT", card, "RIGHT", -14, 0)
-	d:SetText(L.KW_DESC)
-
-	local input = UI.Input(card, 260, L.KW_PLACEHOLDER)
-	input:SetPoint("TOPLEFT", 14, -54)
-	local add = UI.Button(card, L.ADD, 110, 28, "accent")
+local function KeywordCard(flow, parentRow)
+	local card = Card(flow, "card_keywords", L.KW_TITLE, L.KW_DESC, parentRow)
+	local b = card.body
+	local input = UI.Input(b, 260, L.KW_PLACEHOLDER)
+	input:SetPoint("TOPLEFT", 14, -4)
+	local add = UI.Button(b, L.ADD, 110, 28, "accent")
 	add:SetPoint("LEFT", input, "RIGHT", 8, 0)
 	local function submit()
 		AddKeywords(input.eb:GetText())
@@ -162,10 +294,9 @@ local function KeywordCard(child, y)
 	end
 	input.eb:SetScript("OnEnterPressed", function(self) submit(); self:ClearFocus() end)
 	add:SetScript("OnClick", submit)
-
-	card.chips = CreateFrame("Frame", nil, card)
-	card.chips:SetPoint("TOPLEFT", 14, -94)
-	card.chips:SetPoint("RIGHT", card, "RIGHT", -14, 0)
+	card.chips = CreateFrame("Frame", nil, b)
+	card.chips:SetPoint("TOPLEFT", 14, -44)
+	card.chips:SetPoint("RIGHT", b, "RIGHT", -14, 0)
 	card.chips:SetHeight(20)
 	card.empty = UI.Text(card.chips, "GameFontHighlightSmall", C.muted)
 	card.empty:SetPoint("TOPLEFT", 0, -3)
@@ -187,7 +318,7 @@ local function LayoutSnippets()
 	for i, sn in ipairs(list) do
 		local r = snRows[i]
 		if not r then
-			r = CreateFrame("Frame", nil, snCard)
+			r = CreateFrame("Frame", nil, snCard.body)
 			r:SetHeight(26)
 			UI.Fill(r, C.bg)
 			r.text = UI.Text(r, "GameFontHighlight")
@@ -210,37 +341,25 @@ local function LayoutSnippets()
 		end
 		r.index = i
 		r:ClearAllPoints()
-		r:SetPoint("TOPLEFT", snCard, "TOPLEFT", 14, -96 - (i - 1) * 30)
-		r:SetPoint("RIGHT", snCard, "RIGHT", -14, 0)
+		r:SetPoint("TOPLEFT", snCard.body, "TOPLEFT", 14, -44 - (i - 1) * 30)
+		r:SetPoint("RIGHT", snCard.body, "RIGHT", -14, 0)
 		r.text:SetText("|cff4ec9ff#" .. sn.k .. "|r   " .. sn.t)
 		r:Show()
 	end
-	snCard:SetHeight(110 + math.max(#list, 1) * 30)
-	if snCard.onResize then snCard.onResize() end
+	SetCardHeight(snCard, 50 + 44 + math.max(#list, 1) * 30 + 10)
 end
 
-local function SnippetCard(child, y)
-	local card = CreateFrame("Frame", nil, child)
-	card:SetPoint("TOPLEFT", 24, y)
-	card:SetPoint("RIGHT", child, "RIGHT", -24, 0)
-	card:SetHeight(140)
-	UI.Fill(card, C.row)
-	local t = UI.Text(card, "GameFontHighlight")
-	t:SetPoint("TOPLEFT", 14, -12)
-	t:SetText(L.SN_TITLE)
-	local d = UI.Text(card, "GameFontHighlightSmall", C.muted)
-	d:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -5)
-	d:SetPoint("RIGHT", card, "RIGHT", -14, 0)
-	d:SetText(L.SN_DESC)
-
-	local name = UI.Input(card, 110, L.SN_NAME_PH)
-	name:SetPoint("TOPLEFT", 14, -54)
+local function SnippetCard(flow, parentRow)
+	local card = Card(flow, "card_snippets", L.SN_TITLE, L.SN_DESC, parentRow)
+	local b = card.body
+	local name = UI.Input(b, 110, L.SN_NAME_PH)
+	name:SetPoint("TOPLEFT", 14, -4)
 	name.eb:SetMaxLetters(20)
-	local text = UI.Input(card, 250, L.SN_TEXT_PH)
+	local text = UI.Input(b, 250, L.SN_TEXT_PH)
 	text:SetPoint("LEFT", name, "RIGHT", 6, 0)
-	text:SetPoint("RIGHT", card, "RIGHT", -110, 0)
+	text:SetPoint("RIGHT", b, "RIGHT", -110, 0)
 	text.eb:SetMaxLetters(255)
-	local add = UI.Button(card, L.ADD, 90, 28, "accent")
+	local add = UI.Button(b, L.ADD, 90, 28, "accent")
 	add:SetPoint("LEFT", text, "RIGHT", 6, 0)
 	local function submit()
 		local k = strtrim(name.eb:GetText() or ""):gsub("^#", ""):gsub("%s", "")
@@ -258,11 +377,53 @@ local function SnippetCard(child, y)
 	name.eb:SetScript("OnTabPressed", function() text.eb:SetFocus() end)
 	text.eb:SetScript("OnEnterPressed", submit)
 	add:SetScript("OnClick", submit)
-
-	card.empty = UI.Text(card, "GameFontHighlightSmall", C.muted)
-	card.empty:SetPoint("TOPLEFT", 14, -100)
+	card.empty = UI.Text(b, "GameFontHighlightSmall", C.muted)
+	card.empty:SetPoint("TOPLEFT", 14, -48)
 	card.empty:SetText(L.SN_EMPTY)
 	snCard = card
+	return card
+end
+
+-------------------------------------------------------------------------------
+-- Text style card: size stepper, normal/bold, live preview
+-------------------------------------------------------------------------------
+local function TextCard(flow)
+	local card = Card(flow, "card_text", L.OPT_TEXT_TITLE, L.OPT_TEXT_DESC)
+	card.fullHeight = 150
+	local b = card.body
+	local sizeLabel = UI.Text(b, "GameFontHighlight")
+	sizeLabel:SetPoint("TOPLEFT", 14, -12)
+	sizeLabel:SetText(L.OPT_TEXT_SIZE)
+	local minus = UI.Button(b, "-", 30, 28)
+	minus:SetPoint("LEFT", sizeLabel, "RIGHT", 12, 0)
+	local value = UI.Text(b, "GameFontHighlight")
+	value:SetPoint("LEFT", minus, "RIGHT", 10, 0)
+	value:SetWidth(24)
+	value:SetJustifyH("CENTER")
+	local plus = UI.Button(b, "+", 30, 28)
+	plus:SetPoint("LEFT", value, "RIGHT", 10, 0)
+	local normal = UI.Button(b, L.OPT_TEXT_NORMAL, 100, 28)
+	normal:SetPoint("LEFT", plus, "RIGHT", 30, 0)
+	local bold = UI.Button(b, L.OPT_TEXT_BOLD, 100, 28)
+	bold:SetPoint("LEFT", normal, "RIGHT", 6, 0)
+	local preview = b:CreateFontString(nil, "OVERLAY")
+	preview:SetPoint("TOPLEFT", 14, -58)
+	preview:SetPoint("RIGHT", b, "RIGHT", -14, 0)
+	preview:SetJustifyH("LEFT")
+	preview:SetFontObject(UI.MessageFont())
+	preview:SetText("|cff6b7383" .. date("%H:%M") .. "|r  |cff3fc7ebJalen|r: " .. L.OPT_TEXT_PREVIEW)
+
+	local function Refresh()
+		UI.MessageFont()
+		value:SetText(tostring(ns.S.textSize))
+		normal:SetSelected(not ns.S.textBold)
+		bold:SetSelected(ns.S.textBold and true or false)
+	end
+	minus:SetScript("OnClick", function() ns.S.textSize = math.max(10, ns.S.textSize - 1); Refresh() end)
+	plus:SetScript("OnClick", function() ns.S.textSize = math.min(20, ns.S.textSize + 1); Refresh() end)
+	normal:SetScript("OnClick", function() ns.S.textBold = false; Refresh() end)
+	bold:SetScript("OnClick", function() ns.S.textBold = true; Refresh() end)
+	b:SetScript("OnShow", Refresh)
 	return card
 end
 
@@ -280,136 +441,81 @@ end
 
 local function BuildTyping(content)
 	local sf, c = NewPage(content)
-	local y = PageHeader(c, L.PAGE_TYPING, L.PAGE_TYPING_SUB)
-	y = ToggleRow(c, y, "autocomplete")
-	y = ToggleRow(c, y, "keepAt", "autocomplete")
-	y = ToggleRow(c, y, "whisperNames")
-	y = ToggleRow(c, y, "raidIcons")
-	y = ToggleRow(c, y, "charCounter")
-	y = ToggleRow(c, y, "snippets")
-	local card = SnippetCard(c, y)
-	card.onResize = function() c:SetHeight(-y + card:GetHeight() + 30) end
-	sf:SetScript("OnShow", LayoutSnippets)
+	local flow = NewFlow(c, PageHeader(c, L.PAGE_TYPING, L.PAGE_TYPING_SUB))
+	local auto = ToggleRow(flow, "autocomplete")
+	ToggleRow(flow, "keepAt", auto)
+	ToggleRow(flow, "whisperNames")
+	ToggleRow(flow, "raidIcons")
+	ToggleRow(flow, "charCounter")
+	local sn = ToggleRow(flow, "snippets")
+	SnippetCard(flow, sn)
+	sf:SetScript("OnShow", function() Relayout(flow); LayoutSnippets() end)
 	return sf
 end
 
 local function BuildMentions(content)
 	local sf, c = NewPage(content)
-	local y = PageHeader(c, L.PAGE_MENTIONS, L.PAGE_MENTIONS_SUB)
-	y = ToggleRow(c, y, "mentions")
-	y = ToggleRow(c, y, "highlight", "mentions")
-	y = ToggleRow(c, y, "mentionSound", "mentions")
-	y = ToggleRow(c, y, "mentionFlash", "mentions")
-	y = ToggleRow(c, y, "mentionToast", "mentions")
-	y = ToggleRow(c, y, "mentionPublic", "mentions")
-	y = Section(c, y - 6, L.KW_TITLE)
-	local card = KeywordCard(c, y)
+	local flow = NewFlow(c, PageHeader(c, L.PAGE_MENTIONS, L.PAGE_MENTIONS_SUB))
+	local m = ToggleRow(flow, "mentions")
+	ToggleRow(flow, "highlight", m)
+	ToggleRow(flow, "mentionSound", m)
+	ToggleRow(flow, "mentionFlash", m)
+	ToggleRow(flow, "mentionToast", m)
+	ToggleRow(flow, "mentionPublic", m)
+	KeywordCard(flow, m)
 
 	local bar = CreateFrame("Frame", nil, c)
-	bar:SetPoint("TOPLEFT", card, "BOTTOMLEFT", 0, -14)
-	bar:SetSize(400, 28)
+	bar:SetHeight(28)
 	local hist = UI.Button(bar, L.OPT_SHOW_MENTIONS, 170, 28)
 	hist:SetPoint("LEFT")
 	hist:SetScript("OnClick", function() ns:ShowMentions() end)
 	local test = UI.Button(bar, L.OPT_TEST, 140, 28)
 	test:SetPoint("LEFT", hist, "RIGHT", 8, 0)
 	test:SetScript("OnClick", function() ns:TestAlert() end)
+	FlowAdd(flow, bar, nil, { gap = 6 })
 
-	sf:SetScript("OnShow", function()
-		LayoutChips()
-		c:SetHeight(-y + card:GetHeight() + 70)
-	end)
+	sf:SetScript("OnShow", function() Relayout(flow); LayoutChips() end)
 	return sf
-end
-
--- Text style card: size stepper, normal/bold, live preview
-local function TextCard(child, y)
-	local card = CreateFrame("Frame", nil, child)
-	card:SetPoint("TOPLEFT", 24, y)
-	card:SetPoint("RIGHT", child, "RIGHT", -24, 0)
-	card:SetHeight(150)
-	UI.Fill(card, C.row)
-	local t = UI.Text(card, "GameFontHighlight")
-	t:SetPoint("TOPLEFT", 14, -12)
-	t:SetText(L.OPT_TEXT_TITLE)
-	local d = UI.Text(card, "GameFontHighlightSmall", C.muted)
-	d:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -5)
-	d:SetPoint("RIGHT", card, "RIGHT", -14, 0)
-	d:SetText(L.OPT_TEXT_DESC)
-
-	local sizeLabel = UI.Text(card, "GameFontHighlight")
-	sizeLabel:SetPoint("TOPLEFT", 14, -62)
-	sizeLabel:SetText(L.OPT_TEXT_SIZE)
-	local minus = UI.Button(card, "-", 30, 28)
-	minus:SetPoint("LEFT", sizeLabel, "RIGHT", 12, 0)
-	local value = UI.Text(card, "GameFontHighlight")
-	value:SetPoint("LEFT", minus, "RIGHT", 10, 0)
-	value:SetWidth(24)
-	value:SetJustifyH("CENTER")
-	local plus = UI.Button(card, "+", 30, 28)
-	plus:SetPoint("LEFT", value, "RIGHT", 10, 0)
-
-	local normal = UI.Button(card, L.OPT_TEXT_NORMAL, 100, 28)
-	normal:SetPoint("LEFT", plus, "RIGHT", 30, 0)
-	local bold = UI.Button(card, L.OPT_TEXT_BOLD, 100, 28)
-	bold:SetPoint("LEFT", normal, "RIGHT", 6, 0)
-
-	local preview = card:CreateFontString(nil, "OVERLAY")
-	preview:SetPoint("TOPLEFT", 14, -108)
-	preview:SetPoint("RIGHT", card, "RIGHT", -14, 0)
-	preview:SetJustifyH("LEFT")
-	preview:SetFontObject(UI.MessageFont())
-	preview:SetText("|cff6b7383" .. date("%H:%M") .. "|r  |cff3fc7ebJalen|r: " .. L.OPT_TEXT_PREVIEW)
-
-	local function Refresh()
-		UI.MessageFont()
-		value:SetText(tostring(ns.S.textSize))
-		normal:SetSelected(not ns.S.textBold)
-		bold:SetSelected(ns.S.textBold and true or false)
-	end
-	minus:SetScript("OnClick", function() ns.S.textSize = math.max(10, ns.S.textSize - 1); Refresh() end)
-	plus:SetScript("OnClick", function() ns.S.textSize = math.min(20, ns.S.textSize + 1); Refresh() end)
-	normal:SetScript("OnClick", function() ns.S.textBold = false; Refresh() end)
-	bold:SetScript("OnClick", function() ns.S.textBold = true; Refresh() end)
-	card:SetScript("OnShow", Refresh)
-	return card
 end
 
 local function BuildWhispers(content)
 	local sf, c = NewPage(content)
-	local y = PageHeader(c, L.PAGE_WHISPERS, L.PAGE_WHISPERS_SUB)
-	y = ToggleRow(c, y, "whispers", nil, function() ns:UpdateChatButtons() end)
-	y = ToggleRow(c, y, "whisperSummary", "whispers")
-	local card = TextCard(c, y - 4)
-	y = y - 4 - 150 - 6
-	local open = UI.Button(c, L.WH_OPEN, 200, 30, "accent")
-	open:SetPoint("TOPLEFT", 24, y - 8)
+	local flow = NewFlow(c, PageHeader(c, L.PAGE_WHISPERS, L.PAGE_WHISPERS_SUB))
+	local w = ToggleRow(flow, "whispers", nil, function() ns:UpdateChatButtons() end)
+	ToggleRow(flow, "whisperSummary", w)
+	TextCard(flow)
+
+	local box = CreateFrame("Frame", nil, c)
+	box:SetHeight(110)
+	local open = UI.Button(box, L.WH_OPEN, 200, 30, "accent")
+	open:SetPoint("TOPLEFT", 0, -6)
 	open:SetScript("OnClick", function() ns:ShowWhispers() end)
-	local hint = UI.Text(c, "GameFontHighlightSmall", C.muted)
+	local hint = UI.Text(box, "GameFontHighlightSmall", C.muted)
 	hint:SetPoint("TOPLEFT", open, "BOTTOMLEFT", 0, -12)
-	hint:SetPoint("RIGHT", c, "RIGHT", -24, 0)
+	hint:SetPoint("RIGHT", box, "RIGHT", 0, 0)
 	hint:SetSpacing(3)
 	hint:SetText(L.WH_HINT)
-	c:SetHeight(-y + 120)
+	FlowAdd(flow, box)
+	sf:SetScript("OnShow", function() Relayout(flow) end)
 	return sf
 end
 
 local function BuildChat(content)
 	local sf, c = NewPage(content)
-	local y = PageHeader(c, L.PAGE_CHAT, L.PAGE_CHAT_SUB)
-	y = ToggleRow(c, y, "abbrevTips")
-	y = ToggleRow(c, y, "showLevels")
-	y = ToggleRow(c, y, "spamFilter")
-	y = ToggleRow(c, y, "keepHistory")
-	y = ToggleRow(c, y, "urls")
-	y = ToggleRow(c, y, "markForeign")
-	y = ToggleRow(c, y, "hideForeign", "markForeign")
-	y = ToggleRow(c, y, "hideRepeats")
-	y = ToggleRow(c, y, "copyButton", nil, function() ns:UpdateChatButtons() end)
-	y = ToggleRow(c, y, "buttonsTop", "copyButton", function() ns:UpdateChatButtons() end)
-	y = ToggleRow(c, y, "buttonBackground", "copyButton", function() ns:UpdateChatButtons() end)
-	y = ToggleRow(c, y, "versionCheck")
-	c:SetHeight(-y + 20)
+	local flow = NewFlow(c, PageHeader(c, L.PAGE_CHAT, L.PAGE_CHAT_SUB))
+	ToggleRow(flow, "abbrevTips")
+	ToggleRow(flow, "showLevels")
+	ToggleRow(flow, "spamFilter")
+	ToggleRow(flow, "keepHistory")
+	ToggleRow(flow, "urls")
+	local foreign = ToggleRow(flow, "markForeign")
+	ToggleRow(flow, "hideForeign", foreign)
+	ToggleRow(flow, "hideRepeats")
+	local btn = ToggleRow(flow, "copyButton", nil, function() ns:UpdateChatButtons() end)
+	ToggleRow(flow, "buttonsTop", btn, function() ns:UpdateChatButtons() end)
+	ToggleRow(flow, "buttonBackground", btn, function() ns:UpdateChatButtons() end)
+	ToggleRow(flow, "versionCheck")
+	sf:SetScript("OnShow", function() Relayout(flow) end)
 	return sf
 end
 
@@ -514,7 +620,7 @@ local function Build()
 	hint:SetPoint("RIGHT", -12, 0)
 	hint:SetText(L.SIDEBAR_HINT)
 
-	win:SetScript("OnShow", RefreshRows)
+	win:SetScript("OnShow", function() RefreshRows(); RelayoutAll() end)
 	SelectPage(1)
 end
 
