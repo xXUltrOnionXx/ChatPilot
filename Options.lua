@@ -322,11 +322,66 @@ local function BuildMentions(content)
 	return sf
 end
 
+-- Text style card: size stepper, normal/bold, live preview
+local function TextCard(child, y)
+	local card = CreateFrame("Frame", nil, child)
+	card:SetPoint("TOPLEFT", 24, y)
+	card:SetPoint("RIGHT", child, "RIGHT", -24, 0)
+	card:SetHeight(150)
+	UI.Fill(card, C.row)
+	local t = UI.Text(card, "GameFontHighlight")
+	t:SetPoint("TOPLEFT", 14, -12)
+	t:SetText(L.OPT_TEXT_TITLE)
+	local d = UI.Text(card, "GameFontHighlightSmall", C.muted)
+	d:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -5)
+	d:SetPoint("RIGHT", card, "RIGHT", -14, 0)
+	d:SetText(L.OPT_TEXT_DESC)
+
+	local sizeLabel = UI.Text(card, "GameFontHighlight")
+	sizeLabel:SetPoint("TOPLEFT", 14, -62)
+	sizeLabel:SetText(L.OPT_TEXT_SIZE)
+	local minus = UI.Button(card, "-", 30, 28)
+	minus:SetPoint("LEFT", sizeLabel, "RIGHT", 12, 0)
+	local value = UI.Text(card, "GameFontHighlight")
+	value:SetPoint("LEFT", minus, "RIGHT", 10, 0)
+	value:SetWidth(24)
+	value:SetJustifyH("CENTER")
+	local plus = UI.Button(card, "+", 30, 28)
+	plus:SetPoint("LEFT", value, "RIGHT", 10, 0)
+
+	local normal = UI.Button(card, L.OPT_TEXT_NORMAL, 100, 28)
+	normal:SetPoint("LEFT", plus, "RIGHT", 30, 0)
+	local bold = UI.Button(card, L.OPT_TEXT_BOLD, 100, 28)
+	bold:SetPoint("LEFT", normal, "RIGHT", 6, 0)
+
+	local preview = card:CreateFontString(nil, "OVERLAY")
+	preview:SetPoint("TOPLEFT", 14, -108)
+	preview:SetPoint("RIGHT", card, "RIGHT", -14, 0)
+	preview:SetJustifyH("LEFT")
+	preview:SetFontObject(UI.MessageFont())
+	preview:SetText("|cff6b7383" .. date("%H:%M") .. "|r  |cff3fc7ebJalen|r: " .. L.OPT_TEXT_PREVIEW)
+
+	local function Refresh()
+		UI.MessageFont()
+		value:SetText(tostring(ns.S.textSize))
+		normal:SetSelected(not ns.S.textBold)
+		bold:SetSelected(ns.S.textBold and true or false)
+	end
+	minus:SetScript("OnClick", function() ns.S.textSize = math.max(10, ns.S.textSize - 1); Refresh() end)
+	plus:SetScript("OnClick", function() ns.S.textSize = math.min(20, ns.S.textSize + 1); Refresh() end)
+	normal:SetScript("OnClick", function() ns.S.textBold = false; Refresh() end)
+	bold:SetScript("OnClick", function() ns.S.textBold = true; Refresh() end)
+	card:SetScript("OnShow", Refresh)
+	return card
+end
+
 local function BuildWhispers(content)
 	local sf, c = NewPage(content)
 	local y = PageHeader(c, L.PAGE_WHISPERS, L.PAGE_WHISPERS_SUB)
 	y = ToggleRow(c, y, "whispers", nil, function() ns:UpdateChatButtons() end)
 	y = ToggleRow(c, y, "whisperSummary", "whispers")
+	local card = TextCard(c, y - 4)
+	y = y - 4 - 150 - 6
 	local open = UI.Button(c, L.WH_OPEN, 200, 30, "accent")
 	open:SetPoint("TOPLEFT", 24, y - 8)
 	open:SetScript("OnClick", function() ns:ShowWhispers() end)
@@ -556,4 +611,5 @@ function ns:OnLogin()
 	if prevLogin then prevLogin(self) end
 	if CommunitiesFrame and CommunitiesFrame.ChatEditBox then ns.HookEditBox(CommunitiesFrame.ChatEditBox) end
 	self:UpdateChatButtons()
+	UI.MessageFont()
 end

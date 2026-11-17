@@ -32,7 +32,7 @@ local function CreateCopy()
 	eb:SetPoint("RIGHT", scroll.child, "RIGHT")
 	eb:SetMultiLine(true)
 	eb:SetAutoFocus(false)
-	eb:SetFontObject(ChatFontNormal)
+	eb:SetFontObject(UI.MessageFont())
 	eb:SetScript("OnEscapePressed", function() f:Hide() end)
 	-- read-only: typing restores the original text
 	eb:SetScript("OnTextChanged", function(self, userInput)

@@ -103,6 +103,18 @@ function UI.CloseButton(parent, onClick)
 	return b
 end
 
+-- Font for message texts in ChatPilot windows (size + normal/bold, no shadow).
+local msgFont
+function UI.MessageFont()
+	if not msgFont then msgFont = CreateFont("ChatPilotMessageFont") end
+	local path = (ChatFontNormal and ChatFontNormal:GetFont()) or STANDARD_TEXT_FONT
+	local S = ns.S or {}
+	msgFont:SetFont(path, S.textSize or 14, S.textBold and "OUTLINE" or "")
+	msgFont:SetShadowOffset(0, 0)
+	msgFont:SetShadowColor(0, 0, 0, 0)
+	return msgFont
+end
+
 -- Movable window with a header bar. Escape closes it.
 function UI.Window(name, title, w, h)
 	local f = CreateFrame("Frame", name, UIParent)
