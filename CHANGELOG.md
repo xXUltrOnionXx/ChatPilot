@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0
+- Komplett neues, modernes Einstellungsfenster mit Seitenleiste (Schreiben, Erwähnungen, Chat-Hilfen, Über), Kippschaltern und Erklärung zu jeder Option
+- Stichwörter als Chips: hinzufügen mit Enter, entfernen per Klick
+- Knopfleiste am Chatfenster: Zahnrad (Einstellungen), @ (Erwähnungen mit Zähler für ungelesene) und Kopieren
+- Eintrag im Addon-Menü an der Minimap
+- Erwähnungs-, Kopier- und Feedback-Fenster im neuen Design
+- Fehler behoben: Fenster ließen sich nicht mit dem X schließen
+
 ## 1.1.1
 - Feedback geht jetzt an GitHub Issues
 

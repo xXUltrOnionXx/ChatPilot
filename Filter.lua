@@ -151,7 +151,7 @@ local function Filter(frame, event, msg, author, language, ...)
 	local S = ns.S
 	if not S or type(msg) ~= "string" or ns.IsSecret(msg) then return false end
 
-	if (S.markForeign or S.hideForeign) and IsForeign(language) then
+	if S.markForeign and IsForeign(language) then
 		if S.hideForeign then return true end
 		return false, "|cff8a8a8a" .. msg .. "|r |cff666666" .. L.UNREADABLE .. "|r", author, language, ...
 	end

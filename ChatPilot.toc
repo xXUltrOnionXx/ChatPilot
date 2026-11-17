@@ -3,10 +3,13 @@
 ## Notes: Smarter chat: @-mention autocomplete, mention alerts, clickable links, chat copy and more.
 ## Notes-deDE: Intuitiverer Chat: @-Erwähnungen mit Namensvorschlägen, Erwähnungs-Alarme, anklickbare Links, Chat kopieren und mehr.
 ## Author: xXUltrOnionXx
-## Version: 1.1.1
+## Version: 1.2.0
 ## Category: Chat & Communication
 ## IconTexture: Interface\Icons\INV_Letter_15
 ## SavedVariables: ChatPilotDB
+## AddonCompartmentFunc: ChatPilot_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: ChatPilot_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: ChatPilot_OnAddonCompartmentLeave
 ## X-Feedback: https://github.com/xXUltrOnionXx/ChatPilot/issues/new/choose
 ## X-Website: https://github.com/xXUltrOnionXx/ChatPilot
 ## X-License: MIT
@@ -14,6 +17,7 @@
 Locales.lua
 Locales_deDE.lua
 Util.lua
+UI.lua
 Glossary.lua
 Core.lua
 Autocomplete.lua

@@ -37,46 +37,51 @@ local function BuildReport(entry)
 	}, "\n")
 end
 
+local UI, C = ns.UI, ns.UI.C
+
 local function Refresh()
-	for _, b in ipairs(fb.typeButtons) do
-		b:SetAlpha(b.key == fb.kind and 1 or 0.45)
-	end
+	for _, b in ipairs(fb.typeButtons) do b:SetSelected(b.key == fb.kind) end
 	for i, s in ipairs(fb.stars) do
 		s.tex:SetDesaturated(i > fb.rating)
-		s.tex:SetAlpha(i > fb.rating and 0.35 or 1)
+		s.tex:SetAlpha(i > fb.rating and 0.3 or 1)
 	end
 	fb.count:SetText(L.FB_HISTORY:format(#ns.db.feedback))
 end
 
-local function Create()
-	local f = ns.CreateWindow("ChatPilotFeedback", L.FB_TITLE, 460, 360)
-	f.kind, f.rating = "idea", 5
+local function Label(parent, text, anchor, y)
+	local t = UI.Text(parent, "GameFontNormalSmall", C.accent)
+	t:SetPoint("TOPLEFT", anchor or parent, anchor and "BOTTOMLEFT" or "TOPLEFT", anchor and 0 or 20, y)
+	t:SetText(text:upper())
+	return t
+end
 
-	local intro = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	intro:SetPoint("TOPLEFT", 12, -34)
-	intro:SetPoint("TOPRIGHT", -12, -34)
-	intro:SetJustifyH("LEFT")
+local function Create()
+	local f = UI.Window("ChatPilotFeedback", L.FB_TITLE, 520, 470)
+	f.kind, f.rating = "idea", 5
+	local c = f.content
+
+	local intro = UI.Text(c, "GameFontHighlight", C.muted)
+	intro:SetPoint("TOPLEFT", 20, -18)
+	intro:SetPoint("RIGHT", c, "RIGHT", -20, 0)
+	intro:SetSpacing(3)
 	intro:SetText(L.FB_INTRO)
 
+	local typeLabel = Label(c, L.FB_TYPE, intro, -18)
 	f.typeButtons = {}
 	for i, t in ipairs(TYPES) do
-		local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-		b:SetSize(110, 24)
-		b:SetPoint("TOPLEFT", 12 + (i - 1) * 116, -70)
-		b:SetText(t.label)
+		local b = UI.Button(c, t.label, 110, 30)
+		b:SetPoint("TOPLEFT", typeLabel, "BOTTOMLEFT", (i - 1) * 116, -8)
 		b.key = t.key
 		b:SetScript("OnClick", function() f.kind = t.key; Refresh() end)
 		f.typeButtons[i] = b
 	end
 
-	local rl = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	rl:SetPoint("TOPLEFT", 12, -108)
-	rl:SetText(L.FB_RATING)
+	local rl = Label(c, L.FB_RATING, typeLabel, -50)
 	f.stars = {}
 	for i = 1, 5 do
-		local s = CreateFrame("Button", nil, f)
-		s:SetSize(22, 22)
-		s:SetPoint("LEFT", rl, "RIGHT", 8 + (i - 1) * 24, 0)
+		local s = CreateFrame("Button", nil, c)
+		s:SetSize(24, 24)
+		s:SetPoint("TOPLEFT", rl, "BOTTOMLEFT", (i - 1) * 28, -8)
 		s.tex = s:CreateTexture(nil, "ARTWORK")
 		s.tex:SetAllPoints()
 		s.tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_1")
@@ -84,39 +89,35 @@ local function Create()
 		f.stars[i] = s
 	end
 
-	local tl = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	tl:SetPoint("TOPLEFT", 12, -140)
-	tl:SetText(L.FB_TEXT)
-
-	local bg = CreateFrame("Frame", nil, f, "BackdropTemplate")
-	bg:SetPoint("TOPLEFT", 12, -158)
-	bg:SetPoint("BOTTOMRIGHT", -12, 48)
-	bg:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
-	bg:SetBackdropColor(0, 0, 0, 0.5)
-	bg:SetBackdropBorderColor(0.4, 0.4, 0.4, 0.8)
-
-	local scroll = CreateFrame("ScrollFrame", nil, bg, "UIPanelScrollFrameTemplate")
-	scroll:SetPoint("TOPLEFT", 6, -6)
-	scroll:SetPoint("BOTTOMRIGHT", -26, 6)
-	local eb = CreateFrame("EditBox", nil, scroll)
+	local tl = Label(c, L.FB_TEXT, rl, -46)
+	local box = CreateFrame("Frame", nil, c)
+	box:SetPoint("TOPLEFT", tl, "BOTTOMLEFT", 0, -8)
+	box:SetPoint("BOTTOMRIGHT", -20, 60)
+	UI.Fill(box, C.panel)
+	UI.Border(box)
+	local scroll = UI.ScrollArea(box)
+	scroll:SetPoint("TOPLEFT", 10, -8)
+	scroll:SetPoint("BOTTOMRIGHT", -10, 8)
+	local eb = CreateFrame("EditBox", nil, scroll.child)
+	eb:SetPoint("TOPLEFT")
 	eb:SetMultiLine(true)
 	eb:SetAutoFocus(false)
 	eb:SetMaxLetters(1500)
 	eb:SetFontObject(ChatFontNormal)
-	eb:SetWidth(390)
 	eb:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
-	scroll:SetScrollChild(eb)
-	bg:EnableMouse(true)
-	bg:SetScript("OnMouseDown", function() eb:SetFocus() end)
+	eb:SetScript("OnTextChanged", function(self) scroll.child:SetHeight(math.max(self:GetHeight(), 10)) end)
+	eb:HookScript("OnEditFocusGained", function() box:SetBorderColor(unpack(C.accent)) end)
+	eb:HookScript("OnEditFocusLost", function() box:SetBorderColor(unpack(C.border)) end)
+	scroll:SetScript("OnSizeChanged", function(_, width) scroll.child:SetWidth(width); eb:SetWidth(width) end)
+	box:EnableMouse(true)
+	box:SetScript("OnMouseDown", function() eb:SetFocus() end)
 	f.eb = eb
 
-	f.count = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	f.count:SetPoint("BOTTOMLEFT", 14, 18)
+	f.count = UI.Text(c, "GameFontHighlightSmall", C.muted)
+	f.count:SetPoint("BOTTOMLEFT", 20, 22)
 
-	local save = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-	save:SetSize(150, 24)
-	save:SetPoint("BOTTOMRIGHT", -12, 12)
-	save:SetText(L.FB_SAVE)
+	local save = UI.Button(c, L.FB_SAVE, 170, 30, "accent")
+	save:SetPoint("BOTTOMRIGHT", -20, 14)
 	save:SetScript("OnClick", function()
 		local text = strtrim(eb:GetText() or "")
 		if text == "" then
@@ -140,5 +141,6 @@ function ns:ShowFeedback()
 	fb = fb or Create()
 	Refresh()
 	fb:Show()
+	fb:Raise()
 	fb.eb:SetFocus()
 end

@@ -1,136 +1,396 @@
 local ADDON, ns = ...
 local L = ns.L
+local UI = ns.UI
+local C = UI.C
 
-local panel = CreateFrame("Frame")
-panel.name = "ChatPilot"
-panel:Hide()
+local GITHUB = "https://github.com/xXUltrOnionXx/ChatPilot"
+local win
+local rows = {}   -- toggle rows (for refresh / dependencies)
+local pages, navButtons = {}, {}
 
-local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-scroll:SetPoint("TOPLEFT", 0, -4)
-scroll:SetPoint("BOTTOMRIGHT", -28, 4)
-local content = CreateFrame("Frame", nil, scroll)
-content:SetSize(600, 760)
-scroll:SetScrollChild(content)
-
-local checks = {}
-local y = -16
-
-local function Header(text)
-	local fs = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-	fs:SetPoint("TOPLEFT", 16, y)
-	fs:SetText(text)
-	y = y - 26
+-------------------------------------------------------------------------------
+-- Building blocks
+-------------------------------------------------------------------------------
+local function PageHeader(child, title, subtitle)
+	local t = UI.Text(child, "GameFontHighlightHuge")
+	t:SetPoint("TOPLEFT", 24, -20)
+	t:SetText(title)
+	local s = UI.Text(child, "GameFontHighlight", C.muted)
+	s:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -6)
+	s:SetPoint("RIGHT", child, "RIGHT", -24, 0)
+	s:SetText(subtitle)
+	return -78
 end
 
-local function Check(key, label, indent, onChange)
-	local cb = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-	cb:SetSize(24, 24)
-	cb:SetPoint("TOPLEFT", 16 + (indent or 0), y)
-	local fs = cb:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-	fs:SetPoint("LEFT", cb, "RIGHT", 4, 0)
-	fs:SetText(label)
-	cb:SetScript("OnClick", function(self)
-		ns.S[key] = self:GetChecked() and true or false
-		if onChange then onChange() end
+local function RefreshRows()
+	for _, r in ipairs(rows) do
+		r.toggle:SetValue(ns.S[r.key])
+		local on = not r.dep or ns.S[r.dep]
+		r.toggle:SetEnabled(on and true or false)
+		r:SetAlpha(on and 1 or 0.45)
+	end
+end
+
+local function ToggleRow(child, y, key, dep, onChange)
+	local indent = dep and 24 or 0
+	local r = CreateFrame("Frame", nil, child)
+	r:SetPoint("TOPLEFT", 24 + indent, y)
+	r:SetPoint("RIGHT", child, "RIGHT", -24, 0)
+	r:SetHeight(52)
+	r.bg = UI.Fill(r, C.row)
+	if dep then
+		local bar = r:CreateTexture(nil, "ARTWORK")
+		bar:SetColorTexture(unpack(C.border))
+		bar:SetPoint("TOPLEFT")
+		bar:SetPoint("BOTTOMLEFT")
+		bar:SetWidth(2)
+	end
+	r.label = UI.Text(r, "GameFontHighlight")
+	r.label:SetPoint("TOPLEFT", 14, -10)
+	r.label:SetText(L["OPT_" .. key])
+	r.desc = UI.Text(r, "GameFontHighlightSmall", C.muted)
+	r.desc:SetPoint("TOPLEFT", r.label, "BOTTOMLEFT", 0, -5)
+	r.desc:SetPoint("RIGHT", r, "RIGHT", -70, 0)
+	r.desc:SetText(L["DESC_" .. key])
+	r.desc:SetWordWrap(false)
+
+	r.toggle = UI.Toggle(r, function(v)
+		ns.S[key] = v
+		if onChange then onChange(v) end
+		RefreshRows()
 	end)
-	cb.key = key
-	checks[#checks + 1] = cb
-	y = y - 24
+	r.toggle:SetPoint("RIGHT", -14, 0)
+
+	r:EnableMouse(true)
+	r:SetScript("OnEnter", function() r.bg:SetColorTexture(unpack(C.rowHover)) end)
+	r:SetScript("OnLeave", function() r.bg:SetColorTexture(unpack(C.row)) end)
+	r:SetScript("OnMouseUp", function() if r.toggle:IsEnabled() then r.toggle:Click() end end)
+
+	r.key, r.dep = key, dep
+	rows[#rows + 1] = r
+	return y - 58
 end
 
-local function Button(text, x, fn)
-	local b = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
-	b:SetSize(150, 24)
-	b:SetPoint("TOPLEFT", x, y)
-	b:SetText(text)
-	b:SetScript("OnClick", fn)
+local function Section(child, y, text)
+	local t = UI.Text(child, "GameFontNormalSmall", C.accent)
+	t:SetPoint("TOPLEFT", 24, y - 8)
+	t:SetText(text:upper())
+	return y - 30
+end
+
+-------------------------------------------------------------------------------
+-- Keywords card (chips)
+-------------------------------------------------------------------------------
+local chipPool, kwCard = {}, nil
+
+local function LayoutChips()
+	if not kwCard then return end
+	local area = kwCard.chips
+	for _, c in ipairs(chipPool) do c:Hide() end
+	local words = ns.S.keywords
+	kwCard.empty:SetShown(#words == 0)
+	local x, y, maxW = 0, 0, area:GetWidth()
+	if not maxW or maxW < 50 then maxW = 420 end
+	for i, word in ipairs(words) do
+		local c = chipPool[i]
+		if not c then
+			c = CreateFrame("Button", nil, area)
+			c:SetHeight(24)
+			c.bg = UI.Fill(c, C.accentDim)
+			UI.Border(c, C.accent)
+			c.text = UI.Text(c, "GameFontHighlightSmall")
+			c.text:SetPoint("LEFT", 9, 0)
+			c.x = UI.Text(c, "GameFontHighlightSmall", C.muted)
+			c.x:SetPoint("RIGHT", -8, 0)
+			c.x:SetText("x")
+			c:SetScript("OnEnter", function(self) self.x:SetTextColor(unpack(C.orange)) end)
+			c:SetScript("OnLeave", function(self) self.x:SetTextColor(unpack(C.muted)) end)
+			c:SetScript("OnClick", function(self)
+				table.remove(ns.S.keywords, self.index)
+				ns:RebuildWords()
+				LayoutChips()
+			end)
+			chipPool[i] = c
+		end
+		c.index = i
+		c.text:SetText(word)
+		local w = c.text:GetStringWidth() + 34
+		c:SetWidth(w)
+		if x > 0 and x + w > maxW then x, y = 0, y - 30 end
+		c:ClearAllPoints()
+		c:SetPoint("TOPLEFT", area, "TOPLEFT", x, y)
+		c:Show()
+		x = x + w + 6
+	end
+	local h = (#words == 0) and 20 or (-y + 24)
+	area:SetHeight(h)
+	kwCard:SetHeight(110 + h)
+end
+
+local function AddKeywords(text)
+	for w in (text or ""):gmatch("[^,]+") do
+		w = strtrim(w)
+		local exists = false
+		for _, k in ipairs(ns.S.keywords) do if k:lower() == w:lower() then exists = true end end
+		if w ~= "" and not exists then table.insert(ns.S.keywords, w) end
+	end
+	ns:RebuildWords()
+	LayoutChips()
+end
+
+local function KeywordCard(child, y)
+	local card = CreateFrame("Frame", nil, child)
+	card:SetPoint("TOPLEFT", 24, y)
+	card:SetPoint("RIGHT", child, "RIGHT", -24, 0)
+	card:SetHeight(140)
+	UI.Fill(card, C.row)
+	local t = UI.Text(card, "GameFontHighlight")
+	t:SetPoint("TOPLEFT", 14, -12)
+	t:SetText(L.KW_TITLE)
+	local d = UI.Text(card, "GameFontHighlightSmall", C.muted)
+	d:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -5)
+	d:SetPoint("RIGHT", card, "RIGHT", -14, 0)
+	d:SetText(L.KW_DESC)
+
+	local input = UI.Input(card, 260, L.KW_PLACEHOLDER)
+	input:SetPoint("TOPLEFT", 14, -54)
+	local add = UI.Button(card, L.ADD, 110, 28, "accent")
+	add:SetPoint("LEFT", input, "RIGHT", 8, 0)
+	local function submit()
+		AddKeywords(input.eb:GetText())
+		input.eb:SetText("")
+	end
+	input.eb:SetScript("OnEnterPressed", function(self) submit(); self:ClearFocus() end)
+	add:SetScript("OnClick", submit)
+
+	card.chips = CreateFrame("Frame", nil, card)
+	card.chips:SetPoint("TOPLEFT", 14, -94)
+	card.chips:SetPoint("RIGHT", card, "RIGHT", -14, 0)
+	card.chips:SetHeight(20)
+	card.empty = UI.Text(card.chips, "GameFontHighlightSmall", C.muted)
+	card.empty:SetPoint("TOPLEFT", 0, -3)
+	card.empty:SetText(L.KW_EMPTY)
+	kwCard = card
+	return card
+end
+
+-------------------------------------------------------------------------------
+-- Pages
+-------------------------------------------------------------------------------
+local function NewPage(content)
+	local sf = UI.ScrollArea(content)
+	sf:SetPoint("TOPLEFT", 190, 0)
+	sf:SetPoint("BOTTOMRIGHT", 0, 0)
+	sf:Hide()
+	pages[#pages + 1] = sf
+	return sf, sf.child
+end
+
+local function BuildTyping(content)
+	local sf, c = NewPage(content)
+	local y = PageHeader(c, L.PAGE_TYPING, L.PAGE_TYPING_SUB)
+	y = ToggleRow(c, y, "autocomplete")
+	y = ToggleRow(c, y, "keepAt", "autocomplete")
+	y = ToggleRow(c, y, "whisperNames")
+	y = ToggleRow(c, y, "raidIcons")
+	y = ToggleRow(c, y, "charCounter")
+	c:SetHeight(-y + 20)
+	return sf
+end
+
+local function BuildMentions(content)
+	local sf, c = NewPage(content)
+	local y = PageHeader(c, L.PAGE_MENTIONS, L.PAGE_MENTIONS_SUB)
+	y = ToggleRow(c, y, "mentions")
+	y = ToggleRow(c, y, "highlight", "mentions")
+	y = ToggleRow(c, y, "mentionSound", "mentions")
+	y = ToggleRow(c, y, "mentionFlash", "mentions")
+	y = ToggleRow(c, y, "mentionToast", "mentions")
+	y = ToggleRow(c, y, "mentionPublic", "mentions")
+	y = Section(c, y - 6, L.KW_TITLE)
+	local card = KeywordCard(c, y)
+
+	local bar = CreateFrame("Frame", nil, c)
+	bar:SetPoint("TOPLEFT", card, "BOTTOMLEFT", 0, -14)
+	bar:SetSize(400, 28)
+	local hist = UI.Button(bar, L.OPT_SHOW_MENTIONS, 170, 28)
+	hist:SetPoint("LEFT")
+	hist:SetScript("OnClick", function() ns:ShowMentions() end)
+	local test = UI.Button(bar, L.OPT_TEST, 140, 28)
+	test:SetPoint("LEFT", hist, "RIGHT", 8, 0)
+	test:SetScript("OnClick", function() ns:TestAlert() end)
+
+	sf:SetScript("OnShow", function()
+		LayoutChips()
+		c:SetHeight(-y + card:GetHeight() + 70)
+	end)
+	return sf
+end
+
+local function BuildChat(content)
+	local sf, c = NewPage(content)
+	local y = PageHeader(c, L.PAGE_CHAT, L.PAGE_CHAT_SUB)
+	y = ToggleRow(c, y, "abbrevTips")
+	y = ToggleRow(c, y, "urls")
+	y = ToggleRow(c, y, "markForeign")
+	y = ToggleRow(c, y, "hideForeign", "markForeign")
+	y = ToggleRow(c, y, "hideRepeats")
+	y = ToggleRow(c, y, "copyButton", nil, function() ns:UpdateChatButtons() end)
+	c:SetHeight(-y + 20)
+	return sf
+end
+
+local function BuildAbout(content)
+	local sf, c = NewPage(content)
+	local badge = UI.Badge(c, 56)
+	badge:SetPoint("TOPLEFT", 24, -24)
+	local name = UI.Text(c, "GameFontHighlightHuge")
+	name:SetPoint("TOPLEFT", badge, "TOPRIGHT", 16, -4)
+	name:SetText("ChatPilot")
+	local ver = UI.Text(c, "GameFontHighlight", C.muted)
+	ver:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -6)
+	ver:SetText("Version " .. ns.version .. "  -  MIT")
+
+	local desc = UI.Text(c, "GameFontHighlight")
+	desc:SetPoint("TOPLEFT", badge, "BOTTOMLEFT", 0, -18)
+	desc:SetPoint("RIGHT", c, "RIGHT", -24, 0)
+	desc:SetSpacing(3)
+	desc:SetText(L.ABOUT_DESC)
+
+	local fb = UI.Button(c, L.OPT_FEEDBACK, 170, 30, "accent")
+	fb:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -18)
+	fb:SetScript("OnClick", function() win:Hide(); ns:ShowFeedback() end)
+	local gh = UI.Button(c, L.ABOUT_GITHUB, 170, 30)
+	gh:SetPoint("LEFT", fb, "RIGHT", 8, 0)
+	gh:SetScript("OnClick", function() ns:ShowCopy(GITHUB, L.COPY_URL_TITLE, true) end)
+
+	local head = UI.Text(c, "GameFontNormalSmall", C.accent)
+	head:SetPoint("TOPLEFT", fb, "BOTTOMLEFT", 0, -26)
+	head:SetText(L.ABOUT_COMMANDS:upper())
+	local cmds = UI.Text(c, "GameFontHighlight", C.muted)
+	cmds:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -8)
+	cmds:SetSpacing(5)
+	cmds:SetText(L.ABOUT_COMMAND_LIST)
+	c:SetHeight(460)
+	return sf
+end
+
+-------------------------------------------------------------------------------
+-- Window with sidebar
+-------------------------------------------------------------------------------
+local function SelectPage(index)
+	for i, p in ipairs(pages) do p:SetShown(i == index) end
+	for i, b in ipairs(navButtons) do
+		local sel = i == index
+		b.bar:SetShown(sel)
+		b.bg:SetShown(sel)
+		b.label:SetTextColor(unpack(sel and C.text or C.muted))
+	end
+end
+
+local function NavButton(sidebar, i, text)
+	local b = CreateFrame("Button", nil, sidebar)
+	b:SetHeight(38)
+	b:SetPoint("TOPLEFT", 0, -12 - (i - 1) * 40)
+	b:SetPoint("RIGHT")
+	b.bg = UI.Fill(b, C.rowHover)
+	b.bar = b:CreateTexture(nil, "ARTWORK")
+	b.bar:SetColorTexture(unpack(C.accent))
+	b.bar:SetPoint("TOPLEFT")
+	b.bar:SetPoint("BOTTOMLEFT")
+	b.bar:SetWidth(3)
+	b.label = UI.Text(b, "GameFontHighlight", C.muted)
+	b.label:SetPoint("LEFT", 20, 0)
+	b.label:SetText(text)
+	b:SetScript("OnEnter", function(self) if not self.bar:IsShown() then self.label:SetTextColor(unpack(C.text)) end end)
+	b:SetScript("OnLeave", function(self) if not self.bar:IsShown() then self.label:SetTextColor(unpack(C.muted)) end end)
+	b:SetScript("OnClick", function() SelectPage(i) end)
+	navButtons[i] = b
 	return b
 end
 
-local title = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightHuge")
-title:SetPoint("TOPLEFT", 16, y)
-title:SetText("|cff4ec9ffChat|rPilot")
-y = y - 36
+local function Build()
+	win = UI.Window("ChatPilotOptions", "ChatPilot", 740, 560)
+	win.subtitle:SetText(ns.version)
+	local content = win.content
 
-Header(L.OPT_HEADER_INPUT)
-Check("autocomplete", L.OPT_AUTOCOMPLETE)
-Check("keepAt", L.OPT_KEEPAT, 20)
-Check("whisperNames", L.OPT_WHISPERNAMES)
-Check("raidIcons", L.OPT_RAIDICONS)
-Check("charCounter", L.OPT_COUNTER)
-y = y - 8
+	local sidebar = CreateFrame("Frame", nil, content)
+	sidebar:SetPoint("TOPLEFT")
+	sidebar:SetPoint("BOTTOMLEFT")
+	sidebar:SetWidth(190)
+	UI.Fill(sidebar, C.panel)
+	local sep = sidebar:CreateTexture(nil, "ARTWORK")
+	sep:SetColorTexture(unpack(C.border))
+	sep:SetPoint("TOPRIGHT")
+	sep:SetPoint("BOTTOMRIGHT")
+	sep:SetWidth(1)
 
-Header(L.OPT_HEADER_MENTIONS)
-Check("mentions", L.OPT_MENTIONS)
-Check("highlight", L.OPT_HIGHLIGHT, 20)
-Check("mentionSound", L.OPT_SOUND, 20)
-Check("mentionFlash", L.OPT_FLASH, 20)
-Check("mentionToast", L.OPT_TOAST, 20)
-Check("mentionPublic", L.OPT_PUBLIC, 20)
+	BuildTyping(content)
+	BuildMentions(content)
+	BuildChat(content)
+	BuildAbout(content)
+	NavButton(sidebar, 1, L.PAGE_TYPING)
+	NavButton(sidebar, 2, L.PAGE_MENTIONS)
+	NavButton(sidebar, 3, L.PAGE_CHAT)
+	NavButton(sidebar, 4, L.PAGE_ABOUT)
 
-local kwLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-kwLabel:SetPoint("TOPLEFT", 20, y - 4)
-kwLabel:SetText(L.OPT_KEYWORDS)
-y = y - 22
-local kw = CreateFrame("EditBox", nil, content, "InputBoxTemplate")
-kw:SetSize(360, 20)
-kw:SetPoint("TOPLEFT", 26, y)
-kw:SetAutoFocus(false)
-kw:SetMaxLetters(200)
-local function SaveKeywords()
-	local list = {}
-	for w in (kw:GetText() or ""):gmatch("[^,]+") do
-		w = strtrim(w)
-		if w ~= "" then list[#list + 1] = w end
-	end
-	ns.S.keywords = list
-	ns:RebuildWords()
+	local hint = UI.Text(sidebar, "GameFontHighlightSmall", C.muted)
+	hint:SetPoint("BOTTOMLEFT", 20, 16)
+	hint:SetPoint("RIGHT", -12, 0)
+	hint:SetText(L.SIDEBAR_HINT)
+
+	win:SetScript("OnShow", RefreshRows)
+	SelectPage(1)
 end
-kw:SetScript("OnEnterPressed", function(self) SaveKeywords(); self:ClearFocus() end)
-kw:SetScript("OnEditFocusLost", SaveKeywords)
-kw:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
-y = y - 22
-local kwHint = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-kwHint:SetPoint("TOPLEFT", 22, y)
-kwHint:SetText(L.OPT_KEYWORDS_HINT)
-y = y - 22
 
-Header(L.OPT_HEADER_MISC)
-Check("urls", L.OPT_URLS)
-Check("copyButton", L.OPT_COPYBTN, 0, function() ns:UpdateCopyButtons() end)
-Check("abbrevTips", L.OPT_ABBR)
-Check("markForeign", L.OPT_MARKFOREIGN)
-Check("hideForeign", L.OPT_HIDEFOREIGN, 20)
-Check("hideRepeats", L.OPT_REPEATS)
-y = y - 10
+function ns:OpenOptions(page)
+	if not win then Build() end
+	if SettingsPanel and SettingsPanel:IsShown() and HideUIPanel then HideUIPanel(SettingsPanel) end
+	if page then SelectPage(page) end
+	win:Show()
+	win:Raise()
+end
 
-Button(L.OPT_SHOW_MENTIONS, 16, function() ns:ShowMentions() end)
-Button(L.OPT_COPY_CHAT, 172, function() ns:CopyChat() end)
-Button(L.OPT_TEST, 328, function() ns:TestAlert() end)
-y = y - 30
-Button(L.OPT_FEEDBACK, 16, function() ns:ShowFeedback() end)
+function ns:ToggleOptions()
+	if win and win:IsShown() then win:Hide() else self:OpenOptions() end
+end
 
-panel:SetScript("OnShow", function()
-	for _, cb in ipairs(checks) do cb:SetChecked(ns.S[cb.key]) end
-	kw:SetText(table.concat(ns.S.keywords, ", "))
-end)
-
-local category
+-------------------------------------------------------------------------------
+-- Entry in Blizzard's options (points to our window)
+-------------------------------------------------------------------------------
+local panel = CreateFrame("Frame")
+panel.name = "ChatPilot"
+panel:Hide()
+do
+	local badge = UI.Badge(panel, 48)
+	badge:SetPoint("TOPLEFT", 20, -20)
+	local t = UI.Text(panel, "GameFontHighlightHuge")
+	t:SetPoint("TOPLEFT", badge, "TOPRIGHT", 14, -2)
+	t:SetText("ChatPilot")
+	local d = UI.Text(panel, "GameFontHighlight", C.muted)
+	d:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -6)
+	d:SetText(L.SETTINGS_DESC)
+	local b = UI.Button(panel, L.OPEN, 200, 32, "accent")
+	b:SetPoint("TOPLEFT", badge, "BOTTOMLEFT", 0, -20)
+	b:SetScript("OnClick", function() ns:OpenOptions() end)
+end
 if Settings and Settings.RegisterCanvasLayoutCategory then
-	category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
+	local category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
 	Settings.RegisterAddOnCategory(category)
 elseif InterfaceOptions_AddCategory then
 	InterfaceOptions_AddCategory(panel)
 end
 
-function ns:OpenOptions()
-	if category and Settings and Settings.OpenToCategory then
-		local id = category.GetID and category:GetID() or category.ID
-		if not pcall(Settings.OpenToCategory, id) then pcall(Settings.OpenToCategory, panel.name) end
-	elseif InterfaceOptionsFrame_OpenToCategory then
-		InterfaceOptionsFrame_OpenToCategory(panel)
-	end
+-- Minimap addon menu (Addon Compartment), declared in the .toc.
+function ChatPilot_OnAddonCompartmentClick() ns:ToggleOptions() end
+function ChatPilot_OnAddonCompartmentEnter(_, button)
+	if type(button) ~= "table" or not button.GetObjectType then return end
+	GameTooltip:SetOwner(button, "ANCHOR_LEFT")
+	GameTooltip:SetText("ChatPilot")
+	GameTooltip:AddLine(L.COMPARTMENT_TIP, 1, 1, 1)
+	GameTooltip:Show()
 end
+function ChatPilot_OnAddonCompartmentLeave() GameTooltip:Hide() end
 
 -------------------------------------------------------------------------------
 -- Slash commands
@@ -141,7 +401,7 @@ SlashCmdList.CHATPILOT = function(input)
 	local cmd, rest = strtrim(input or ""):match("^(%S*)%s*(.-)$")
 	cmd = (cmd or ""):lower()
 	if cmd == "" or cmd == "options" or cmd == "config" then
-		ns:OpenOptions()
+		ns:ToggleOptions()
 	elseif cmd == "mentions" or cmd == "m" then
 		ns:ShowMentions()
 	elseif cmd == "copy" then
@@ -151,14 +411,14 @@ SlashCmdList.CHATPILOT = function(input)
 	elseif cmd == "test" then
 		ns:TestAlert()
 	elseif cmd == "add" and rest ~= "" then
-		table.insert(ns.S.keywords, rest)
-		ns:RebuildWords()
+		AddKeywords(rest)
 		ns.Print(L.KW_ADDED, rest)
 	elseif (cmd == "del" or cmd == "remove") and rest ~= "" then
 		for i = #ns.S.keywords, 1, -1 do
 			if ns.S.keywords[i]:lower() == rest:lower() then table.remove(ns.S.keywords, i) end
 		end
 		ns:RebuildWords()
+		LayoutChips()
 		ns.Print(L.KW_REMOVED, rest)
 	elseif cmd == "list" then
 		local kws = #ns.S.keywords > 0 and table.concat(ns.S.keywords, ", ") or L.NONE
@@ -173,5 +433,5 @@ local prevLogin = ns.OnLogin
 function ns:OnLogin()
 	if prevLogin then prevLogin(self) end
 	if CommunitiesFrame and CommunitiesFrame.ChatEditBox then ns.HookEditBox(CommunitiesFrame.ChatEditBox) end
-	self:UpdateCopyButtons()
+	self:UpdateChatButtons()
 end

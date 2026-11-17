@@ -19,23 +19,28 @@ end
 -------------------------------------------------------------------------------
 -- Toast
 -------------------------------------------------------------------------------
-local toast = CreateFrame("Button", "ChatPilotToast", UIParent, "BackdropTemplate")
-toast:SetSize(420, 52)
+local UI, C = ns.UI, ns.UI.C
+local toast = CreateFrame("Button", "ChatPilotToast", UIParent)
+toast:SetSize(440, 58)
 toast:SetPoint("TOP", UIParent, "TOP", 0, -150)
 toast:SetFrameStrata("HIGH")
-toast:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
-toast:SetBackdropColor(0.04, 0.05, 0.08, 0.9)
-toast:SetBackdropBorderColor(1, 0.6, 0.12, 0.9)
+UI.Fill(toast, C.bg)
+UI.Border(toast)
+local stripe = toast:CreateTexture(nil, "ARTWORK")
+stripe:SetColorTexture(unpack(C.orange))
+stripe:SetPoint("TOPLEFT", 1, -1)
+stripe:SetPoint("BOTTOMLEFT", 1, 1)
+stripe:SetWidth(3)
+local tb = UI.Badge(toast, 30)
+tb:SetPoint("LEFT", 14, 0)
 toast:Hide()
 
-toast.title = toast:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-toast.title:SetPoint("TOPLEFT", 10, -8)
-toast.title:SetPoint("TOPRIGHT", -10, -8)
-toast.title:SetJustifyH("LEFT")
-toast.text = toast:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-toast.text:SetPoint("TOPLEFT", toast.title, "BOTTOMLEFT", 0, -4)
-toast.text:SetPoint("TOPRIGHT", toast.title, "BOTTOMRIGHT", 0, -4)
-toast.text:SetJustifyH("LEFT")
+toast.title = UI.Text(toast, "GameFontHighlight")
+toast.title:SetPoint("TOPLEFT", tb, "TOPRIGHT", 12, 2)
+toast.title:SetPoint("RIGHT", toast, "RIGHT", -12, 0)
+toast.text = UI.Text(toast, "GameFontHighlightSmall", C.muted)
+toast.text:SetPoint("TOPLEFT", toast.title, "BOTTOMLEFT", 0, -5)
+toast.text:SetPoint("RIGHT", toast, "RIGHT", -12, 0)
 toast.text:SetWordWrap(false)
 
 local fade = toast:CreateAnimationGroup()
@@ -87,7 +92,12 @@ function ns:Alert(event, msg, author, channelName, guid)
 	end
 	if S.mentionFlash and FlashClientIcon then FlashClientIcon() end
 	if S.mentionToast then ShowToast(who, label, plain) end
-	if self.mentionsFrame and self.mentionsFrame:IsShown() then self:FillMentions() end
+	if self.mentionsFrame and self.mentionsFrame:IsShown() then
+		self:FillMentions()
+	else
+		self.unread = (self.unread or 0) + 1
+	end
+	if self.UpdateChatButtons then self:UpdateChatButtons() end
 end
 
 ns:OnChat(function(event, msg, author, channelName, guid)
@@ -108,41 +118,15 @@ end)
 -------------------------------------------------------------------------------
 -- Mentions log window
 -------------------------------------------------------------------------------
-local function CreateWindow(name, title, w, h)
-	local f = CreateFrame("Frame", name, UIParent, "BackdropTemplate")
-	f:SetSize(w, h)
-	f:SetPoint("CENTER")
-	f:SetFrameStrata("DIALOG")
-	f:SetClampedToScreen(true)
-	f:SetMovable(true)
-	f:EnableMouse(true)
-	f:RegisterForDrag("LeftButton")
-	f:SetScript("OnDragStart", f.StartMoving)
-	f:SetScript("OnDragStop", f.StopMovingOrSizing)
-	f:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
-	f:SetBackdropColor(0.04, 0.05, 0.08, 0.95)
-	f:SetBackdropBorderColor(0.31, 0.79, 1, 0.6)
-	f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	f.title:SetPoint("TOPLEFT", 12, -10)
-	f.title:SetText(title)
-	local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
-	close:SetPoint("TOPRIGHT", 2, 2)
-	f:Hide()
-	tinsert(UISpecialFrames, name) -- Escape closes it
-	return f
-end
-ns.CreateWindow = CreateWindow
-
 function ns:FillMentions()
-	local smf = self.mentionsFrame.smf
+	local f = self.mentionsFrame
+	local smf = f.smf
 	smf:Clear()
 	local log = self.db.mentions
-	if #log == 0 then
-		smf:AddMessage(L.MENTIONS_EMPTY, 0.6, 0.6, 0.6)
-		return
-	end
+	f.empty:SetShown(#log == 0)
+	f.count:SetText(L.MENTIONS_COUNT:format(#log))
 	for _, e in ipairs(log) do
-		smf:AddMessage(("|cff777777%s|r |cffaaaaaa[%s]|r %s: %s"):format(
+		smf:AddMessage(("|cff6b7383%s|r  |cff4ec9ff%s|r  %s: %s"):format(
 			date("%d.%m. %H:%M", e.t), e.ch or "?", ns.ClassColorText(e.a or "?", e.c), e.m or ""))
 	end
 	smf:ScrollToBottom()
@@ -150,31 +134,47 @@ end
 
 function ns:ShowMentions()
 	if not self.mentionsFrame then
-		local f = CreateWindow("ChatPilotMentions", L.MENTIONS_TITLE, 560, 300)
-		local smf = CreateFrame("ScrollingMessageFrame", nil, f)
-		smf:SetPoint("TOPLEFT", 12, -34)
-		smf:SetPoint("BOTTOMRIGHT", -12, 40)
+		local f = UI.Window("ChatPilotMentions", L.MENTIONS_TITLE, 620, 380)
+		local box = CreateFrame("Frame", nil, f.content)
+		box:SetPoint("TOPLEFT", 14, -14)
+		box:SetPoint("BOTTOMRIGHT", -14, 52)
+		UI.Fill(box, C.panel)
+		UI.Border(box)
+		local smf = CreateFrame("ScrollingMessageFrame", nil, box)
+		smf:SetPoint("TOPLEFT", 12, -10)
+		smf:SetPoint("BOTTOMRIGHT", -12, 10)
 		smf:SetFontObject(ChatFontNormal)
 		smf:SetJustifyH("LEFT")
 		smf:SetFading(false)
+		smf:SetSpacing(4)
 		smf:SetMaxLines(MAX_LOG + 5)
 		smf:EnableMouseWheel(true)
 		smf:SetScript("OnMouseWheel", function(self, delta)
 			if delta > 0 then self:ScrollUp() else self:ScrollDown() end
 		end)
 		f.smf = smf
-		local clear = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-		clear:SetSize(100, 22)
-		clear:SetPoint("BOTTOMRIGHT", -12, 10)
-		clear:SetText(L.CLEAR)
+		f.empty = UI.Text(box, "GameFontHighlight", C.muted)
+		f.empty:SetPoint("CENTER")
+		f.empty:SetText(L.MENTIONS_EMPTY)
+
+		f.count = UI.Text(f.content, "GameFontHighlightSmall", C.muted)
+		f.count:SetPoint("BOTTOMLEFT", 16, 20)
+		local clear = UI.Button(f.content, L.CLEAR, 110, 28)
+		clear:SetPoint("BOTTOMRIGHT", -14, 12)
 		clear:SetScript("OnClick", function()
 			wipe(ns.db.mentions)
 			ns:FillMentions()
 		end)
+		local opts = UI.Button(f.content, L.BTN_SETTINGS, 130, 28)
+		opts:SetPoint("RIGHT", clear, "LEFT", -8, 0)
+		opts:SetScript("OnClick", function() ns:OpenOptions(2) end)
 		self.mentionsFrame = f
 	end
+	self.unread = 0
+	if self.UpdateChatButtons then self:UpdateChatButtons() end
 	self:FillMentions()
 	self.mentionsFrame:Show()
+	self.mentionsFrame:Raise()
 end
 
 function ns:TestAlert()
