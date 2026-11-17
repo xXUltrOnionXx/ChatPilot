@@ -5,7 +5,9 @@
 *English below.*
 
 ## 💬 Feedback, Fehler & Ideen
-Hier landen alle Rückmeldungen – bitte über die Vorlagen:
+**Ohne Anmeldung, anonym:** 👉 **[Feedback-Formular](https://forms.gle/zpQr4CFqMkBETFVV6)**
+
+Mit GitHub-Konto – bitte über die Vorlagen:
 - 🐞 **[Fehler melden](https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template=bug_report.yml)**
 - 💡 **[Idee vorschlagen](https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template=feature_request.yml)**
 - ⭐ **[Feedback / Lob](https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template=feedback.yml)**
