@@ -1,9 +1,18 @@
 ## Interface: 16001
 ## Title: ChatPilot
-## Notes: Smarter chat: @-mention autocomplete, mention alerts, clickable links, chat copy and more.
-## Notes-deDE: Intuitiverer Chat: @-Erwähnungen mit Namensvorschlägen, Erwähnungs-Alarme, anklickbare Links, Chat kopieren und mehr.
+## Notes: Smarter chat: @-mention autocomplete, mention alerts, missed whispers, clickable links and more.
+## Notes-deDE: Intuitiverer Chat: @-Erwähnungen mit Namensvorschlägen, Erwähnungs-Alarme, verpasste Flüsternachrichten, anklickbare Links und mehr.
+## Notes-frFR: Un chat plus intuitif : mentions @ avec suggestions de noms, alertes de mention, chuchotements manqués, liens cliquables et plus.
+## Notes-esES: Un chat más intuitivo: menciones con @ y sugerencias de nombres, alertas, susurros perdidos, enlaces clicables y más.
+## Notes-esMX: Un chat más intuitivo: menciones con @ y sugerencias de nombres, alertas, susurros perdidos, enlaces clicables y más.
+## Notes-itIT: Una chat più intuitiva: menzioni con @ e suggerimenti di nomi, avvisi, sussurri persi, link cliccabili e altro.
+## Notes-ptBR: Um chat mais intuitivo: menções com @ e sugestões de nomes, alertas, sussurros perdidos, links clicáveis e mais.
+## Notes-ruRU: Более удобный чат: упоминания через @ с подсказкой имён, оповещения, пропущенный шёпот, ссылки и многое другое.
+## Notes-koKR: 더 직관적인 채팅: @ 언급 이름 추천, 언급 알림, 놓친 귓속말, 클릭 가능한 링크 등.
+## Notes-zhCN: 更直观的聊天：@ 提及与名字推荐、提及提醒、错过的密语、可点击链接等。
+## Notes-zhTW: 更直覺的聊天：@ 提及與名字建議、提及提醒、錯過的密語、可點擊連結等。
 ## Author: xXUltrOnionXx
-## Version: 1.2.1
+## Version: 1.3.0
 ## Category: Chat & Communication
 ## IconTexture: Interface\Icons\INV_Letter_15
 ## SavedVariables: ChatPilotDB
@@ -16,6 +25,14 @@
 
 Locales.lua
 Locales_deDE.lua
+Locales_frFR.lua
+Locales_esES.lua
+Locales_itIT.lua
+Locales_ptBR.lua
+Locales_ruRU.lua
+Locales_koKR.lua
+Locales_zhCN.lua
+Locales_zhTW.lua
 Util.lua
 UI.lua
 Glossary.lua

@@ -4,6 +4,10 @@
 
 *English below.*
 
+## 🌍 Sprachen
+ChatPilot passt sich automatisch der Sprache deines WoW-Clients an:
+Englisch · Deutsch · Français · Español (ES/MX) · Italiano · Português (BR) · Русский · 한국어 · 简体中文 · 繁體中文
+
 ## 💬 Feedback, Fehler & Ideen
 **Ohne Anmeldung, anonym:** 👉 **[Feedback-Formular](https://forms.gle/zpQr4CFqMkBETFVV6)**
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+- Neue Sprachen passend zu allen WoW-Regionen: Englisch, Deutsch, Französisch, Spanisch (Spanien & Mexiko), Italienisch, Portugiesisch (Brasilien), Russisch, Koreanisch, Chinesisch (vereinfacht & traditionell)
+- ChatPilot erkennt die Sprache deines WoW-Clients automatisch
+
 ## 1.2.1
 - Update-Hinweis im Spiel: Nutzt jemand aus Gilde oder Gruppe eine neuere ChatPilot-Version, bekommst du einmal eine Meldung (ohne Internet, unsichtbare Addon-Nachrichten, nicht in Instanzen)
 
