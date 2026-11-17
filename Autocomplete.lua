@@ -45,7 +45,7 @@ popup:SetBackdropColor(0.04, 0.05, 0.08, 0.94)
 popup:SetBackdropBorderColor(0.31, 0.79, 1, 0.6)
 popup:Hide()
 
-popup.hint = popup:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+popup.hint = ns.UI.NoShadow(popup:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall"))
 popup.hint:SetPoint("BOTTOMLEFT", 6, 4)
 popup.hint:SetPoint("BOTTOMRIGHT", -6, 4)
 popup.hint:SetJustifyH("LEFT")
@@ -74,12 +74,12 @@ local function GetRow(i)
 	r.icon:SetSize(16, 16)
 	r.icon:SetPoint("LEFT", 4, 0)
 
-	r.name = r:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	r.name = ns.UI.NoShadow(r:CreateFontString(nil, "OVERLAY", "GameFontHighlight"))
 	r.name:SetPoint("LEFT", r.icon, "RIGHT", 6, 0)
 	r.name:SetJustifyH("LEFT")
 	r.name:SetWordWrap(false)
 
-	r.tag = r:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	r.tag = ns.UI.NoShadow(r:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall"))
 	r.tag:SetPoint("RIGHT", -6, 0)
 	r.name:SetPoint("RIGHT", r.tag, "LEFT", -6, 0)
 

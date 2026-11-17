@@ -49,8 +49,16 @@ function UI.Border(frame, color)
 	end
 end
 
+-- Flat look: no drop shadow under ChatPilot texts.
+function UI.NoShadow(fs)
+	fs:SetShadowOffset(0, 0)
+	fs:SetShadowColor(0, 0, 0, 0)
+	return fs
+end
+
 function UI.Text(parent, template, color, layer)
 	local fs = parent:CreateFontString(nil, layer or "OVERLAY", template or "GameFontHighlight")
+	UI.NoShadow(fs)
 	fs:SetTextColor(unpack(color or C.text))
 	fs:SetJustifyH("LEFT")
 	return fs
@@ -63,6 +71,7 @@ function UI.Badge(parent, size)
 	UI.Fill(b, C.accent, "ARTWORK")
 	local fs = b:CreateFontString(nil, "OVERLAY", size >= 40 and "GameFontHighlightHuge" or "GameFontHighlightLarge")
 	fs:SetPoint("CENTER", 0, 1)
+	UI.NoShadow(fs)
 	fs:SetText("@")
 	fs:SetTextColor(unpack(C.dark))
 	return b
@@ -151,7 +160,7 @@ function UI.Button(parent, text, w, h, style)
 	local hover = style == "accent" and C.accentHi or C.rowHover
 	b.bg = UI.Fill(b, base)
 	UI.Border(b, style == "accent" and C.accent or C.border)
-	b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	b.label = UI.NoShadow(b:CreateFontString(nil, "OVERLAY", "GameFontHighlight"))
 	b.label:SetPoint("CENTER")
 	b.label:SetText(text)
 	if style == "accent" then b.label:SetTextColor(unpack(C.dark)) end

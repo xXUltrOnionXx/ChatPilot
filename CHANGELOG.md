@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.3.2
+- Schöneres, flaches Design: kein Schriftschatten mehr auf Knöpfen und Texten in den ChatPilot-Fenstern
 - Neuer Schalter „Hintergrund der Knöpfe“: dunklen Hintergrund und Rahmen hinter den Chat-Knöpfen ausschalten (nur Symbole)
 
 ## 1.3.1
