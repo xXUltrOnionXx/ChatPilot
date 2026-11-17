@@ -236,6 +236,7 @@ local function BuildChat(content)
 	y = ToggleRow(c, y, "hideForeign", "markForeign")
 	y = ToggleRow(c, y, "hideRepeats")
 	y = ToggleRow(c, y, "copyButton", nil, function() ns:UpdateChatButtons() end)
+	y = ToggleRow(c, y, "buttonsTop", "copyButton", function() ns:UpdateChatButtons() end)
 	c:SetHeight(-y + 20)
 	return sf
 end

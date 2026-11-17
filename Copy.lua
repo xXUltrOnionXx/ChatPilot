@@ -90,10 +90,14 @@ function ns:CopyChat(frame)
 end
 
 -------------------------------------------------------------------------------
--- Button bar on every chat window: [@ mentions] [copy] [settings]
+-- Button bar on every chat window: settings, mentions (@), copy.
+-- Default: stacked vertically right next to the chat window, bottom-aligned
+-- (close to the input box). Optional: in a row above the chat window.
 -------------------------------------------------------------------------------
 local bars = {}
-local IDLE_ALPHA = 0.35
+local SIZE, GAP = 24, 4
+local IDLE_ALPHA = 0.9
+local BTN_BG = { 0.11, 0.125, 0.17, 0.92 }
 
 local function GearIcon(tex)
 	if C_Texture and C_Texture.GetAtlasInfo then
@@ -109,66 +113,81 @@ end
 
 local function BarButton(bar, tip, onClick)
 	local b = CreateFrame("Button", nil, bar)
-	b:SetSize(20, 20)
-	b.bg = UI.Fill(b, { 0.05, 0.06, 0.09, 0.75 })
+	b:SetSize(SIZE, SIZE)
+	b.bg = UI.Fill(b, BTN_BG)
+	UI.Border(b, C.border)
 	b:SetAlpha(IDLE_ALPHA)
 	b:SetScript("OnEnter", function(self)
 		self:SetAlpha(1)
 		self.bg:SetColorTexture(unpack(C.rowHover))
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+		self:SetBorderColor(unpack(C.accent))
+		GameTooltip:SetOwner(self, ns.S.buttonsTop and "ANCHOR_TOP" or "ANCHOR_RIGHT")
 		GameTooltip:SetText(tip)
 		GameTooltip:Show()
 	end)
 	b:SetScript("OnLeave", function(self)
-		self.bg:SetColorTexture(0.05, 0.06, 0.09, 0.75)
-		self:SetAlpha(self.keepVisible and 1 or IDLE_ALPHA)
+		self.bg:SetColorTexture(unpack(BTN_BG))
+		self:SetBorderColor(unpack(C.border))
+		self:SetAlpha(IDLE_ALPHA)
 		GameTooltip:Hide()
 	end)
 	b:SetScript("OnClick", onClick)
 	return b
 end
 
+local function Layout(bar)
+	local frame = bar.chatFrame
+	local list = bar.order
+	bar:ClearAllPoints()
+	if ns.S.buttonsTop then
+		bar:SetSize(#list * SIZE + (#list - 1) * GAP, SIZE)
+		bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, 6)
+		for i, b in ipairs(list) do
+			b:ClearAllPoints()
+			b:SetPoint("LEFT", bar, "LEFT", (i - 1) * (SIZE + GAP), 0)
+		end
+	else
+		bar:SetSize(SIZE, #list * SIZE + (#list - 1) * GAP)
+		bar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 6, -2)
+		for i, b in ipairs(list) do
+			b:ClearAllPoints()
+			b:SetPoint("TOP", bar, "TOP", 0, -(i - 1) * (SIZE + GAP))
+		end
+	end
+end
+
 function ns:UpdateChatButtons()
 	local unread = self.unread or 0
 	for _, bar in ipairs(bars) do
 		bar:SetShown(self.S.copyButton)
+		Layout(bar)
 		local m = bar.mentions
-		m.keepVisible = unread > 0
-		m:SetAlpha(unread > 0 and 1 or IDLE_ALPHA)
 		m.badge:SetShown(unread > 0)
 		m.badge.text:SetText(unread > 9 and "9+" or tostring(unread))
+		m.icon:SetTextColor(unpack(unread > 0 and C.orange or C.accent))
 	end
 end
 
 ns.OnChatFrame(function(frame)
 	local bar = CreateFrame("Frame", nil, frame)
-	bar:SetSize(66, 20)
-	bar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -2)
-	bar:SetFrameLevel(frame:GetFrameLevel() + 5)
+	bar:SetFrameStrata("MEDIUM")
+	bar.chatFrame = frame
 
 	local gear = BarButton(bar, L.BTN_SETTINGS, function() ns:ToggleOptions() end)
-	gear:SetPoint("RIGHT")
 	gear.icon = gear:CreateTexture(nil, "ARTWORK")
-	gear.icon:SetSize(14, 14)
+	gear.icon:SetSize(16, 16)
 	gear.icon:SetPoint("CENTER")
 	GearIcon(gear.icon)
 
-	local copyBtn = BarButton(bar, L.COPY_BUTTON_TIP, function() ns:CopyChat(frame) end)
-	copyBtn:SetPoint("RIGHT", gear, "LEFT", -3, 0)
-	copyBtn.icon = copyBtn:CreateTexture(nil, "ARTWORK")
-	copyBtn.icon:SetSize(14, 14)
-	copyBtn.icon:SetPoint("CENTER")
-	copyBtn.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-
 	local m = BarButton(bar, L.BTN_MENTIONS, function() ns:ShowMentions() end)
-	m:SetPoint("RIGHT", copyBtn, "LEFT", -3, 0)
-	m.icon = m:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	m.icon = m:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
 	m.icon:SetPoint("CENTER", 0, 1)
 	m.icon:SetText("@")
 	m.icon:SetTextColor(unpack(C.accent))
 	m.badge = CreateFrame("Frame", nil, m)
-	m.badge:SetSize(14, 12)
-	m.badge:SetPoint("TOPRIGHT", 5, 4)
+	m.badge:SetSize(15, 13)
+	m.badge:SetPoint("TOPRIGHT", 5, 5)
+	m.badge:SetFrameLevel(m:GetFrameLevel() + 2)
 	UI.Fill(m.badge, C.orange, "OVERLAY")
 	m.badge.text = m.badge:CreateFontString(nil, "OVERLAY", _G.SystemFont_Tiny and "SystemFont_Tiny" or "GameFontHighlightSmall")
 	m.badge.text:SetPoint("CENTER", 0, 0)
@@ -176,6 +195,13 @@ ns.OnChatFrame(function(frame)
 	m.badge:Hide()
 	bar.mentions = m
 
+	local copyBtn = BarButton(bar, L.COPY_BUTTON_TIP, function() ns:CopyChat(frame) end)
+	copyBtn.icon = copyBtn:CreateTexture(nil, "ARTWORK")
+	copyBtn.icon:SetSize(16, 16)
+	copyBtn.icon:SetPoint("CENTER")
+	copyBtn.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+
+	bar.order = { gear, m, copyBtn }
 	bars[#bars + 1] = bar
 	if ns.S then ns:UpdateChatButtons() end
 end)

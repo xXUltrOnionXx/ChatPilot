@@ -3,7 +3,7 @@
 ## 1.2.0
 - Komplett neues, modernes Einstellungsfenster mit Seitenleiste (Schreiben, Erwähnungen, Chat-Hilfen, Über), Kippschaltern und Erklärung zu jeder Option
 - Stichwörter als Chips: hinzufügen mit Enter, entfernen per Klick
-- Knopfleiste am Chatfenster: Zahnrad (Einstellungen), @ (Erwähnungen mit Zähler für ungelesene) und Kopieren
+- Gut sichtbare Knöpfe direkt neben dem Chatfenster (untereinander, auf Höhe des Eingabefelds): Zahnrad (Einstellungen), @ (Erwähnungen mit Zähler für ungelesene) und Kopieren – wahlweise auch in einer Reihe über dem Chat
 - Eintrag im Addon-Menü an der Minimap
 - Erwähnungs-, Kopier- und Feedback-Fenster im neuen Design
 - Fehler behoben: Fenster ließen sich nicht mit dem X schließen

@@ -18,6 +18,7 @@ ns.defaults = {
 	mentionPublic = true,
 	urls = true,
 	copyButton = true,
+	buttonsTop = false,
 	abbrevTips = true,
 	markForeign = true,
 	hideForeign = false,

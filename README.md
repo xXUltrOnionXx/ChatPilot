@@ -41,7 +41,7 @@ Im Spiel geht's noch einfacher: `/chatpilot feedback` erstellt einen fertigen Be
 - **Feedback-System:** `/chatpilot feedback` – Art wählen (Fehler/Idee/Lob), Sterne vergeben, Text schreiben. ChatPilot erstellt einen fertigen Bericht (inkl. Addon- und Client-Version), den du kopierst und als Issue auf GitHub postest: https://github.com/xXUltrOnionXx/ChatPilot/issues
 
 ## Bedienung
-- **Zahnrad** oben rechts am Chatfenster → Einstellungen
+- **Zahnrad** direkt rechts neben dem Chatfenster → Einstellungen (Knöpfe wahlweise auch über dem Chat)
 - **@** daneben → Erwähnungs-Verlauf (orange Zahl = ungelesene Erwähnungen)
 - **Notiz-Symbol** → Chat kopieren
 - Oder über das **Addon-Menü an der Minimap**, `/chatpilot` bzw. Spieloptionen → AddOns → ChatPilot
