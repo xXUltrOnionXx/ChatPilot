@@ -140,12 +140,24 @@ local function GearIcon(tex)
 	tex:SetTexture("Interface\\WorldMap\\Gear_64Grey")
 end
 
+-- Background + border behind the buttons (optional; off = icons only).
+local function ApplyIdleStyle(b)
+	if ns.S and ns.S.buttonBackground == false then
+		b.bg:SetColorTexture(0, 0, 0, 0)
+		b:SetBorderColor(0, 0, 0, 0)
+	else
+		b.bg:SetColorTexture(unpack(BTN_BG))
+		b:SetBorderColor(unpack(C.border))
+	end
+end
+
 local function BarButton(bar, tip, onClick)
 	local b = CreateFrame("Button", nil, bar)
 	b:SetSize(SIZE, SIZE)
 	b.bg = UI.Fill(b, BTN_BG)
 	UI.Border(b, C.border)
 	b:SetAlpha(IDLE_ALPHA)
+	ApplyIdleStyle(b)
 	b:SetScript("OnEnter", function(self)
 		self:SetAlpha(1)
 		self.bg:SetColorTexture(unpack(C.rowHover))
@@ -155,8 +167,7 @@ local function BarButton(bar, tip, onClick)
 		GameTooltip:Show()
 	end)
 	b:SetScript("OnLeave", function(self)
-		self.bg:SetColorTexture(unpack(BTN_BG))
-		self:SetBorderColor(unpack(C.border))
+		ApplyIdleStyle(self)
 		self:SetAlpha(IDLE_ALPHA)
 		GameTooltip:Hide()
 	end)
@@ -210,6 +221,7 @@ function ns:UpdateChatButtons()
 	for _, bar in ipairs(bars) do
 		bar:SetShown(self.S.copyButton)
 		Layout(bar)
+		for _, b in ipairs(bar.order) do ApplyIdleStyle(b) end
 		local m = bar.mentions
 		SetBadge(m, unread)
 		m.icon:SetTextColor(unpack(unread > 0 and C.orange or C.accent))

@@ -20,6 +20,7 @@ ns.defaults = {
 	urls = true,
 	copyButton = true,
 	buttonsTop = false,
+	buttonBackground = true,
 	whispers = true,
 	whisperSummary = true,
 	versionCheck = true,

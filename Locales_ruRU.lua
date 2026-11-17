@@ -159,3 +159,5 @@ L.SN_TEXT_PH = "Текст, напр. LFM BRD, нужен танк + лекар�
 L.SN_EMPTY = "Заготовок пока нет."
 L.HISTORY_RESTORED = "-- чат до перезагрузки/выхода (%s) --"
 L.SRC_SNIPPET = "Заготовка"
+L.OPT_buttonBackground = "Фон кнопок"
+L.DESC_buttonBackground = "Тёмный фон и рамка за кнопками чата. Выключено - только значки."

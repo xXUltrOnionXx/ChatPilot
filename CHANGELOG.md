@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.2
+- Neuer Schalter „Hintergrund der Knöpfe“: dunklen Hintergrund und Rahmen hinter den Chat-Knöpfen ausschalten (nur Symbole)
+
 ## 1.3.1
 - Fix: Stufe wird jetzt auch bei „ist online“-Meldungen angezeigt – auch für Battle.net-Freunde, neue Freunde und Spieler, die mal mit und mal ohne Nachnamen auftauchen
 - Gilden- und Freundesliste werden bei unbekannten Spielern automatisch aktualisiert
