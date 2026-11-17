@@ -4,6 +4,14 @@
 
 *English below.*
 
+## 💬 Feedback, Fehler & Ideen
+Hier landen alle Rückmeldungen – bitte über die Vorlagen:
+- 🐞 **[Fehler melden](https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template=bug_report.yml)**
+- 💡 **[Idee vorschlagen](https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template=feature_request.yml)**
+- ⭐ **[Feedback / Lob](https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template=feedback.yml)**
+
+Im Spiel geht's noch einfacher: `/chatpilot feedback` erstellt einen fertigen Bericht (mit Versionen und Einstellungen) und zeigt den passenden Link.
+
 ## Funktionen
 
 ### Schreiben

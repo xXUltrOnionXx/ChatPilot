@@ -6,7 +6,10 @@ local L = ns.L
 -- The window only opens when the player asks for it (no pop-ups, no nagging).
 
 local GetMeta = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
-local function FeedbackURL()
+local ISSUES = "https://github.com/xXUltrOnionXx/ChatPilot/issues/new?template="
+local TEMPLATE = { bug = "bug_report.yml", idea = "feature_request.yml", praise = "feedback.yml" }
+local function FeedbackURL(kind)
+	if kind and TEMPLATE[kind] then return ISSUES .. TEMPLATE[kind] end
 	return (GetMeta and GetMeta(ADDON, "X-Feedback")) or "https://github.com/xXUltrOnionXx/ChatPilot/issues/new/choose"
 end
 
@@ -131,8 +134,9 @@ local function Create()
 		eb:SetText("")
 		f:Hide()
 		ns.Print(L.FB_SAVED)
-		ns.Print(L.FB_WHERE, FeedbackURL())
-		ns:ShowCopy(BuildReport(entry) .. "\n\n" .. L.FB_WHERE:format(FeedbackURL()), L.COPY_TITLE)
+		local url = FeedbackURL(entry.kind)
+		ns.Print(L.FB_WHERE, url)
+		ns:ShowCopy(L.FB_WHERE:format(url) .. "\n\n" .. BuildReport(entry), L.COPY_TITLE)
 	end)
 	return f
 end

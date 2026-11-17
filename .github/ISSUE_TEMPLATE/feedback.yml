@@ -1,0 +1,17 @@
+name: "⭐ Feedback / Lob"
+description: Allgemeine Rückmeldung, Bewertung oder Lob.
+title: "[Feedback] "
+body:
+  - type: dropdown
+    id: rating
+    attributes:
+      label: Bewertung
+      options: ["★★★★★", "★★★★☆", "★★★☆☆", "★★☆☆☆", "★☆☆☆☆"]
+    validations:
+      required: true
+  - type: textarea
+    id: text
+    attributes:
+      label: Deine Rückmeldung
+    validations:
+      required: true

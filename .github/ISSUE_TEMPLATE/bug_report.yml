@@ -1,0 +1,43 @@
+name: "🐞 Fehler melden / Bug report"
+description: Etwas funktioniert nicht oder es kommt eine Fehlermeldung.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke fürs Melden! Am schnellsten geht's mit dem Bericht aus dem Spiel: `/chatpilot feedback` → **Fehler** → *Bericht erstellen* → kopieren und unten einfügen.
+  - type: input
+    id: version
+    attributes:
+      label: ChatPilot-Version
+      description: Steht in /chatpilot unter „Über“.
+      placeholder: "1.2.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: Was ist passiert?
+      description: Was hast du erwartet und was ist stattdessen passiert?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Wie kann man es nachstellen?
+      placeholder: |
+        1. Chat öffnen
+        2. @ tippen
+        3. ...
+  - type: textarea
+    id: error
+    attributes:
+      label: Fehlermeldung (falls vorhanden)
+      description: Text der Lua-Fehlermeldung, z. B. aus BugSack oder nach /console scriptErrors 1
+      render: text
+  - type: textarea
+    id: report
+    attributes:
+      label: Bericht aus dem Spiel (optional)
+      render: text

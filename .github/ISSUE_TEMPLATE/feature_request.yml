@@ -1,0 +1,22 @@
+name: "💡 Idee / Feature request"
+description: Vorschlag für eine neue Funktion oder Verbesserung.
+title: "[Idee] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Deine Idee
+      description: Was soll ChatPilot (besser) können?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Wofür brauchst du das?
+      description: In welcher Situation im Spiel würde es helfen?
+  - type: textarea
+    id: report
+    attributes:
+      label: Bericht aus dem Spiel (optional)
+      render: text
