@@ -15,7 +15,7 @@ end
 
 function ns.Print(fmt, ...)
 	local msg = select("#", ...) > 0 and fmt:format(...) or fmt
-	DEFAULT_CHAT_FRAME:AddMessage("|cff4ec9ffChatPilot|r: " .. msg)
+	DEFAULT_CHAT_FRAME:AddMessage("|cff4ec9ffChatPilot Forever|r: " .. msg)
 end
 
 -- A "word byte" is an ASCII letter/digit or any byte of a UTF-8 multibyte

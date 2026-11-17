@@ -1,6 +1,11 @@
 # Changelog
 
 ## 1.3.0
+- Neuer Name: **ChatPilot Forever**
+- Werbe-Spam-Filter (Gold, Boosts, Echtgeld, Webseiten) – Freunde, Gilde und Gruppe werden nie gefiltert
+- Chatverlauf bleibt nach /reload und erneutem Einloggen erhalten
+- Stufe im Chat, z. B. [18:Arthas]
+- Textbausteine: #Kürzel + Tab fügt gespeicherten Text ein
 - Neue Sprachen passend zu allen WoW-Regionen: Englisch, Deutsch, Französisch, Spanisch (Spanien & Mexiko), Italienisch, Portugiesisch (Brasilien), Russisch, Koreanisch, Chinesisch (vereinfacht & traditionell)
 - ChatPilot erkennt die Sprache deines WoW-Clients automatisch
 - Feedback mit einem einzigen Link: Das Addon füllt das Formular vorab aus – Strg+C, im Browser einfügen, Absenden. Nichts mehr doppelt schreiben

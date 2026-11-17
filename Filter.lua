@@ -145,6 +145,49 @@ local function IsRepeat(frame, author, msg)
 end
 
 -------------------------------------------------------------------------------
+-- Advertising spam (gold selling, boosts for real money, websites)
+-- Score based so normal trade chat ("WTS [item] 5g") is never hidden.
+-------------------------------------------------------------------------------
+local SPAM_EVENTS = { CHAT_MSG_CHANNEL = true, CHAT_MSG_SAY = true, CHAT_MSG_YELL = true,
+	CHAT_MSG_WHISPER = true, CHAT_MSG_EMOTE = true }
+local SPAM_RULES = {
+	{ 2, { "www%.", "%.com", "%.net", "%.org", "%.ru", "%.cn", "d0t", "dot%s*com", "%[dot%]" } },
+	{ 2, { "%$", "€", "usd", "eur%f[%A]", "dollar", "euro", "paypal", "btc", "crypto" } },
+	{ 2, { "cheap gold", "buy gold", "gold for sale", "sell gold", "goldshop", "gold shop", "fast gold",
+		"wts gold", "gold%s*%-%s*%d", "g2g", "mmoga", "gold kaufen", "billig gold" } },
+	{ 1, { "boost", "carry", "power%s*level", "pl service", "piloted", "account" } },
+	{ 1, { "discount", "%d+%s*%%%s*off", "rabatt", "24/7", "fast delivery", "instant delivery", "cheap",
+		"coupon", "promo", "code:" } },
+	{ 1, { "skype", "telegram", "whatsapp" } },
+}
+local function SpamScore(msg)
+	local text = ns.StripEscapes(msg):lower()
+	local score = 0
+	for _, rule in ipairs(SPAM_RULES) do
+		for _, pat in ipairs(rule[2]) do
+			if text:find(pat) then score = score + rule[1]; break end
+		end
+	end
+	return score
+end
+ns.SpamScore = SpamScore
+
+local function Trusted(author)
+	if type(author) ~= "string" or not ns.Usable(author) then return false end
+	local key = ns.Normalize(author)
+	if not key or key == ns.playerKey then return true end
+	local e = ns.live and ns.live[key]
+	return e and (e.src.friend or e.src.guild or e.src.group) or false
+end
+
+local countedLines = {}
+local function CountSpam(lineID)
+	if lineID and countedLines[lineID] then return end
+	if lineID then countedLines[lineID] = true end
+	ns.spamHidden = (ns.spamHidden or 0) + 1
+end
+
+-------------------------------------------------------------------------------
 -- The filter
 -------------------------------------------------------------------------------
 local function Filter(frame, event, msg, author, language, ...)
@@ -154,6 +197,11 @@ local function Filter(frame, event, msg, author, language, ...)
 	if S.markForeign and IsForeign(language) then
 		if S.hideForeign then return true end
 		return false, "|cff8a8a8a" .. msg .. "|r |cff666666" .. L.UNREADABLE .. "|r", author, language, ...
+	end
+
+	if S.spamFilter and SPAM_EVENTS[event] and not Trusted(author) and SpamScore(msg) >= 3 then
+		CountSpam((select(8, ...)))
+		return true
 	end
 
 	if S.hideRepeats and event == "CHAT_MSG_CHANNEL" and IsRepeat(frame, author, msg) then

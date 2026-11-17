@@ -1,5 +1,5 @@
 ## Interface: 16001
-## Title: ChatPilot
+## Title: ChatPilot Forever
 ## Notes: Smarter chat: @-mention autocomplete, mention alerts, missed whispers, clickable links and more.
 ## Notes-deDE: Intuitiverer Chat: @-Erwähnungen mit Namensvorschlägen, Erwähnungs-Alarme, verpasste Flüsternachrichten, anklickbare Links und mehr.
 ## Notes-frFR: Un chat plus intuitif : mentions @ avec suggestions de noms, alertes de mention, chuchotements manqués, liens cliquables et plus.
@@ -39,6 +39,8 @@ Glossary.lua
 Core.lua
 Autocomplete.lua
 Filter.lua
+Levels.lua
+History.lua
 Mentions.lua
 Whispers.lua
 Copy.lua

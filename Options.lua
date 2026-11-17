@@ -175,6 +175,98 @@ local function KeywordCard(child, y)
 end
 
 -------------------------------------------------------------------------------
+-- Snippets card (#shortcut -> text)
+-------------------------------------------------------------------------------
+local snCard, snRows = nil, {}
+
+local function LayoutSnippets()
+	if not snCard then return end
+	local list = ns.db.snippets
+	for _, r in ipairs(snRows) do r:Hide() end
+	snCard.empty:SetShown(#list == 0)
+	for i, sn in ipairs(list) do
+		local r = snRows[i]
+		if not r then
+			r = CreateFrame("Frame", nil, snCard)
+			r:SetHeight(26)
+			UI.Fill(r, C.bg)
+			r.text = UI.Text(r, "GameFontHighlight")
+			r.text:SetPoint("LEFT", 10, 0)
+			r.text:SetPoint("RIGHT", r, "RIGHT", -40, 0)
+			r.text:SetWordWrap(false)
+			r.del = CreateFrame("Button", nil, r)
+			r.del:SetSize(26, 26)
+			r.del:SetPoint("RIGHT")
+			r.del.x = UI.Text(r.del, "GameFontHighlight", C.muted)
+			r.del.x:SetPoint("CENTER")
+			r.del.x:SetText("x")
+			r.del:SetScript("OnEnter", function(self) self.x:SetTextColor(unpack(C.orange)) end)
+			r.del:SetScript("OnLeave", function(self) self.x:SetTextColor(unpack(C.muted)) end)
+			r.del:SetScript("OnClick", function(self)
+				table.remove(ns.db.snippets, self:GetParent().index)
+				LayoutSnippets()
+			end)
+			snRows[i] = r
+		end
+		r.index = i
+		r:ClearAllPoints()
+		r:SetPoint("TOPLEFT", snCard, "TOPLEFT", 14, -96 - (i - 1) * 30)
+		r:SetPoint("RIGHT", snCard, "RIGHT", -14, 0)
+		r.text:SetText("|cff4ec9ff#" .. sn.k .. "|r   " .. sn.t)
+		r:Show()
+	end
+	snCard:SetHeight(110 + math.max(#list, 1) * 30)
+	if snCard.onResize then snCard.onResize() end
+end
+
+local function SnippetCard(child, y)
+	local card = CreateFrame("Frame", nil, child)
+	card:SetPoint("TOPLEFT", 24, y)
+	card:SetPoint("RIGHT", child, "RIGHT", -24, 0)
+	card:SetHeight(140)
+	UI.Fill(card, C.row)
+	local t = UI.Text(card, "GameFontHighlight")
+	t:SetPoint("TOPLEFT", 14, -12)
+	t:SetText(L.SN_TITLE)
+	local d = UI.Text(card, "GameFontHighlightSmall", C.muted)
+	d:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -5)
+	d:SetPoint("RIGHT", card, "RIGHT", -14, 0)
+	d:SetText(L.SN_DESC)
+
+	local name = UI.Input(card, 110, L.SN_NAME_PH)
+	name:SetPoint("TOPLEFT", 14, -54)
+	name.eb:SetMaxLetters(20)
+	local text = UI.Input(card, 250, L.SN_TEXT_PH)
+	text:SetPoint("LEFT", name, "RIGHT", 6, 0)
+	text:SetPoint("RIGHT", card, "RIGHT", -110, 0)
+	text.eb:SetMaxLetters(255)
+	local add = UI.Button(card, L.ADD, 90, 28, "accent")
+	add:SetPoint("LEFT", text, "RIGHT", 6, 0)
+	local function submit()
+		local k = strtrim(name.eb:GetText() or ""):gsub("^#", ""):gsub("%s", "")
+		local v = strtrim(text.eb:GetText() or "")
+		if k == "" or v == "" then name.eb:SetFocus() return end
+		for i = #ns.db.snippets, 1, -1 do
+			if ns.db.snippets[i].k:lower() == k:lower() then table.remove(ns.db.snippets, i) end
+		end
+		table.insert(ns.db.snippets, { k = k, t = v })
+		name.eb:SetText(""); text.eb:SetText("")
+		name.eb:ClearFocus(); text.eb:ClearFocus()
+		LayoutSnippets()
+	end
+	name.eb:SetScript("OnEnterPressed", function() text.eb:SetFocus() end)
+	name.eb:SetScript("OnTabPressed", function() text.eb:SetFocus() end)
+	text.eb:SetScript("OnEnterPressed", submit)
+	add:SetScript("OnClick", submit)
+
+	card.empty = UI.Text(card, "GameFontHighlightSmall", C.muted)
+	card.empty:SetPoint("TOPLEFT", 14, -100)
+	card.empty:SetText(L.SN_EMPTY)
+	snCard = card
+	return card
+end
+
+-------------------------------------------------------------------------------
 -- Pages
 -------------------------------------------------------------------------------
 local function NewPage(content)
@@ -194,7 +286,10 @@ local function BuildTyping(content)
 	y = ToggleRow(c, y, "whisperNames")
 	y = ToggleRow(c, y, "raidIcons")
 	y = ToggleRow(c, y, "charCounter")
-	c:SetHeight(-y + 20)
+	y = ToggleRow(c, y, "snippets")
+	local card = SnippetCard(c, y)
+	card.onResize = function() c:SetHeight(-y + card:GetHeight() + 30) end
+	sf:SetScript("OnShow", LayoutSnippets)
 	return sf
 end
 
@@ -248,6 +343,9 @@ local function BuildChat(content)
 	local sf, c = NewPage(content)
 	local y = PageHeader(c, L.PAGE_CHAT, L.PAGE_CHAT_SUB)
 	y = ToggleRow(c, y, "abbrevTips")
+	y = ToggleRow(c, y, "showLevels")
+	y = ToggleRow(c, y, "spamFilter")
+	y = ToggleRow(c, y, "keepHistory")
 	y = ToggleRow(c, y, "urls")
 	y = ToggleRow(c, y, "markForeign")
 	y = ToggleRow(c, y, "hideForeign", "markForeign")
@@ -265,7 +363,7 @@ local function BuildAbout(content)
 	badge:SetPoint("TOPLEFT", 24, -24)
 	local name = UI.Text(c, "GameFontHighlightHuge")
 	name:SetPoint("TOPLEFT", badge, "TOPRIGHT", 16, -4)
-	name:SetText("ChatPilot")
+	name:SetText(ns.TITLE)
 	local ver = UI.Text(c, "GameFontHighlight", C.muted)
 	ver:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -6)
 	ver:SetText("Version " .. ns.version .. "  -  MIT")
@@ -329,7 +427,7 @@ local function NavButton(sidebar, i, text)
 end
 
 local function Build()
-	win = UI.Window("ChatPilotOptions", "ChatPilot", 740, 560)
+	win = UI.Window("ChatPilotOptions", ns.TITLE, 760, 580)
 	win.subtitle:SetText(ns.version)
 	local content = win.content
 
@@ -380,14 +478,14 @@ end
 -- Entry in Blizzard's options (points to our window)
 -------------------------------------------------------------------------------
 local panel = CreateFrame("Frame")
-panel.name = "ChatPilot"
+panel.name = "ChatPilot Forever"
 panel:Hide()
 do
 	local badge = UI.Badge(panel, 48)
 	badge:SetPoint("TOPLEFT", 20, -20)
 	local t = UI.Text(panel, "GameFontHighlightHuge")
 	t:SetPoint("TOPLEFT", badge, "TOPRIGHT", 14, -2)
-	t:SetText("ChatPilot")
+	t:SetText(ns.TITLE)
 	local d = UI.Text(panel, "GameFontHighlight", C.muted)
 	d:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -6)
 	d:SetText(L.SETTINGS_DESC)
@@ -407,7 +505,7 @@ function ChatPilot_OnAddonCompartmentClick() ns:ToggleOptions() end
 function ChatPilot_OnAddonCompartmentEnter(_, button)
 	if type(button) ~= "table" or not button.GetObjectType then return end
 	GameTooltip:SetOwner(button, "ANCHOR_LEFT")
-	GameTooltip:SetText("ChatPilot")
+	GameTooltip:SetText(ns.TITLE)
 	GameTooltip:AddLine(L.COMPARTMENT_TIP, 1, 1, 1)
 	GameTooltip:Show()
 end

@@ -3,6 +3,7 @@ local L = ns.L
 
 local GetMeta = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
 ns.version = (GetMeta and GetMeta(ADDON, "Version")) or "?"
+ns.TITLE = "ChatPilot Forever"
 
 ns.defaults = {
 	autocomplete = true,
@@ -22,6 +23,10 @@ ns.defaults = {
 	whispers = true,
 	whisperSummary = true,
 	versionCheck = true,
+	spamFilter = true,
+	keepHistory = true,
+	showLevels = true,
+	snippets = true,
 	abbrevTips = true,
 	markForeign = true,
 	hideForeign = false,
@@ -294,6 +299,9 @@ f:SetScript("OnEvent", function(_, event, ...)
 			db.mentions = db.mentions or {}
 			db.feedback = db.feedback or {}
 			db.whispers = db.whispers or {}
+			db.snippets = db.snippets or {}
+			db.history = db.history or {}
+			db.levels = db.levels or {}
 			CopyDefaults(ns.defaults, db.settings)
 			ns.db, ns.S = db, db.settings
 

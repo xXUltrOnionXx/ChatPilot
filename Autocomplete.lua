@@ -4,11 +4,11 @@ local L = ns.L
 -- The autocomplete only ever changes the text in YOUR input box.
 -- It never sends anything: you still press Enter yourself.
 
-local ROW_H, WIDTH = 20, 250
+local ROW_H, WIDTH = 20, 290
 local SRC_LABEL = {
 	group = L.SRC_GROUP, target = L.SRC_TARGET, chat = L.SRC_CHAT,
 	friend = L.SRC_FRIEND, guild = L.SRC_GUILD, community = L.SRC_COMMUNITY,
-	icon = L.SRC_ICON,
+	icon = L.SRC_ICON, snippet = L.SRC_SNIPPET,
 }
 local WHISPER_CMDS = {
 	["/w"] = true, ["/whisper"] = true, ["/t"] = true, ["/tell"] = true, ["/send"] = true,
@@ -77,6 +77,7 @@ local function GetRow(i)
 	r.name = r:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	r.name:SetPoint("LEFT", r.icon, "RIGHT", 6, 0)
 	r.name:SetJustifyH("LEFT")
+	r.name:SetWordWrap(false)
 
 	r.tag = r:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
 	r.tag:SetPoint("RIGHT", -6, 0)
@@ -109,7 +110,12 @@ function ns.RenderPopup()
 	for i, item in ipairs(items) do
 		local r = GetRow(i)
 		r.index = i
-		if item.icon then
+		if item.snippet then
+			r.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+			r.icon:SetTexCoord(0, 1, 0, 1)
+			r.name:SetText(item.short .. "  |cff8a94a6" .. item.snippet .. "|r")
+			r.name:SetTextColor(0.31, 0.79, 1)
+		elseif item.icon then
 			r.icon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_" .. item.icon)
 			r.icon:SetTexCoord(0, 1, 0, 1)
 			r.name:SetText(item.short)
@@ -144,6 +150,17 @@ local function HidePopup()
 end
 ns.HidePopup = HidePopup
 
+function ns.SnippetItems(partial)
+	local p, items = (partial or ""):lower(), {}
+	for _, sn in ipairs(ns.db.snippets) do
+		if p == "" or sn.k:lower():find(p, 1, true) then
+			items[#items + 1] = { short = "#" .. sn.k, snippet = sn.t, tag = "snippet" }
+			if #items >= 8 then break end
+		end
+	end
+	return items
+end
+
 local function IconItems(partial)
 	local p, items = partial:lower(), {}
 	for i = 1, 8 do
@@ -174,6 +191,12 @@ local function GetContext(box)
 			return "name", #pre + 1, partial, false
 		end
 	end
+	if S.snippets and ns.db and #ns.db.snippets > 0 then
+		local pre, partial = before:match("^(.-)#([^%s#]*)$")
+		if pre and (pre == "" or pre:find("%s$")) then
+			return "snippet", #pre + 1, partial, false
+		end
+	end
 	if S.raidIcons then
 		local pre, partial = before:match("^(.-){(%w*)$")
 		if pre then return "icon", #pre + 1, partial, false end
@@ -186,7 +209,10 @@ local function Update(box)
 	local mode, startPos, partial, whisper = GetContext(box)
 	if not mode then return HidePopup() end
 
-	local items = (mode == "icon") and IconItems(partial) or ns:GetCandidates(partial, ns.S.maxRows)
+	local items
+	if mode == "icon" then items = IconItems(partial)
+	elseif mode == "snippet" then items = ns.SnippetItems(partial)
+	else items = ns:GetCandidates(partial, ns.S.maxRows) end
 	if #items == 0 then return HidePopup() end
 
 	local prevAlt
@@ -215,7 +241,9 @@ function Accept(index)
 	local box, text, cursor = st.box, st.text, st.cursor
 
 	local insert
-	if item.code then
+	if item.snippet then
+		insert = item.snippet
+	elseif item.code then
 		insert = item.code
 	elseif st.whisper then
 		insert = item.key

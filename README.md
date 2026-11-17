@@ -1,6 +1,6 @@
-# ChatPilot
+# ChatPilot Forever
 
-**Intuitiverer Chat für WoW: Forever** – @-Erwähnungen mit Namensvorschlägen, Erwähnungs-Alarme, anklickbare Links, Chat kopieren und ein eingebautes Feedback-System.
+**ChatPilot Forever – der intuitivere Chat für WoW: Forever** – @-Erwähnungen mit Namensvorschlägen, Erwähnungs-Alarme, anklickbare Links, Chat kopieren und ein eingebautes Feedback-System.
 
 *English below.*
 
@@ -46,6 +46,13 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 - Ein Fenster zeigt alle Gespräche; **Antworten** öffnet dein Eingabefeld mit dem richtigen Namen (abschicken tust du selbst).
 - Kommst du aus dem **AFK** oder einem **Kampf** zurück, siehst du, wer dir geschrieben hat.
 - Während Bosskämpfen kann das Spiel den Text verbergen – dann zählt ChatPilot die Nachricht nur und verweist auf den Chat.
+
+### Noch mehr Komfort
+- **Werbe-Spam weg:** Goldverkäufer, bezahlte Boosts und Webseiten-Werbung werden ausgeblendet. Normaler Handel, Freunde, Gilde und Gruppe bleiben unberührt.
+- **Chatverlauf bleibt:** Nach `/reload` oder erneutem Einloggen ist dein Chat noch da.
+- **Stufe im Chat:** `[18:Arthas]` – farbig nach Schwierigkeit, sobald die Stufe bekannt ist (Gruppe, Ziel, Maus, Gilde, Freunde, /who).
+- **Textbausteine:** In den Einstellungen Texte speichern, im Chat `#Kürzel` + Tab – fertig.
+- **Chat durchsuchen** im Kopierfenster.
 
 ### Sonstiges
 - **Anklickbare Links:** Internetadressen im Chat werden blau. Ein Klick öffnet ein Fenster, aus dem du den Link mit Strg+C kopierst.
