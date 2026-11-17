@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.1
+- Update-Hinweis im Spiel: Nutzt jemand aus Gilde oder Gruppe eine neuere ChatPilot-Version, bekommst du einmal eine Meldung (ohne Internet, unsichtbare Addon-Nachrichten, nicht in Instanzen)
+
 ## 1.2.0
 - Komplett neues, modernes Einstellungsfenster mit Seitenleiste (Schreiben, Erwähnungen, Chat-Hilfen, Über), Kippschaltern und Erklärung zu jeder Option
 - Stichwörter als Chips: hinzufügen mit Enter, entfernen per Klick

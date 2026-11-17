@@ -21,6 +21,7 @@ ns.defaults = {
 	buttonsTop = false,
 	whispers = true,
 	whisperSummary = true,
+	versionCheck = true,
 	abbrevTips = true,
 	markForeign = true,
 	hideForeign = false,

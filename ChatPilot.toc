@@ -3,7 +3,7 @@
 ## Notes: Smarter chat: @-mention autocomplete, mention alerts, clickable links, chat copy and more.
 ## Notes-deDE: Intuitiverer Chat: @-Erwähnungen mit Namensvorschlägen, Erwähnungs-Alarme, anklickbare Links, Chat kopieren und mehr.
 ## Author: xXUltrOnionXx
-## Version: 1.2.0
+## Version: 1.2.1
 ## Category: Chat & Communication
 ## IconTexture: Interface\Icons\INV_Letter_15
 ## SavedVariables: ChatPilotDB
@@ -26,4 +26,5 @@ Mentions.lua
 Whispers.lua
 Copy.lua
 Feedback.lua
+VersionCheck.lua
 Options.lua

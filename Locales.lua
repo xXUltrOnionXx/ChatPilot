@@ -161,3 +161,10 @@ L.WH_SECRET = "+%d during a boss fight (check your chat)"
 L.WH_SECRET_HINT = "%d whisper(s) arrived during a boss fight - the game hides their text, please check your chat."
 L.WH_LOGIN = "You have %d unread whisper(s). Click the envelope next to your chat or type /chatpilot whispers."
 L.BTN_WHISPERS = "Whispers"
+
+-- Version check
+L.OPT_versionCheck = "Update notice"
+L.DESC_versionCheck = "Tells you when guild or group members use a newer ChatPilot version."
+L.UPDATE_AVAILABLE = "A new version is available: %s (you have %s). Update it in the CurseForge app."
+L.UPDATE_TOAST = "ChatPilot %s is available"
+L.UPDATE_TOAST_TEXT = "Update it in the CurseForge app."

@@ -159,3 +159,10 @@ L.WH_SECRET = "+%d während eines Bosskampfs (bitte im Chat nachsehen)"
 L.WH_SECRET_HINT = "%d Flüsternachricht(en) kamen während eines Bosskampfs - das Spiel verbirgt deren Text, bitte im Chat nachsehen."
 L.WH_LOGIN = "Du hast %d ungelesene Flüsternachricht(en). Klick auf den Brief neben dem Chat oder tippe /chatpilot whispers."
 L.BTN_WHISPERS = "Flüsternachrichten"
+
+-- Update-Hinweis
+L.OPT_versionCheck = "Update-Hinweis"
+L.DESC_versionCheck = "Meldet, wenn Gilden- oder Gruppenmitglieder eine neuere ChatPilot-Version nutzen."
+L.UPDATE_AVAILABLE = "Eine neue Version ist verfügbar: %s (du hast %s). Aktualisiere sie in der CurseForge-App."
+L.UPDATE_TOAST = "ChatPilot %s ist verfügbar"
+L.UPDATE_TOAST_TEXT = "Aktualisiere es in der CurseForge-App."
