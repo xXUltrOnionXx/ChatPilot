@@ -31,7 +31,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 ### Schreiben
 - **@-Erwähnungen:** Tippe `@` und ChatPilot schlägt Namen vor – Leute aus deiner Gruppe, deinem Ziel, wer gerade im Chat geschrieben hat, Freunde, Gildenmitglieder und Mitglieder deiner Communities. Die Namen sind in Klassenfarben.
   - Wer gerade schreibt, steht weiter oben. `@` allein zeigt die aktivsten Leute.
-  - **Tab** oder **Klick** fügt den Namen ein, **Pfeil hoch/runter** wählt aus.
+  - **Enter**, **Tab** oder **Klick** fügt den markierten Namen ein (es wird noch nichts gesendet), **Pfeil hoch/runter** wählt aus.
 - **/w, /inv, /who:** Auch hier gibt es Namensvorschläge (bei anderen Realms mit Realm-Namen).
 - **Zielmarkierungen:** `{` + Name, z. B. `{ste` → Stern. Funktioniert in jeder Sprache (`{rt1}`–`{rt8}`).
 - **Textbausteine:** In den Einstellungen Texte speichern, im Chat `#Kürzel` + Tab – fertig.
@@ -121,7 +121,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 #### Typing
 - **@-mentions:** type `@` and ChatPilot suggests names – people in your group, your target, whoever just wrote in chat, friends, guild members and members of your communities. Names are class-coloured.
   - Recent chatters are ranked higher. A bare `@` shows the most active people.
-  - **Tab** or **click** inserts the name, **arrow up/down** selects.
+  - **Enter**, **Tab** or **click** inserts the marked name (nothing is sent yet), **arrow up/down** selects.
 - **/w, /inv, /who:** name suggestions here too (with realm name for other realms).
 - **Raid markers:** `{` + name, e.g. `{sta` → star. Works in every language (`{rt1}`–`{rt8}`).
 - **Snippets:** save texts in the settings, then type `#shortcut` + Tab in chat – done.

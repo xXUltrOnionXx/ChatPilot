@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.4
+- Enter übernimmt jetzt den markierten Vorschlag (Name, Textbaustein, Zielmarkierung), statt die Nachricht mit „@“ sofort abzuschicken. Ein zweites Enter sendet wie gewohnt
+
 ## 1.3.3
 - Einstellungen aufgeräumt: Unteroptionen sind jetzt aufklappbar (Pfeil mit Anzahl der Unterpunkte), ebenso die Karten für Stichwörter, Textbausteine und Schrift. Der Zustand wird gespeichert
 

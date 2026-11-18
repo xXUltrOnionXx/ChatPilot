@@ -18,6 +18,7 @@ local WHISPER_CMDS = {
 }
 
 local state         -- active suggestion state or nil
+local pendingEnter  -- text parked while Enter picks an entry
 
 -- During Blizzard's chat restrictions (e.g. boss encounters) addons must not
 -- change the input box. Then ChatPilot simply stays out of the way.
@@ -233,12 +234,11 @@ local function Update(box)
 	ns.RenderPopup()
 end
 
-function Accept(index)
-	local st = state
-	if not st or Restricted() then return HidePopup() end
+-- Builds the new input text for the chosen entry (does not touch the box).
+local function BuildText(st, index)
 	local item = st.items[index or st.index]
 	if not item then return end
-	local box, text, cursor = st.box, st.text, st.cursor
+	local text, cursor = st.text, st.cursor
 
 	local insert
 	if item.snippet then
@@ -260,10 +260,19 @@ function Accept(index)
 	end
 	local after = text:sub(cursor + 1)
 	if after:sub(1, 1) ~= " " then insert = insert .. " " end
+	return text:sub(1, st.startPos - 1) .. insert .. after, st.startPos - 1 + #insert
+end
+ns.BuildText = BuildText -- for tests
 
+function Accept(index)
+	local st = state
+	if not st or Restricted() then return HidePopup() end
+	local newText, newCursor = BuildText(st, index)
+	if not newText then return end
+	local box = st.box
 	HidePopup()
-	box:SetText(text:sub(1, st.startPos - 1) .. insert .. after)
-	box:SetCursorPosition(st.startPos - 1 + #insert)
+	box:SetText(newText)
+	box:SetCursorPosition(newCursor)
 	if not box:HasFocus() then
 		box:Show()
 		box:SetFocus()
@@ -335,7 +344,34 @@ function ns.HookEditBox(box)
 		end
 	end)
 
-	box:HookScript("OnEnterPressed", function(self) if state and state.box == self then HidePopup() end end)
+	-- Enter while the list is open picks the marked entry instead of sending.
+	-- OnKeyDown runs before the input box handles Enter: the text is parked and
+	-- the box is emptied, so Blizzard's own Enter handler has nothing to send.
+	-- Right after it, the text comes back with the chosen name filled in.
+	box:HookScript("OnKeyDown", function(self, key)
+		if (key == "ENTER" or key == "NUMPADENTER") and Active(self) and not Restricted() then
+			pendingEnter = { box = self, st = state }
+			self:SetText("")
+		end
+	end)
+	box:HookScript("OnEnterPressed", function(self)
+		local p = pendingEnter
+		pendingEnter = nil
+		if p and p.box == self then
+			local newText, newCursor = BuildText(p.st)
+			if state and state.box == self then HidePopup() end
+			if not newText then return end
+			if not self:IsShown() then
+				local open = ChatEdit_ActivateChat or (ChatFrameUtil and ChatFrameUtil.ActivateChat)
+				if open then open(self) else self:Show() end
+			end
+			if not self:HasFocus() then self:SetFocus() end
+			self:SetText(newText)
+			self:SetCursorPosition(newCursor)
+			return
+		end
+		if state and state.box == self then HidePopup() end
+	end)
 	box:HookScript("OnEscapePressed", function(self) if state and state.box == self then HidePopup() end end)
 	box:HookScript("OnHide", function(self)
 		if state and state.box == self then HidePopup() end
