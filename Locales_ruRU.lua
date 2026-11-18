@@ -2,7 +2,7 @@ local _, ns = ...
 if GetLocale() ~= "ruRU" then return end
 local L = ns.L
 
-L.HINT = "Tab: вставить   Стрелки: выбрать   Клик: вставить"
+L.HINT = "Enter/Tab: вставить   Стрелки: выбрать   Клик: вставить"
 L.SRC_GROUP = "Группа"
 L.SRC_TARGET = "Цель"
 L.SRC_CHAT = "Чат"
@@ -24,7 +24,7 @@ L.OPT_FEEDBACK = "Оставить отзыв"
 L.UNREADABLE = "(другой язык - нельзя прочитать)"
 L.TEST_MESSAGE = "Это тест, %s!"
 L.LOADED = "ChatPilot Forever %s загружен. Введите @ в чате, чтобы попробовать. /chatpilot - настройки."
-L.HELP = "Команды: /chatpilot [options | mentions | whispers | copy | feedback | add <слово> | del <слово> | list]"
+L.HELP = "Команды: /chatpilot [options | mentions | whispers | notes | copy | feedback | add <слово> | del <слово> | list]"
 L.KW_ADDED = "Ключевое слово добавлено: %s"
 L.KW_REMOVED = "Ключевое слово удалено: %s"
 L.KW_LIST = "Ключевые слова: %s"
@@ -167,3 +167,15 @@ L.OPT_TEXT_SIZE = "Размер"
 L.OPT_TEXT_NORMAL = "Обычный"
 L.OPT_TEXT_BOLD = "Жирный"
 L.OPT_TEXT_PREVIEW = "привет, ты тут? Пойдём в Мертвые копи?"
+
+-- Notes
+L.BTN_NOTES = "Заметки"
+L.NOTES_TIP = "ЛКМ: показать/скрыть заметки\nПКМ: новая заметка"
+L.NOTE_TITLE = "Заметка"
+L.NOTE_PLACEHOLDER = "Напиши что-нибудь..."
+L.NOTE_NEW = "Новая заметка"
+L.NOTE_MINIMIZE = "Свернуть / развернуть (или двойной щелчок по заголовку)"
+L.NOTE_DELETE = "Удалить заметку"
+L.NOTE_DELETE_CONFIRM = "Нажми ещё раз, чтобы удалить"
+L.OPT_notes = "Заметки"
+L.DESC_notes = "Небольшие заметки: перемещай, меняй размер и сворачивай. Кнопка рядом с чатом."

@@ -2,7 +2,7 @@ local _, ns = ...
 if GetLocale() ~= "deDE" then return end
 local L = ns.L
 
-L.HINT = "Tab: einfügen   Pfeiltasten: wählen   Klick: einfügen"
+L.HINT = "Enter/Tab: einfügen   Pfeiltasten: wählen   Klick: einfügen"
 L.SRC_GROUP = "Gruppe"
 L.SRC_TARGET = "Ziel"
 L.SRC_CHAT = "Chat"
@@ -27,7 +27,7 @@ L.OPT_FEEDBACK = "Feedback geben"
 
 L.TEST_MESSAGE = "Das ist ein Test, %s!"
 L.LOADED = "ChatPilot Forever %s geladen. Tippe @ im Chat zum Ausprobieren. /chatpilot für Optionen."
-L.HELP = "Befehle: /chatpilot [options | mentions | whispers | copy | feedback | add <Wort> | del <Wort> | list]"
+L.HELP = "Befehle: /chatpilot [options | mentions | whispers | notes | copy | feedback | add <Wort> | del <Wort> | list]"
 L.KW_ADDED = "Stichwort hinzugefügt: %s"
 L.KW_REMOVED = "Stichwort entfernt: %s"
 L.KW_LIST = "Stichwörter: %s"
@@ -173,3 +173,15 @@ L.OPT_TEXT_SIZE = "Größe"
 L.OPT_TEXT_NORMAL = "Normal"
 L.OPT_TEXT_BOLD = "Fett"
 L.OPT_TEXT_PREVIEW = "hey, bist du da? Lust auf die Todesminen?"
+
+-- Notes
+L.BTN_NOTES = "Notizen"
+L.NOTES_TIP = "Linksklick: Notizen zeigen/verstecken\nRechtsklick: neue Notiz"
+L.NOTE_TITLE = "Notiz"
+L.NOTE_PLACEHOLDER = "Schreib etwas..."
+L.NOTE_NEW = "Neue Notiz"
+L.NOTE_MINIMIZE = "Minimieren / aufklappen (oder Doppelklick auf den Titel)"
+L.NOTE_DELETE = "Notiz löschen"
+L.NOTE_DELETE_CONFIRM = "Nochmal klicken zum Löschen"
+L.OPT_notes = "Notizen"
+L.DESC_notes = "Kleine Notizzettel zum Verschieben, Vergrößern und Minimieren. Knopf neben dem Chat."

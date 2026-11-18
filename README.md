@@ -64,12 +64,14 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 - **Anklickbare Links:** Internetadressen im Chat werden blau. Ein Klick öffnet ein Fenster, aus dem du den Link mit Strg+C kopierst.
 - **Chat kopieren** mit **Suche** – über den Knopf neben dem Chat.
 - **Update-Hinweis:** Hat jemand aus Gilde oder Gruppe eine neuere Version, sagt ChatPilot einmal Bescheid.
+- **Notizzettel:** Kleine Zettel, die du frei verschieben, in der Größe ändern und minimieren kannst. Linksklick auf den gelben Zettel-Knopf zeigt oder versteckt alle Notizen, Rechtsklick legt eine neue an. **+** im Zettel = neuer Zettel, **–** oder Doppelklick auf den Titel = minimieren, **×** = löschen (bei Text mit zweitem Klick). Die Notizen bleiben gespeichert, für alle deine Charaktere.
 - **Moderne Einstellungen** mit aufklappbaren Untermenüs.
 
 ## Bedienung
 - **Zahnrad** direkt rechts neben dem Chatfenster → Einstellungen (Knöpfe wahlweise auch über dem Chat)
 - **@** daneben → Erwähnungs-Verlauf (orange Zahl = ungelesene Erwähnungen)
 - **Brief** → verpasste Flüsternachrichten
+- **Gelber Zettel** → Notizen (Rechtsklick: neue Notiz)
 - **Notiz-Symbol** → Chat kopieren
 - Oder über das **Addon-Menü an der Minimap**, `/chatpilot` bzw. Spieloptionen → AddOns → ChatPilot Forever
 
@@ -79,6 +81,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 | `/chatpilot` oder `/cpilot` | Einstellungen öffnen |
 | `/chatpilot mentions` | Erwähnungs-Verlauf |
 | `/chatpilot whispers` | Verpasste Flüsternachrichten |
+| `/chatpilot notes` | Notizen zeigen/verstecken |
 | `/chatpilot copy` | Aktuellen Chat kopieren |
 | `/chatpilot feedback` | Feedback geben |
 | `/chatpilot add <Wort>` / `del <Wort>` / `list` | Stichwörter verwalten |
@@ -154,12 +157,14 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 - **Clickable links:** web addresses in chat turn blue. Clicking opens a box where you copy the link with Ctrl+C.
 - **Copy chat** with **search** – via the button next to the chat.
 - **Update notice:** if someone in your guild or group has a newer version, ChatPilot tells you once.
+- **Sticky notes:** small notes you can move, resize and minimize. Left-click the yellow note button to show or hide all notes, right-click for a new one. **+** in a note = new note, **–** or double-click the title = minimize, **×** = delete (a second click if it has text). Notes are saved for all your characters.
 - **Modern settings window** with collapsible sub-menus.
 
 ### How to use
 - **Gear** right next to the chat window → settings (buttons can also sit above the chat)
 - **@** next to it → mention history (orange number = unread mentions)
 - **Envelope** → missed whispers
+- **Yellow note** → sticky notes (right-click: new note)
 - **Note icon** → copy chat
 - Or via the **addon menu at the minimap**, `/chatpilot`, or Game Menu → Options → AddOns → ChatPilot Forever
 
@@ -169,6 +174,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 | `/chatpilot` or `/cpilot` | Open settings |
 | `/chatpilot mentions` | Mention history |
 | `/chatpilot whispers` | Missed whispers |
+| `/chatpilot notes` | Show/hide notes |
 | `/chatpilot copy` | Copy current chat |
 | `/chatpilot feedback` | Give feedback |
 | `/chatpilot add <word>` / `del <word>` / `list` | Manage keywords |

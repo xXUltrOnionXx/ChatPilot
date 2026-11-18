@@ -19,6 +19,7 @@ ns.defaults = {
 	mentionPublic = true,
 	urls = true,
 	copyButton = true,
+	notes = true,
 	buttonsTop = false,
 	buttonBackground = true,
 	textSize = 14,
@@ -306,6 +307,7 @@ f:SetScript("OnEvent", function(_, event, ...)
 			db.snippets = db.snippets or {}
 			db.history = db.history or {}
 			db.levels = db.levels or {}
+			db.notes = db.notes or {}
 			CopyDefaults(ns.defaults, db.settings)
 			ns.db, ns.S = db, db.settings
 

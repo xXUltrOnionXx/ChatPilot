@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.5
+- Neu: Notizzettel. Kleine Zettel, die du frei verschieben, in der Größe ändern und minimieren kannst (Knopf mit gelbem Zettel neben dem Chat). Linksklick zeigt/versteckt alle Notizen, Rechtsklick legt eine neue an. Notizen bleiben gespeichert, für alle Charaktere
+- Hinweis in der Vorschlagsliste nennt jetzt auch Enter
+
 ## 1.3.4
 - Enter übernimmt jetzt den markierten Vorschlag (Name, Textbaustein, Zielmarkierung), statt die Nachricht mit „@“ sofort abzuschicken. Ein zweites Enter sendet wie gewohnt
 

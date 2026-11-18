@@ -2,7 +2,7 @@ local _, ns = ...
 if GetLocale() ~= "koKR" then return end
 local L = ns.L
 
-L.HINT = "Tab: 입력   화살표: 선택   클릭: 입력"
+L.HINT = "Enter/Tab: 입력   화살표: 선택   클릭: 입력"
 L.SRC_GROUP = "파티"
 L.SRC_TARGET = "대상"
 L.SRC_CHAT = "채팅"
@@ -24,7 +24,7 @@ L.OPT_FEEDBACK = "피드백 보내기"
 L.UNREADABLE = "(다른 언어 - 읽을 수 없음)"
 L.TEST_MESSAGE = "테스트입니다, %s님!"
 L.LOADED = "ChatPilot Forever %s 로드됨. 채팅에 @를 입력해 보세요. 설정: /chatpilot"
-L.HELP = "명령어: /chatpilot [options | mentions | whispers | copy | feedback | add <단어> | del <단어> | list]"
+L.HELP = "명령어: /chatpilot [options | mentions | whispers | notes | copy | feedback | add <단어> | del <단어> | list]"
 L.KW_ADDED = "키워드 추가됨: %s"
 L.KW_REMOVED = "키워드 삭제됨: %s"
 L.KW_LIST = "키워드: %s"
@@ -167,3 +167,15 @@ L.OPT_TEXT_SIZE = "크기"
 L.OPT_TEXT_NORMAL = "보통"
 L.OPT_TEXT_BOLD = "굵게"
 L.OPT_TEXT_PREVIEW = "안녕, 있어? 죽음의 폐광 갈래?"
+
+-- Notes
+L.BTN_NOTES = "메모"
+L.NOTES_TIP = "왼쪽 클릭: 메모 표시/숨기기\n오른쪽 클릭: 새 메모"
+L.NOTE_TITLE = "메모"
+L.NOTE_PLACEHOLDER = "내용을 입력하세요..."
+L.NOTE_NEW = "새 메모"
+L.NOTE_MINIMIZE = "최소화 / 펼치기 (또는 제목 더블 클릭)"
+L.NOTE_DELETE = "메모 삭제"
+L.NOTE_DELETE_CONFIRM = "한 번 더 클릭하면 삭제"
+L.OPT_notes = "메모"
+L.DESC_notes = "이동, 크기 조절, 최소화가 가능한 작은 메모지. 채팅 옆 버튼."

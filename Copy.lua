@@ -179,7 +179,7 @@ local function Layout(bar)
 	local frame = bar.chatFrame
 	local list = {}
 	for _, b in ipairs(bar.order) do
-		if b ~= bar.whispers or ns.S.whispers then list[#list + 1] = b end
+		if (b ~= bar.whispers or ns.S.whispers) and (b ~= bar.notes or ns.S.notes) then list[#list + 1] = b end
 	end
 	bar:ClearAllPoints()
 	if ns.S.buttonsTop then
@@ -228,6 +228,8 @@ function ns:UpdateChatButtons()
 		local w = bar.whispers
 		w:SetShown(self.S.whispers)
 		SetBadge(w, self.S.whispers and self.WhisperUnread and self:WhisperUnread() or 0)
+		bar.notes:SetShown(self.S.notes)
+		bar.notes.active:SetShown(self.NotesShown and self:NotesShown() or false)
 	end
 end
 
@@ -258,13 +260,36 @@ ns.OnChatFrame(function(frame)
 	AddBadge(w)
 	bar.whispers = w
 
+	-- notes: a small flat sticky-note icon (yellow sheet with lines)
+	local nb = BarButton(bar, L.BTN_NOTES .. "\n|cff8a94a6" .. L.NOTES_TIP .. "|r", function(_, button)
+		if button == "RightButton" then ns:NewNote() else ns:ToggleNotes() end
+		ns:UpdateChatButtons()
+	end)
+	nb:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	local sheet = nb:CreateTexture(nil, "ARTWORK")
+	sheet:SetSize(13, 15)
+	sheet:SetPoint("CENTER")
+	sheet:SetColorTexture(1, 0.82, 0.30, 1)
+	for i = 1, 3 do
+		local l = nb:CreateTexture(nil, "OVERLAY")
+		l:SetColorTexture(0.05, 0.07, 0.10, 0.8)
+		l:SetSize(i == 3 and 5 or 8, 1)
+		l:SetPoint("TOPLEFT", sheet, "TOPLEFT", 2, -3 - (i - 1) * 3)
+	end
+	nb.active = nb:CreateTexture(nil, "OVERLAY")       -- small dot: notes are open
+	nb.active:SetSize(4, 4)
+	nb.active:SetPoint("BOTTOMRIGHT", -2, 2)
+	nb.active:SetColorTexture(unpack(C.accent))
+	nb.active:Hide()
+	bar.notes = nb
+
 	local copyBtn = BarButton(bar, L.COPY_BUTTON_TIP, function() ns:CopyChat(frame) end)
 	copyBtn.icon = copyBtn:CreateTexture(nil, "ARTWORK")
 	copyBtn.icon:SetSize(16, 16)
 	copyBtn.icon:SetPoint("CENTER")
 	copyBtn.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
 
-	bar.order = { gear, m, w, copyBtn }
+	bar.order = { gear, m, w, nb, copyBtn }
 	bars[#bars + 1] = bar
 	if ns.S then ns:UpdateChatButtons() end
 end)

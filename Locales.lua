@@ -4,7 +4,7 @@ local _, ns = ...
 local L = setmetatable({}, { __index = function(_, k) return k end })
 ns.L = L
 
-L.HINT = "Tab: insert   Arrows: select   Click: insert"
+L.HINT = "Enter/Tab: insert   Arrows: select   Click: insert"
 L.SRC_GROUP = "Group"
 L.SRC_TARGET = "Target"
 L.SRC_CHAT = "Chat"
@@ -29,7 +29,7 @@ L.OPT_FEEDBACK = "Give feedback"
 
 L.TEST_MESSAGE = "This is a test, %s!"
 L.LOADED = "ChatPilot Forever %s loaded. Type @ in chat to try it. /chatpilot for options."
-L.HELP = "Commands: /chatpilot [options | mentions | whispers | copy | feedback | add <word> | del <word> | list]"
+L.HELP = "Commands: /chatpilot [options | mentions | whispers | notes | copy | feedback | add <word> | del <word> | list]"
 L.KW_ADDED = "Keyword added: %s"
 L.KW_REMOVED = "Keyword removed: %s"
 L.KW_LIST = "Keywords: %s"
@@ -175,3 +175,15 @@ L.OPT_TEXT_SIZE = "Size"
 L.OPT_TEXT_NORMAL = "Normal"
 L.OPT_TEXT_BOLD = "Bold"
 L.OPT_TEXT_PREVIEW = "hey, are you around? Want to do Deadmines?"
+
+-- Notes
+L.BTN_NOTES = "Notes"
+L.NOTES_TIP = "Left-click: show/hide notes\nRight-click: new note"
+L.NOTE_TITLE = "Note"
+L.NOTE_PLACEHOLDER = "Write something..."
+L.NOTE_NEW = "New note"
+L.NOTE_MINIMIZE = "Minimize / expand (or double-click the title)"
+L.NOTE_DELETE = "Delete note"
+L.NOTE_DELETE_CONFIRM = "Click again to delete"
+L.OPT_notes = "Notes"
+L.DESC_notes = "Small sticky notes you can move, resize and minimize. Button next to the chat."

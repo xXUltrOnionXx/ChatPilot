@@ -2,7 +2,7 @@ local _, ns = ...
 if GetLocale() ~= "itIT" then return end
 local L = ns.L
 
-L.HINT = "Tab: inserisci   Frecce: scegli   Clic: inserisci"
+L.HINT = "Invio/Tab: inserisci   Frecce: scegli   Clic: inserisci"
 L.SRC_GROUP = "Gruppo"
 L.SRC_TARGET = "Bersaglio"
 L.SRC_CHAT = "Chat"
@@ -24,7 +24,7 @@ L.OPT_FEEDBACK = "Lascia un feedback"
 L.UNREADABLE = "(altra lingua - illeggibile)"
 L.TEST_MESSAGE = "Questo è un test, %s!"
 L.LOADED = "ChatPilot Forever %s caricato. Scrivi @ in chat per provarlo. /chatpilot per le opzioni."
-L.HELP = "Comandi: /chatpilot [options | mentions | whispers | copy | feedback | add <parola> | del <parola> | list]"
+L.HELP = "Comandi: /chatpilot [options | mentions | whispers | notes | copy | feedback | add <parola> | del <parola> | list]"
 L.KW_ADDED = "Parola chiave aggiunta: %s"
 L.KW_REMOVED = "Parola chiave rimossa: %s"
 L.KW_LIST = "Parole chiave: %s"
@@ -167,3 +167,15 @@ L.OPT_TEXT_SIZE = "Dimensione"
 L.OPT_TEXT_NORMAL = "Normale"
 L.OPT_TEXT_BOLD = "Grassetto"
 L.OPT_TEXT_PREVIEW = "ciao, ci sei? Andiamo alle Miniere della Morte?"
+
+-- Notes
+L.BTN_NOTES = "Note"
+L.NOTES_TIP = "Clic sinistro: mostra/nascondi note\nClic destro: nuova nota"
+L.NOTE_TITLE = "Nota"
+L.NOTE_PLACEHOLDER = "Scrivi qualcosa..."
+L.NOTE_NEW = "Nuova nota"
+L.NOTE_MINIMIZE = "Riduci / espandi (o doppio clic sul titolo)"
+L.NOTE_DELETE = "Elimina nota"
+L.NOTE_DELETE_CONFIRM = "Clicca di nuovo per eliminare"
+L.OPT_notes = "Note"
+L.DESC_notes = "Piccoli foglietti da spostare, ridimensionare e ridurre. Pulsante accanto alla chat."

@@ -2,7 +2,7 @@ local _, ns = ...
 if GetLocale() ~= "zhCN" then return end
 local L = ns.L
 
-L.HINT = "Tab：插入   方向键：选择   点击：插入"
+L.HINT = "回车/Tab：插入   方向键：选择   点击：插入"
 L.SRC_GROUP = "队伍"
 L.SRC_TARGET = "目标"
 L.SRC_CHAT = "聊天"
@@ -24,7 +24,7 @@ L.OPT_FEEDBACK = "提交反馈"
 L.UNREADABLE = "（其他语言 - 无法阅读）"
 L.TEST_MESSAGE = "这是一条测试，%s！"
 L.LOADED = "ChatPilot Forever %s 已加载。在聊天中输入 @ 试试看。/chatpilot 打开设置。"
-L.HELP = "命令：/chatpilot [options | mentions | whispers | copy | feedback | add <词> | del <词> | list]"
+L.HELP = "命令：/chatpilot [options | mentions | whispers | notes | copy | feedback | add <词> | del <词> | list]"
 L.KW_ADDED = "已添加关键词：%s"
 L.KW_REMOVED = "已删除关键词：%s"
 L.KW_LIST = "关键词：%s"
@@ -167,3 +167,15 @@ L.OPT_TEXT_SIZE = "字号"
 L.OPT_TEXT_NORMAL = "普通"
 L.OPT_TEXT_BOLD = "粗体"
 L.OPT_TEXT_PREVIEW = "嗨，在吗？去死亡矿井吗？"
+
+-- Notes
+L.BTN_NOTES = "便签"
+L.NOTES_TIP = "左键：显示/隐藏便签\n右键：新建便签"
+L.NOTE_TITLE = "便签"
+L.NOTE_PLACEHOLDER = "写点什么..."
+L.NOTE_NEW = "新建便签"
+L.NOTE_MINIMIZE = "最小化 / 展开（或双击标题）"
+L.NOTE_DELETE = "删除便签"
+L.NOTE_DELETE_CONFIRM = "再点一次删除"
+L.OPT_notes = "便签"
+L.DESC_notes = "可移动、调整大小和最小化的小便签。按钮在聊天框旁。"

@@ -511,6 +511,10 @@ local function BuildChat(content)
 	local foreign = ToggleRow(flow, "markForeign")
 	ToggleRow(flow, "hideForeign", foreign)
 	ToggleRow(flow, "hideRepeats")
+	ToggleRow(flow, "notes", nil, function(v)
+		if not v and ns.HideNotes then ns:HideNotes() end
+		ns:UpdateChatButtons()
+	end)
 	local btn = ToggleRow(flow, "copyButton", nil, function() ns:UpdateChatButtons() end)
 	ToggleRow(flow, "buttonsTop", btn, function() ns:UpdateChatButtons() end)
 	ToggleRow(flow, "buttonBackground", btn, function() ns:UpdateChatButtons() end)
@@ -687,6 +691,8 @@ SlashCmdList.CHATPILOT = function(input)
 		ns:ShowMentions()
 	elseif cmd == "whispers" or cmd == "w" then
 		ns:ShowWhispers()
+	elseif cmd == "notes" or cmd == "note" then
+		ns:ToggleNotes(); ns:UpdateChatButtons()
 	elseif cmd == "copy" then
 		ns:CopyChat()
 	elseif cmd == "feedback" or cmd == "fb" then
