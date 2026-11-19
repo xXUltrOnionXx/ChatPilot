@@ -11,6 +11,8 @@
 | ![@-Erwähnungen](media/02-autocomplete.png) | ![Erwähnungen](media/03-mentions.png) |
 | ![Flüsternachrichten](media/04-whispers.png) | ![Chat-Helfer](media/05-chat-helpers.png) |
 | ![Einstellungen](media/06-settings.png) | ![Feedback & Sprachen](media/07-feedback-languages.png) |
+| ![Forever-Design](media/08-forever-design.png) | ![Eigene Chat-Fenster](media/09-chat-windows.png) |
+| ![Rundgang](media/10-tour.png) | |
 
 ## 🌍 Sprachen
 ChatPilot passt sich automatisch der Sprache deines WoW-Clients an:
@@ -75,7 +77,13 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
   - **Frei verschieben** an der Titelleiste, Größe unten rechts ändern.
   - **Andocken:** ein Fenster auf die Titelleiste eines anderen ziehen – es wird ein Tab. Tab wieder herausziehen zum Abdocken.
   - **Einrasten:** direkt über dem Chat ablegen – das Fenster sitzt dann über dem Chat und wandert mit.
+  - **Neues Fenster mit einem Klick:** das **+** oben rechts am Chat (oder **+** im Fenster für einen neuen Tab).
+  - **Direkt im Fenster schreiben:** Jedes Fenster hat ein Eingabefeld. Der Knopf links daneben zeigt, wohin die Nachricht geht – standardmäßig dorthin, woher die letzte Nachricht kam. Klick auf einen Namen = ihm flüstern. @-Vorschläge funktionieren auch hier.
+  - **Glocke:** pro Fenster an-/ausschaltbar – Ton und Hinweis bei neuen Nachrichten.
   - Namen, Items und Links sind anklickbar, die letzten Nachrichten bleiben gespeichert.
+
+### Rundgang
+- Ein moderner Schritt-für-Schritt-Rundgang erklärt alle Funktionen und hebt den passenden Knopf hervor. Er erscheint einmal nach dem Update und lässt sich jederzeit wieder ansehen: Einstellungen → „Rundgang ansehen“ oder `/chatpilot tutorial`.
 
 ## Bedienung
 - **Zahnrad** direkt rechts neben dem Chatfenster → Einstellungen (Knöpfe wahlweise auch über dem Chat)
@@ -93,6 +101,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 | `/chatpilot whispers` | Verpasste Flüsternachrichten |
 | `/chatpilot notes` | Notizen zeigen/verstecken |
 | `/chatpilot window` | Neues Chat-Fenster |
+| `/chatpilot tutorial` | Rundgang ansehen |
 | `/chatpilot design forever` / `modern` | Design wechseln |
 | `/chatpilot copy` | Aktuellen Chat kopieren |
 | `/chatpilot feedback` | Feedback geben |
@@ -101,7 +110,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 
 ## Blizzard-Regeln (UI Add-On Development Policy)
 ChatPilot wurde so gebaut, dass es die Regeln einhält:
-- **Sendet nie selbst Nachrichten.** Es ändert nur den Text in deinem Eingabefeld; abschicken tust du immer selbst mit Enter. Keine Automatisierung, kein Spam, keine Server-Last.
+- **Sendet nie von selbst.** Abgeschickt wird nur, was du selbst tippst und mit Enter bestätigst (im normalen Chat oder im Eingabefeld eines ChatPilot-Fensters). Keine Automatisierung, kein Spam, keine Server-Last. In gesperrten Momenten (z. B. Bosskampf) und bei /Befehlen übergibt ChatPilot den Text an das normale Eingabefeld des Spiels.
 - **Kostenlos**, Quellcode offen und lesbar (nicht verschleiert), MIT-Lizenz.
 - **Keine Werbung, keine Spendenaufrufe, keine Pop-ups im Spiel.** Das Feedback-Fenster öffnet sich nur, wenn du es selbst aufrufst.
 - **Kein Internetzugriff, keine Datensammlung:** Das Addon kann keine Webseiten öffnen und nichts verschicken. Feedback geht nur raus, wenn du den Link selbst im Browser öffnest.
@@ -180,7 +189,13 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
   - **Move freely** by the title bar, resize at the bottom right corner.
   - **Dock:** drop a window onto another window's title bar – it becomes a tab. Drag the tab out again to undock.
   - **Snap:** drop it right above the chat – it then sits on top of the chat and moves with it.
+  - **New window in one click:** the **+** at the top right of the chat (or **+** in a window for a new tab).
+  - **Write right in the window:** every window has its own input box. The button on its left shows where your message goes – by default back to where the last message came from. Click a name to whisper that person. @ suggestions work here too.
+  - **Bell:** turn it on per window – sound and notice for new messages.
   - Names, items and links are clickable, recent messages are saved.
+
+#### Guided tour
+- A modern step-by-step tour explains every feature and highlights the matching button. It shows up once after the update and can be watched again any time: settings → "Watch the tour" or `/chatpilot tutorial`.
 
 ### How to use
 - **Gear** right next to the chat window → settings (buttons can also sit above the chat)
@@ -198,6 +213,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 | `/chatpilot whispers` | Missed whispers |
 | `/chatpilot notes` | Show/hide notes |
 | `/chatpilot window` | New chat window |
+| `/chatpilot tutorial` | Watch the tour |
 | `/chatpilot design forever` / `modern` | Switch design |
 | `/chatpilot copy` | Copy current chat |
 | `/chatpilot feedback` | Give feedback |
@@ -206,7 +222,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 
 ### Blizzard rules (UI Add-On Development Policy)
 ChatPilot is built to follow the rules:
-- **Never sends messages on its own.** It only changes the text in your edit box; you always send it yourself with Enter. No automation, no spam, no server load.
+- **Never sends on its own.** Only what you type yourself and confirm with Enter is sent (in the normal chat or in a ChatPilot window's input box). No automation, no spam, no server load. In restricted moments (e.g. boss fights) and for /commands, ChatPilot hands the text to the game's own input box.
 - **Free**, open and readable source code (not obfuscated), MIT license.
 - **No ads, no donation requests, no in-game pop-ups.** The feedback window only opens when you call it yourself.
 - **No internet access, no data collection:** the addon can't open websites or send anything. Feedback only leaves your PC if you open the link in your browser yourself.

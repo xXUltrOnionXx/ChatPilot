@@ -668,6 +668,9 @@ local function BuildAbout(content)
 	fb:SetScript("OnClick", function() win:Hide(); ns:ShowFeedback() end)
 	local gh = UI.Button(c, L.ABOUT_GITHUB, 170, 30)
 	gh:SetPoint("LEFT", fb, "RIGHT", 8, 0)
+	local tour = UI.Button(c, L.TUT_OPEN, 150, 30)
+	tour:SetPoint("LEFT", gh, "RIGHT", 8, 0)
+	tour:SetScript("OnClick", function() if win then win:Hide() end; ns:ShowTutorial() end)
 	gh:SetScript("OnClick", function() ns:ShowCopy(GITHUB, L.COPY_URL_TITLE, true) end)
 
 	local head = UI.Text(c, "GameFontNormalSmall", C.accent)
@@ -744,6 +747,9 @@ local function Build()
 	NavButton(sidebar, 5, L.PAGE_DESIGN)
 	NavButton(sidebar, 6, L.PAGE_ABOUT)
 
+	local tourBtn = UI.Button(sidebar, L.TUT_OPEN, 150, 28)
+	tourBtn:SetPoint("BOTTOMLEFT", 20, 58)
+	tourBtn:SetScript("OnClick", function() win:Hide(); ns:ShowTutorial() end)
 	local hint = UI.Text(sidebar, "GameFontHighlightSmall", C.muted)
 	hint:SetPoint("BOTTOMLEFT", 20, 16)
 	hint:SetPoint("RIGHT", -12, 0)
@@ -816,6 +822,8 @@ SlashCmdList.CHATPILOT = function(input)
 		ns:ShowMentions()
 	elseif cmd == "whispers" or cmd == "w" then
 		ns:ShowWhispers()
+	elseif cmd == "tutorial" or cmd == "tour" or cmd == "help" or cmd == "hilfe" then
+		ns:ShowTutorial()
 	elseif cmd == "window" or cmd == "fenster" then
 		ns:CW_New()
 	elseif cmd == "design" or cmd == "theme" then

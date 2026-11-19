@@ -216,6 +216,12 @@ local function SetBadge(b, n)
 	b.badge.text:SetText(n > 9 and "9+" or tostring(n))
 end
 
+-- for the tutorial spotlight: a button of the first chat's button bar
+function ns.ChatBarButton(name)
+	local bar = bars[1]
+	return bar and rawget(bar, name)
+end
+
 function ns:UpdateChatButtons()
 	if self.CW_UpdatePlus and self.loggedIn then self:CW_UpdatePlus() end
 	local unread = self.unread or 0
@@ -291,6 +297,7 @@ ns.OnChatFrame(function(frame)
 	copyBtn.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
 
 	bar.order = { gear, m, w, nb, copyBtn }
+	bar.gear, bar.copyBtn = gear, copyBtn
 	bars[#bars + 1] = bar
 	if ns.S then ns:UpdateChatButtons() end
 end)

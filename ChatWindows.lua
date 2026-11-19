@@ -188,6 +188,125 @@ local function Place(g)
 end
 
 -------------------------------------------------------------------------------
+-- Writing: where a message typed in a window goes ("target")
+-- Only text you type yourself and send with Enter is ever sent.
+-------------------------------------------------------------------------------
+local CAT_TARGETS = {
+	guild = { { type = "GUILD" } },
+	party = { { type = "PARTY" } },
+	raid = { { type = "RAID" }, { type = "INSTANCE_CHAT" } },
+	say = { { type = "SAY" } },
+	yell = { { type = "YELL" } },
+	emote = { { type = "EMOTE" } },
+}
+local TYPE_LABEL = {
+	GUILD = "CAT_guild", OFFICER = "CAT_guild", PARTY = "CAT_party", RAID = "CAT_raid", INSTANCE_CHAT = "CAT_raid",
+	SAY = "CAT_say", YELL = "CAT_yell", EMOTE = "CAT_emote",
+}
+local SLASH = { GUILD = "/g ", OFFICER = "/o ", PARTY = "/p ", RAID = "/ra ", INSTANCE_CHAT = "/i ",
+	SAY = "/s ", YELL = "/y ", EMOTE = "/e " }
+
+local function SameTarget(a, b)
+	return a and b and a.type == b.type and a.name == b.name and a.number == b.number
+end
+
+local function TargetLabel(t)
+	if not t then return L.CW_NO_TARGET end
+	if t.type == "WHISPER" or t.type == "BN_WHISPER" then
+		local n = t.type == "WHISPER" and Ambiguate and Ambiguate(t.name, "none") or t.name
+		return "@" .. n
+	elseif t.type == "CHANNEL" then
+		return tostring(t.number) .. ". " .. (t.name or "")
+	end
+	return L[TYPE_LABEL[t.type] or ""] or t.type
+end
+
+local function TargetColor(t)
+	if not t then return 0.6, 0.6, 0.6 end
+	local key = t.type == "CHANNEL" and ("CHANNEL" .. tostring(t.number)) or t.type
+	local info = ChatTypeInfo and (ChatTypeInfo[key] or ChatTypeInfo[t.type])
+	if info and info.r then return info.r, info.g, info.b end
+	return 1, 1, 1
+end
+
+-- all places this window can write to: recent ones first, then by filter
+local function Targets(w)
+	local list = {}
+	local function add(t)
+		for _, o in ipairs(list) do if SameTarget(o, t) then return end end
+		list[#list + 1] = t
+	end
+	for _, t in ipairs(w.recent or {}) do add(t) end
+	for _, c in ipairs(CATS) do
+		if w.data.cats[c.key] then
+			for _, t in ipairs(CAT_TARGETS[c.key] or {}) do add(t) end
+		end
+	end
+	return list
+end
+
+local function Remember(w, t)
+	w.recent = w.recent or {}
+	for i, o in ipairs(w.recent) do
+		if SameTarget(o, t) then table.remove(w.recent, i) break end
+	end
+	table.insert(w.recent, 1, t)
+	while #w.recent > 8 do table.remove(w.recent) end
+	w.data.last = t
+end
+
+-- target of a received message (so "reply" goes back where it came from)
+local function TargetOf(event, author, channelNumber, baseName, bnID)
+	local chatType = event:sub(10)
+	if chatType == "WHISPER" or chatType == "WHISPER_INFORM" then
+		return { type = "WHISPER", name = author }
+	elseif chatType == "BN_WHISPER" or chatType == "BN_WHISPER_INFORM" then
+		if bnID and bnID ~= 0 then return { type = "BN_WHISPER", name = author, id = bnID } end
+	elseif chatType == "CHANNEL" then
+		return { type = "CHANNEL", number = channelNumber, name = baseName }
+	elseif chatType == "GUILD" or chatType == "OFFICER" or chatType == "PARTY" or chatType == "SAY" or chatType == "YELL" then
+		return { type = chatType }
+	elseif chatType == "PARTY_LEADER" then return { type = "PARTY" }
+	elseif chatType == "RAID" or chatType == "RAID_LEADER" or chatType == "RAID_WARNING" then return { type = "RAID" }
+	elseif chatType:find("^INSTANCE_CHAT") then return { type = "INSTANCE_CHAT" }
+	end
+end
+
+local function Locked()
+	return C_ChatInfo and C_ChatInfo.InChatMessagingLockdown and C_ChatInfo.InChatMessagingLockdown() or false
+end
+
+-- hand the text to the game's own input box (slash commands, restricted times)
+local function HandOver(t, text)
+	local prefix = ""
+	if t then
+		if t.type == "WHISPER" then prefix = "/w " .. t.name .. " "
+		elseif t.type == "CHANNEL" then prefix = "/" .. tostring(t.number) .. " "
+		elseif SLASH[t.type] then prefix = SLASH[t.type] end
+	end
+	if text:sub(1, 1) == "/" then prefix = "" end
+	local open = ChatFrame_OpenChat or (ChatFrameUtil and ChatFrameUtil.OpenChat)
+	if open then open(prefix .. text) end
+end
+
+local function Send(t, text)
+	if t.type == "BN_WHISPER" then
+		local bn = BNSendWhisper or (C_BattleNet and C_BattleNet.SendWhisper)
+		if bn then bn(t.id, text) end
+		return
+	end
+	local send = (C_ChatInfo and C_ChatInfo.SendChatMessage) or SendChatMessage
+	if not send then return end
+	if t.type == "WHISPER" then
+		send(text, "WHISPER", nil, t.name)
+	elseif t.type == "CHANNEL" then
+		send(text, "CHANNEL", nil, t.number)
+	else
+		send(text, t.type)
+	end
+end
+
+-------------------------------------------------------------------------------
 -- Tabs
 -------------------------------------------------------------------------------
 local LayoutTabs, Select, StartDrag -- forward
@@ -256,6 +375,8 @@ function Select(g, w)
 		o.msg:SetShown(o == w)
 	end
 	LayoutTabs(g)
+	ns:CW_UpdateChip(g)
+	ns:CW_UpdateBell(g)
 	if menu and menu:IsShown() and menu.group == g then ns:CW_OpenMenu(g) end
 end
 
@@ -367,10 +488,77 @@ local function CreateGroupFrame(g)
 	IconLine(g.filter, 8, 2, nil, 0, 0)
 	IconLine(g.filter, 4, 2, nil, 0, -4)
 
+	-- bell: notify me about new messages in this window (on/off)
+	g.bell = HeaderButton(g, L.CW_BELL_OFF, function() ns:CW_ToggleBell(g) end)
+	g.bell:SetPoint("RIGHT", g.filter, "LEFT", -1, 0)
+	IconLine(g.bell, 2, 2, nil, 0, 6)      -- knob
+	IconLine(g.bell, 4, 2, nil, 0, 4)
+	IconLine(g.bell, 6, 3, nil, 0, 2)      -- dome
+	IconLine(g.bell, 8, 3, nil, 0, -1)
+	IconLine(g.bell, 10, 2, nil, 0, -3)
+	IconLine(g.bell, 12, 2, nil, 0, -5)    -- rim
+	IconLine(g.bell, 3, 2, nil, 0, -7)     -- clapper
+	g.bell.slash = g.bell:CreateTexture(nil, "OVERLAY")
+	g.bell.slash:SetSize(16, 2)
+	g.bell.slash:SetPoint("CENTER")
+	g.bell.slash:SetRotation(math.rad(-45))
+	UI.Paint(g.bell.slash, C.muted)
+
 	local body = CreateFrame("Frame", nil, f)
 	body:SetPoint("TOPLEFT", 6, -HEADER_H - 4)
-	body:SetPoint("BOTTOMRIGHT", -6, 6)
+	body:SetPoint("BOTTOMRIGHT", -6, 36)
 	g.body = body
+
+	-- input row: [target] [text ...........]
+	local row = CreateFrame("Frame", nil, f)
+	row:SetPoint("BOTTOMLEFT", 6, 6)
+	row:SetPoint("BOTTOMRIGHT", -16, 6)
+	row:SetHeight(26)
+	g.row = row
+	local chip = CreateFrame("Button", nil, row)
+	chip:SetPoint("TOPLEFT")
+	chip:SetPoint("BOTTOMLEFT")
+	chip.bg = UI.Fill(chip, C.row)
+	UI.Border(chip, C.border)
+	chip.text = UI.NoShadow(chip:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall"))
+	chip.text:SetPoint("LEFT", 8, 0)
+	chip.text:SetWordWrap(false)
+	chip:SetScript("OnClick", function() ns:CW_TargetMenu(g) end)
+	chip:SetScript("OnEnter", function(self)
+		UI.Paint(self.bg, C.rowHover)
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:SetText(L.CW_TARGET_TIP)
+		GameTooltip:Show()
+	end)
+	chip:SetScript("OnLeave", function(self) UI.Paint(self.bg, C.row); GameTooltip:Hide() end)
+	g.chip = chip
+
+	local holder = CreateFrame("Frame", nil, row)
+	holder:SetPoint("TOPLEFT", chip, "TOPRIGHT", 4, 0)
+	holder:SetPoint("BOTTOMRIGHT")
+	UI.Fill(holder, C.btn)
+	UI.Border(holder, C.border)
+	local eb = CreateFrame("EditBox", nil, holder)
+	eb:SetPoint("TOPLEFT", 8, 0)
+	eb:SetPoint("BOTTOMRIGHT", -8, 0)
+	eb:SetFontObject(ChatFontNormal or UI.MessageFont())
+	eb:SetAutoFocus(false)
+	eb:SetMaxLetters(255)
+	eb:SetAltArrowKeyMode(false)
+	local ph = UI.Text(holder, "GameFontHighlightSmall", C.muted)
+	ph:SetPoint("LEFT", 9, 0)
+	ph:SetText(L.CW_WRITE)
+	local function upd() ph:SetShown(eb:GetText() == "" and not eb:HasFocus()) end
+	eb:SetScript("OnEditFocusGained", function() upd(); holder:SetBorderColor(unpack(C.accent)) end)
+	eb:SetScript("OnEditFocusLost", function() upd(); holder:SetBorderColor(unpack(C.border)) end)
+	eb:SetScript("OnTextChanged", upd)
+	eb:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+	eb:SetScript("OnEnterPressed", function(self) ns:CW_Submit(g) end)
+	holder:EnableMouse(true)
+	holder:SetScript("OnMouseDown", function() eb:SetFocus() end)
+	g.input = eb
+	g.holder = holder
+	if ns.HookEditBox then ns.HookEditBox(eb) end -- @ names, #snippets, {raid icons}
 
 	local grip = CreateFrame("Button", nil, f)
 	grip:SetSize(12, 12)
@@ -416,6 +604,13 @@ local function CreateMessageFrame(w)
 	end)
 	m:SetScript("OnHyperlinkClick", function(self, link, text, button)
 		if ns.LinkClick(link) then return end
+		local name = type(link) == "string" and link:match("^player:([^:]+)")
+		if name and button == "LeftButton" and not IsModifierKeyDown() and w.group then
+			-- click a name: whisper that person right here
+			ns:CW_SetTarget(w.group, { type = "WHISPER", name = name })
+			w.group.input:SetFocus()
+			return
+		end
 		if SetItemRef then SetItemRef(link, text, button, DEFAULT_CHAT_FRAME) end
 	end)
 	m:SetScript("OnHyperlinkEnter", function(self, link)
@@ -624,7 +819,18 @@ local function Deliver(event, ...)
 		local args, n = RunFilters(w.msg, event, ...)
 		if args then
 			local ok, text, r, g, b = pcall(Format, event, unpack(args, 1, n))
-			if ok and text then AddLine(w, text, r, g, b, true) end
+			if ok and text then
+				AddLine(w, text, r, g, b, true)
+				ns:CW_Notify(w, event, (...), select(2, ...))
+				local a = { ... }
+				local t = TargetOf(event, a[2], a[8], a[9], a[13])
+				if t and not (t.type == "WHISPER" and Ambiguate and Ambiguate(t.name, "none") == UnitName("player")) then
+					Remember(w, t)
+					if w.group and w.group.data and w.group.data.active == w.data.id and not w.group.input:HasFocus() then
+						ns:CW_UpdateChip(w.group)
+					end
+				end
+			end
 		end
 	end
 end
@@ -700,6 +906,162 @@ end
 
 function ns:CW_ToggleMenu(g)
 	if menu and menu:IsShown() and menu.group == g then menu:Hide() else self:CW_OpenMenu(g) end
+end
+
+-------------------------------------------------------------------------------
+-- Target chip, target list and sending
+-------------------------------------------------------------------------------
+local function Current(g)
+	local w = g and g.data and wins[g.data.active]
+	if not w then return end
+	if not w.target then
+		w.target = w.data.last or Targets(w)[1]
+	end
+	return w, w.target
+end
+
+function ns:CW_UpdateChip(g)
+	local w, t = Current(g)
+	if not w then return end
+	if g.input:HasFocus() == false and w.data.last and not w.pinned then t = w.data.last; w.target = t end
+	g.chip.text:SetText(TargetLabel(t))
+	g.chip.text:SetTextColor(TargetColor(t))
+	local width = math.min(math.max((g.chip.text:GetStringWidth() or 40) + 18, 50), 140)
+	g.chip:SetWidth(width)
+	g.chip.text:SetWidth(width - 12)
+end
+
+function ns:CW_SetTarget(g, t)
+	local w = Current(g)
+	if not w then return end
+	w.target = t
+	w.pinned = true -- chosen by you: stays until you pick another one
+	Remember(w, t)
+	self:CW_UpdateChip(g)
+end
+
+local tmenu
+function ns:CW_TargetMenu(g)
+	local w = Current(g)
+	if not w then return end
+	if not tmenu then
+		tmenu = CreateFrame("Frame", "ChatPilotTargetMenu", UIParent)
+		tmenu:SetFrameStrata("DIALOG")
+		tmenu:SetClampedToScreen(true)
+		tmenu:EnableMouse(true)
+		UI.Fill(tmenu, C.bg)
+		UI.Border(tmenu, C.border)
+		tmenu.rows = {}
+		tinsert(UISpecialFrames, "ChatPilotTargetMenu")
+		tmenu:Hide()
+	end
+	if tmenu:IsShown() and tmenu.group == g then tmenu:Hide() return end
+	tmenu.group = g
+	local list = Targets(w)
+	for i, t in ipairs(list) do
+		local r = tmenu.rows[i]
+		if not r then
+			r = CreateFrame("Button", nil, tmenu)
+			r:SetHeight(22)
+			r:SetPoint("TOPLEFT", 4, -4 - (i - 1) * 22)
+			r:SetPoint("TOPRIGHT", -4, -4 - (i - 1) * 22)
+			local hl = r:CreateTexture(nil, "HIGHLIGHT")
+			hl:SetAllPoints()
+			UI.Paint(hl, C.rowHover)
+			r.text = UI.NoShadow(r:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall"))
+			r.text:SetPoint("LEFT", 8, 0)
+			tmenu.rows[i] = r
+		end
+		r.text:SetText(TargetLabel(t))
+		r.text:SetTextColor(TargetColor(t))
+		r:SetScript("OnClick", function()
+			tmenu:Hide()
+			ns:CW_SetTarget(g, t)
+			g.input:SetFocus()
+		end)
+		r:Show()
+	end
+	for i = #list + 1, #tmenu.rows do tmenu.rows[i]:Hide() end
+	if #list == 0 then
+		ns.Print(L.CW_NO_TARGET_HINT)
+		return
+	end
+	tmenu:SetSize(180, #list * 22 + 8)
+	tmenu:ClearAllPoints()
+	tmenu:SetPoint("BOTTOMLEFT", g.chip, "TOPLEFT", 0, 4)
+	tmenu:Show()
+end
+
+function ns:CW_Submit(g)
+	local eb = g.input
+	local text = eb:GetText() or ""
+	text = text:gsub("^%s+", ""):gsub("%s+$", "")
+	if text == "" then eb:ClearFocus() return end
+	local w, t = Current(g)
+	if text:sub(1, 1) == "/" or not t or Locked() then
+		-- slash commands and restricted moments go through the game's own chat box
+		eb:SetText("")
+		eb:ClearFocus()
+		HandOver(t, text)
+		return
+	end
+	local ok = pcall(Send, t, text)
+	if ok then
+		eb:SetText("")
+		if eb.AddHistoryLine then eb:AddHistoryLine(text) end
+	else
+		eb:SetText("")
+		eb:ClearFocus()
+		HandOver(t, text)
+	end
+end
+
+-------------------------------------------------------------------------------
+-- Bell: sound + small notice for new messages in a window
+-------------------------------------------------------------------------------
+function ns:CW_UpdateBell(g)
+	local w = g and g.data and wins[g.data.active]
+	if not w then return end
+	local on = w.data.bell and true or false
+	for _, t in ipairs(g.bell.lines) do UI.Paint(t, on and C.orange or C.muted) end
+	g.bell.slash:SetShown(not on)
+	g.bell.tip = on and L.CW_BELL_ON or L.CW_BELL_OFF
+end
+
+function ns:CW_ToggleBell(g)
+	local w = g and g.data and wins[g.data.active]
+	if not w then return end
+	w.data.bell = not w.data.bell or nil
+	self:CW_UpdateBell(g)
+	GameTooltip:SetOwner(g.bell, "ANCHOR_TOP")
+	GameTooltip:SetText(g.bell.tip)
+	GameTooltip:Show()
+end
+
+function ns:CW_Notify(w, event, msg, author)
+	if not w.data.bell or not w.group or not w.group.data then return end
+	if event:find("_INFORM$") then return end -- your own outgoing whispers
+	if type(author) == "string" and ns.Usable(author) and Ambiguate
+		and Ambiguate(author, "none") == UnitName("player") then return end
+	local g = w.group
+	if g.input:HasFocus() and g.data.active == w.data.id then return end
+	local now = GetTime()
+	if w.lastBell and now - w.lastBell < 3 then return end
+	w.lastBell = now
+	PlaySound((SOUNDKIT and SOUNDKIT.TELL_MESSAGE) or 3081, "Master")
+	if ns.ShowToast then
+		local text = ""
+		if type(msg) == "string" and ns.Usable(msg, author) then
+			local who = Ambiguate and Ambiguate(author or "", "none") or author or ""
+			text = (who ~= "" and (who .. ": ") or "") .. ns.StripEscapes(msg)
+			if #text > 90 then text = text:sub(1, 88):gsub("[\192-\255][\128-\191]*$", "") .. "..." end
+		end
+		ns:ShowToast(WindowName(w), text, function()
+			g.frame:Show()
+			Select(g, w)
+			g.input:SetFocus()
+		end, C.accent)
+	end
 end
 
 -------------------------------------------------------------------------------

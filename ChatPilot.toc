@@ -50,3 +50,4 @@ VersionCheck.lua
 Options.lua
 ChatSkin.lua
 ChatWindows.lua
+Tutorial.lua
