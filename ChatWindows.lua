@@ -428,32 +428,109 @@ local function CreateTab(w)
 		GameTooltip:Show()
 	end)
 	t:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	t:EnableMouseWheel(true)
+	t:SetScript("OnMouseWheel", function(_, delta)
+		local row = w.group and w.group.tabRow
+		if row then row:ScrollBy(-delta * 60) end
+	end)
 	return t
 end
 
+-------------------------------------------------------------------------------
+-- Scrollable tab rows. Tabs keep their full size; if they don't all fit, the
+-- row scrolls (mouse wheel over the tabs, or the small arrows) and the active
+-- tab is always brought into view.
+-------------------------------------------------------------------------------
+local TAB_GAP, TAB_MAX = 2, 200
+
+-- clip: frame that cuts off what is outside; strip: holds the tabs
+local function TabRow(parent)
+	local clip = CreateFrame("Frame", nil, parent)
+	if clip.SetClipsChildren then clip:SetClipsChildren(true) end
+	clip.strip = CreateFrame("Frame", nil, clip)
+	clip.strip:SetSize(1, 1)
+	clip.scroll, clip.width = 0, 0
+	local function Arrow(dir)
+		local b = CreateFrame("Button", nil, parent)
+		b:SetSize(14, 20)
+		b.bg = UI.Fill(b, C.panel)
+		local t = b:CreateTexture(nil, "OVERLAY")
+		t:SetSize(7, 2)
+		t:SetPoint("CENTER", 0, 2)
+		t:SetRotation(math.rad(dir < 0 and 45 or -45))
+		UI.Paint(t, C.accent)
+		local t2 = b:CreateTexture(nil, "OVERLAY")
+		t2:SetSize(7, 2)
+		t2:SetPoint("CENTER", 0, -2)
+		t2:SetRotation(math.rad(dir < 0 and -45 or 45))
+		UI.Paint(t2, C.accent)
+		b:SetScript("OnClick", function() clip:ScrollBy(dir * 90) end)
+		b:Hide()
+		return b
+	end
+	clip.left, clip.right = Arrow(-1), Arrow(1)
+	function clip:Apply()
+		local view = self:GetWidth() or 0
+		local maxScroll = math.max(0, self.width - view)
+		self.scroll = math.max(0, math.min(self.scroll, maxScroll))
+		self.strip:ClearAllPoints()
+		self.strip:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -self.scroll, 0)
+		self.strip:SetSize(math.max(1, self.width), self:GetHeight() or 22)
+		self.left:SetShown(self.scroll > 0)
+		self.right:SetShown(self.scroll < maxScroll - 0.5)
+	end
+	function clip:ScrollBy(dx)
+		self.scroll = self.scroll + dx
+		self:Apply()
+	end
+	-- make sure the tab from x1 to x2 is visible
+	function clip:Reveal(x1, x2)
+		local view = self:GetWidth() or 0
+		if x1 < self.scroll then self.scroll = x1
+		elseif x2 > self.scroll + view then self.scroll = x2 - view end
+		self:Apply()
+	end
+	clip:EnableMouseWheel(true)
+	clip:SetScript("OnMouseWheel", function(self, delta) self:ScrollBy(-delta * 60) end)
+	clip:SetScript("OnSizeChanged", function(self) self:Apply() end)
+	return clip
+end
+
 function LayoutTabs(g)
-	local x = 4
-	local maxW = math.max(60, (g.frame:GetWidth() or 300) - 104)
-	local n = #g.data.order
+	if not g.data then return end
+	if not g.tabRow then
+		g.tabRow = TabRow(g.header)
+		g.tabRow:SetPoint("BOTTOMLEFT", g.header, "BOTTOMLEFT", 4, 0)
+		g.tabRow:SetPoint("TOPRIGHT", g.bell, "TOPLEFT", -4, 0)
+		g.tabRow.left:SetPoint("BOTTOMLEFT", g.tabRow, "BOTTOMLEFT", 0, 1)
+		g.tabRow.right:SetPoint("BOTTOMRIGHT", g.tabRow, "BOTTOMRIGHT", 0, 1)
+		g.tabRow.left:SetFrameLevel(g.header:GetFrameLevel() + 6)
+		g.tabRow.right:SetFrameLevel(g.header:GetFrameLevel() + 6)
+	end
+	local row = g.tabRow
+	local x, ax1, ax2 = 0, nil, nil
 	for _, id in ipairs(g.data.order) do
 		local w = wins[id]
 		local t = w.tab
-		t:SetParent(g.header)
-		t:SetFrameLevel(g.header:GetFrameLevel() + 2)
+		t:SetParent(row.strip)
+		t:SetFrameLevel(row.strip:GetFrameLevel() + 2)
 		t.text:SetText(WindowName(w))
-		local width = math.min((t.text:GetStringWidth() or 60) + 22, math.max(60, maxW / n))
+		t.text:SetWordWrap(false)
+		local width = math.min((t.text:GetStringWidth() or 60) + 22, TAB_MAX)
 		t:SetWidth(width)
 		t.text:SetWidth(width - 16)
-		t.text:SetWordWrap(false)
 		t:ClearAllPoints()
-		t:SetPoint("BOTTOMLEFT", g.header, "BOTTOMLEFT", x, 0)
-		x = x + width + 2
+		t:SetPoint("BOTTOMLEFT", row.strip, "BOTTOMLEFT", x, 0)
 		local active = g.data.active == id
+		if active then ax1, ax2 = x, x + width end
+		x = x + width + TAB_GAP
 		t.line:SetShown(active)
 		UI.Ink(t.text, active and C.text or C.muted)
 		t.dot:SetShown(not active and w.unread and true or false)
 		t:Show()
 	end
+	row.width = math.max(0, x - TAB_GAP)
+	if ax1 then row:Reveal(ax1, ax2) else row:Apply() end
 end
 
 function Select(g, w)
@@ -1546,37 +1623,66 @@ local function CreateLauncher(w)
 	return b
 end
 
+local launchRow -- scrollable row for our tabs in the main chat
+
 function UpdateLaunchers()
 	wipe(launchers)
-	local anchor = LastGameTab()
 	local main = MainChat()
 	local hidden = Data and Data.hidden
+	local gameTab = LastGameTab()
+	if not launchRow and main then
+		launchRow = TabRow(UIParent)
+		launchRow:SetFrameStrata("MEDIUM")
+		launchRow:SetHeight(22)
+	end
+	if launchRow then
+		launchRow:ClearAllPoints()
+		if gameTab then
+			launchRow:SetPoint("BOTTOMLEFT", gameTab, "BOTTOMRIGHT", 3, 0)
+		else
+			launchRow:SetPoint("BOTTOMLEFT", main, "TOPLEFT", 0, 4)
+		end
+		-- up to the right edge of the chat, leaving room for the "+" button
+		launchRow:SetPoint("RIGHT", main, "RIGHT", -24, 0)
+		launchRow.left:ClearAllPoints()
+		launchRow.left:SetPoint("BOTTOMLEFT", launchRow, "BOTTOMLEFT", 0, 1)
+		launchRow.right:ClearAllPoints()
+		launchRow.right:SetPoint("BOTTOMRIGHT", launchRow, "BOTTOMRIGHT", 0, 1)
+		launchRow.left:SetFrameStrata("MEDIUM"); launchRow.right:SetFrameStrata("MEDIUM")
+		launchRow.left:SetFrameLevel(launchRow:GetFrameLevel() + 6)
+		launchRow.right:SetFrameLevel(launchRow:GetFrameLevel() + 6)
+	end
+	local x, ax1, ax2 = 0, nil, nil
 	for _, g in ipairs(groups) do
 		for _, id in ipairs(g.data and g.data.main and g.data.order or {}) do
 			local w = wins[id]
-			if w then
+			if w and launchRow then
 				w.launch = w.launch or CreateLauncher(w)
 				local b = w.launch
+				b:SetParent(launchRow.strip)
+				b:SetFrameLevel(launchRow.strip:GetFrameLevel() + 2)
 				b.text:SetText(WindowName(w))
-				local width = math.min((b.text:GetStringWidth() or 60) + 20, 150)
+				local width = math.min((b.text:GetStringWidth() or 60) + 20, TAB_MAX)
 				b:SetWidth(width)
 				b.text:SetWidth(width - 14)
 				b:ClearAllPoints()
-				if anchor then
-					b:SetPoint("BOTTOMLEFT", anchor, "BOTTOMRIGHT", 3, 0)
-				elseif main then
-					b:SetPoint("BOTTOMLEFT", main, "TOPLEFT", 0, 4)
-				end
+				b:SetPoint("BOTTOMLEFT", launchRow.strip, "BOTTOMLEFT", x, 0)
 				local active = g.mainOpen and g.data.active == id
+				if active then ax1, ax2 = x, x + width end
+				x = x + width + 3
 				b.line:SetShown(active)
 				UI.Ink(b.text, active and C.text or C.muted)
 				if active then w.unread = false end
 				b.dot:SetShown(w.unread and not active or false)
-				b:SetShown(not hidden)
-				anchor = b
+				b:Show()
 				launchers[#launchers + 1] = w
 			end
 		end
+	end
+	if launchRow then
+		launchRow.width = math.max(0, x - 3)
+		launchRow:SetShown(#launchers > 0 and not hidden)
+		if ax1 then launchRow:Reveal(ax1, ax2) else launchRow:Apply() end
 	end
 	-- windows that are no longer docked into the main chat lose their tab
 	for _, w in pairs(wins) do
@@ -1622,7 +1728,7 @@ function ns:CW_TabWheel(delta)
 	local entries = {}
 	for _, f in ipairs(frames) do entries[#entries + 1] = { frame = f } end
 	for _, w in ipairs(launchers) do
-		if w.launch and w.launch:IsShown() then entries[#entries + 1] = { win = w } end
+		if w.launch and w.launch:IsVisible() then entries[#entries + 1] = { win = w } end
 	end
 	if #entries < 2 then return end
 	local cur = 1
