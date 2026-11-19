@@ -25,6 +25,7 @@ local EVENTS = {
 	"CHAT_MSG_CHANNEL", "CHAT_MSG_COMMUNITIES_CHANNEL",
 	"CHAT_MSG_WHISPER", "CHAT_MSG_WHISPER_INFORM",
 	"CHAT_MSG_BN_WHISPER", "CHAT_MSG_BN_WHISPER_INFORM",
+	"CHAT_MSG_SYSTEM", "CHAT_MSG_EMOTE", "CHAT_MSG_TEXT_EMOTE",
 }
 
 local function Note(frame, event, ...)
@@ -32,11 +33,11 @@ local function Note(frame, event, ...)
 	frame.cpHint = nil
 	if not ns.MainLookActive() then return false end
 	local msg, author = ...
-	local chanString, chanNum, chanBase = select(4, ...), select(8, ...), select(9, ...)
-	if not ns.Usable(msg, author, chanString, chanNum, chanBase) then return false end
+	local chanString, chanNum, chanBase, guid = select(4, ...), select(8, ...), select(9, ...), select(12, ...)
+	if not ns.Usable(msg, author, chanString, chanNum, chanBase, guid) then return false end
 	frame.cpHint = {
 		event = event, msg = msg, author = author, chan = chanString,
-		chanNum = chanNum, chanBase = chanBase, t = GetTime(),
+		chanNum = chanNum, chanBase = chanBase, guid = guid, t = GetTime(),
 	}
 	return false
 end
@@ -47,12 +48,25 @@ if AddFilter then
 	for _, ev in ipairs(EVENTS) do AddFilter(ev, Note) end
 end
 
+local SOFT = {
+	SYSTEM = { 0.62, 0.67, 0.74 },     -- online/offline and other notices: quiet grey
+	EMOTE = { 0.86, 0.72, 0.55 }, TEXT_EMOTE = { 0.86, 0.72, 0.55 },
+}
+
 -- Rebuilds one line. Returns true when it wrote the line itself.
 function ns.StyleMainLine(frame, text, orig, r, g, b, ...)
 	local h = rawget(frame, "cpHint")
 	frame.cpHint = nil
 	local look = ns.ChatLook
 	if not h or not look or h.t ~= GetTime() then return false end
+
+	local soft = SOFT[h.event:sub(10)]
+	if soft then
+		-- notices and emotes: one calm line between the message blocks
+		frame.cpLastKey = nil
+		orig(frame, text, soft[1], soft[2], soft[3], ...)
+		return true
+	end
 
 	-- the first player link is the author (for "To X:" the person you wrote to)
 	local s, e = text:find("|HB?N?player:[^|]*|h.-|h")
@@ -70,15 +84,20 @@ function ns.StyleMainLine(frame, text, orig, r, g, b, ...)
 	local mentioned = not isOwn and ns.FindMention and ns:FindMention(h.msg)
 	local calm = look.CALM[chatType] or { r or 1, g or 1, b or 1 }
 	local you = UI.Hex(C.accent) .. L.WH_YOU .. "|r"
+	local class
+	if not isOwn and type(h.guid) == "string" and h.guid ~= "" and GetPlayerInfoByGUID then
+		local okc, _, cf = pcall(GetPlayerInfoByGUID, h.guid)
+		if okc then class = cf end
+	end
 
 	-- who: the name as the game links it (class colour, right-click menu), "You" for yourself
-	local who, label = link, nil
+	local who, label = look.PlainName(link), nil
 	if inform then
 		who = you
-		label = L.CW_TO:format(link)
+		label = L.CW_TO:format(look.PlainName(link))
 	elseif isOwn then
 		local open = link:match("^(|H.-|h)")
-		who = open and (open .. "[" .. you .. "]|h") or you
+		who = open and (open .. you .. "|h") or you
 	end
 	if not label then
 		-- keep the game's channel link (clickable), just without the brackets
@@ -98,16 +117,136 @@ function ns.StyleMainLine(frame, text, orig, r, g, b, ...)
 		lastKey = nil
 	end
 	if not (lastKey == key and lastT and now - lastT <= 120) then
-		local dotc = isOwn and C.accent or mentioned and C.orange or calm
-		local head = look.Dot(dotc) .. "  " .. who .. "  " .. UI.Hex(C.muted) .. date("%H:%M", now)
+		local stripe = look.StripeColor(isOwn, mentioned, class, calm)
+		local head = look.HeadMark(stripe) .. who .. "  " .. UI.Hex(C.muted) .. date("%H:%M", now)
 			.. (label and (" · " .. label) or "") .. "|r"
 		orig(frame, head, 1, 1, 1, ...)
 	end
 	frame.cpLastKey, frame.cpLastT = key, now
 	local c = mentioned and C.orange or calm
-	orig(frame, look.INDENT .. body, c[1], c[2], c[3], ...)
+	orig(frame, look.BODY .. body, c[1], c[2], c[3], ...)
 	return true
 end
+
+-------------------------------------------------------------------------------
+-- Message blocks: a soft background and a coloured stripe on the left for every
+-- header + text block. Drawn after the game has laid out the visible lines
+-- (secure hook: the chat itself is never changed by this).
+-------------------------------------------------------------------------------
+local GAP = 4 -- space between two blocks
+
+local function Block(frame, deco, k)
+	local b = deco.pool[k]
+	if not b then
+		b = { bg = frame:CreateTexture(nil, "BORDER"), bar = frame:CreateTexture(nil, "ARTWORK") }
+		b.bg:SetColorTexture(1, 1, 1, 1)
+		b.bar:SetColorTexture(1, 1, 1, 1)
+		b.bar:SetWidth(2)
+		deco.pool[k] = b
+	end
+	return b
+end
+
+local function Place(frame, deco, k, top, bottom, r, g, bl)
+	local b = Block(frame, deco, k)
+	b.top = top
+	b.bg:ClearAllPoints()
+	b.bg:SetPoint("TOP", top, "TOP", 0, 2)
+	b.bg:SetPoint("BOTTOM", bottom, "BOTTOM", 0, -1)
+	b.bg:SetPoint("LEFT", frame, "LEFT", -6, 0)
+	b.bg:SetPoint("RIGHT", frame, "RIGHT", 2, 0)
+	b.bar:ClearAllPoints()
+	b.bar:SetPoint("TOPLEFT", b.bg, "TOPLEFT")
+	b.bar:SetPoint("BOTTOMLEFT", b.bg, "BOTTOMLEFT")
+	b.bar:SetVertexColor(r, g, bl)
+	b.r, b.g, b.b = r, g, bl
+	b.bg:SetVertexColor(1, 1, 1)
+	b.bg:Show(); b.bar:Show()
+end
+
+local function Fade(deco)
+	-- follow the game's line fading, so no empty boxes stay behind
+	for k = 1, deco.used do
+		local b = deco.pool[k]
+		local a = b.top and b.top.GetAlpha and b.top:GetAlpha() or 1
+		b.bg:SetAlpha(0.055 * a)
+		b.bar:SetAlpha(0.9 * a)
+	end
+end
+
+local function Redraw(frame)
+	local deco = rawget(frame, "cpDeco")
+	if not deco then return end
+	local lines = rawget(frame, "visibleLines")
+	local n = 0
+	if deco.active() and type(lines) == "table" then
+		local bottom, top -- lowest and highest text line of the block being collected
+		for i = 1, #lines do -- 1 = newest line at the bottom
+			local fs = lines[i]
+			local info = fs and fs:IsShown() and rawget(fs, "messageInfo")
+			local msg = type(info) == "table" and info.message
+			local kind, hr, hg, hb
+			if type(msg) == "string" and not ns.IsSecret(msg) then
+				if msg:sub(1, 4) == "|r|r" then
+					kind = "body"
+				else
+					hr, hg, hb = msg:match("^|cff(%x%x)(%x%x)(%x%x)|r|r")
+					if hr then kind = "head" end
+				end
+			end
+			if kind == "body" then
+				bottom = bottom or fs
+				top = fs
+			elseif kind == "head" then
+				n = n + 1
+				Place(frame, deco, n, fs, bottom or fs, tonumber(hr, 16) / 255, tonumber(hg, 16) / 255, tonumber(hb, 16) / 255)
+				bottom, top = nil, nil
+			elseif bottom then
+				-- text lines whose header is not on screen
+				n = n + 1
+				Place(frame, deco, n, top, bottom, C.muted[1], C.muted[2], C.muted[3])
+				bottom, top = nil, nil
+			end
+		end
+		if bottom then
+			n = n + 1
+			Place(frame, deco, n, top, bottom, C.muted[1], C.muted[2], C.muted[3])
+		end
+	end
+	for k = n + 1, #deco.pool do deco.pool[k].bg:Hide(); deco.pool[k].bar:Hide(); deco.pool[k].top = nil end
+	deco.used = n
+	Fade(deco)
+	-- a little room between blocks while the look is on
+	if frame.SetSpacing and frame.GetSpacing then
+		if deco.active() then
+			if not deco.spacing then deco.spacing = frame:GetSpacing() or 0 end
+			if (frame:GetSpacing() or 0) < GAP then frame:SetSpacing(GAP) end
+		elseif deco.spacing then
+			frame:SetSpacing(deco.spacing)
+			deco.spacing = nil
+		end
+	end
+end
+
+function ns.DecorateMessages(frame, active)
+	if not frame or rawget(frame, "cpDeco") or not frame.RefreshDisplay then return end
+	local deco = { pool = {}, used = 0, active = active }
+	frame.cpDeco = deco
+	hooksecurefunc(frame, "RefreshDisplay", function(self) pcall(Redraw, self) end)
+	if frame.HookScript then
+		local acc = 0
+		frame:HookScript("OnUpdate", function(_, elapsed)
+			acc = acc + (elapsed or 0)
+			if acc < 0.1 or deco.used == 0 then return end
+			acc = 0
+			Fade(deco)
+		end)
+	end
+end
+
+ns.OnChatFrame(function(frame)
+	ns.DecorateMessages(frame, ns.MainLookActive)
+end)
 
 -------------------------------------------------------------------------------
 -- Emptying chats (memory): the game's chat windows and what ChatPilot saved

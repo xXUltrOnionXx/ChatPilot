@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.3
+- Aufgeräumterer Chat: Jede Nachricht (Kopfzeile + Text) steht jetzt in einem eigenen **Block mit ganz leichtem grauem Hintergrund und einem farbigen Strich links** – in der Klassenfarbe des Absenders, in deiner Akzentfarbe für eigene Nachrichten, orange bei Erwähnungen. So sieht man sofort, wo eine Nachricht anfängt und aufhört und wer schreibt
+- Namen ohne eckige Klammern, Text ohne Einrückung – umbrochene Zeilen stehen sauber untereinander
+- Online-/Offline- und andere Systemmeldungen sind ruhig grau, Emotes sanft orange, ohne Block – so heben sich die echten Nachrichten ab
+- Die Blöcke blenden mit dem Chat aus und verschwinden mit dem normalen WoW-Design („Modernes Chatfenster“ aus) komplett
+
 ## 1.7.2
 - Neu: **Der normale Chat im neuen Look** – dieselben aufgeräumten zweizeiligen Nachrichten wie in den eigenen Fenstern: oben Kanal-Punkt, Name (Klassenfarbe, „Du“ für dich), kleine Uhrzeit und Kanal („· Handel“, „· Gilde“, „· an Tom“), darunter die Nachricht. Mehrere Nachrichten einer Person hintereinander werden gruppiert, Erwähnungen von dir sind orange. Namen und Kanäle bleiben anklickbar
 - Gilt nur, solange „Modernes Chatfenster“ an ist. **Aus = normales WoW-Design: ChatPilot lässt den normalen Chat dann komplett so, wie Blizzard ihn schreibt** (die alten Farbbalken entfallen)

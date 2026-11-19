@@ -928,6 +928,7 @@ local function CreateMessageFrame(w)
 	if m.SetSpacing then m:SetSpacing(2) end
 	if m.SetIndentedWordWrap then m:SetIndentedWordWrap(true) end
 	if m.SetHyperlinksEnabled then m:SetHyperlinksEnabled(true) end
+	if ns.DecorateMessages then ns.DecorateMessages(m, function() return ns.S.chatStyle ~= false end) end
 	m:EnableMouseWheel(true)
 	m:SetScript("OnMouseWheel", function(self, delta)
 		if delta > 0 then
@@ -1180,6 +1181,27 @@ local function Dot(c)
 		math.floor(c[1] * 255 + 0.5), math.floor(c[2] * 255 + 0.5), math.floor(c[3] * 255 + 0.5))
 end
 
+-- Message blocks: a header line and its text lines carry an invisible mark at the
+-- start (an empty colour code + "|r|r"), so the block can get its soft background
+-- and the coloured stripe on the left (see ChatLook.lua). The mark shows nothing.
+local function HeadMark(c)
+	return ("|cff%02x%02x%02x|r|r"):format(math.floor(c[1] * 255 + 0.5), math.floor(c[2] * 255 + 0.5), math.floor(c[3] * 255 + 0.5))
+end
+local BODY = "|r|r"
+
+-- "[Name]" -> "Name" inside a player link (calmer header)
+local function PlainName(link)
+	return (link:gsub("|h%[(.*)%]|h$", "|h%1|h"))
+end
+
+local function StripeColor(isOwn, mentioned, class, calm)
+	if isOwn then return C.accent end
+	if mentioned then return C.orange end
+	local cc = class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+	if cc then return { cc.r, cc.g, cc.b } end
+	return calm
+end
+
 local function ShortChannel(name)
 	name = tostring(name or "")
 	name = name:gsub("^%d+%.%s*", ""):gsub("%s+%-%s+.*$", "")
@@ -1204,7 +1226,8 @@ local function ChannelLabel(chatType, channelNumber, baseName, channelString, au
 end
 
 -- shared with the normal chat (same look there)
-ns.ChatLook = { CALM = CALM, Dot = Dot, INDENT = INDENT, ChannelLabel = ChannelLabel, ShortChannel = ShortChannel }
+ns.ChatLook = { CALM = CALM, Dot = Dot, INDENT = INDENT, ChannelLabel = ChannelLabel, ShortChannel = ShortChannel,
+	HeadMark = HeadMark, BODY = BODY, PlainName = PlainName, StripeColor = StripeColor }
 
 local function Deliver(event, ...)
 	if #groups == 0 then return end
@@ -1295,9 +1318,9 @@ local function Deliver(event, ...)
 							local okL, out = pcall(ns.AddLevels, link)
 							if okL and out then link = out end
 						end
-						local dotc = isOwn and C.accent or mentioned and C.orange or calm
+						local stripe = StripeColor(isOwn, mentioned, class, calm)
 						local label = ChannelLabel(chatType, channelNumber, select(9, ...), select(4, ...), author)
-						local head = Dot(dotc) .. "  " .. link .. "  " .. UI.Hex(C.muted) .. date("%H:%M", now)
+						local head = HeadMark(stripe) .. PlainName(link) .. "  " .. UI.Hex(C.muted) .. date("%H:%M", now)
 							.. (label and (" · " .. label) or "") .. "|r"
 						AddLine(w, head, 1, 1, 1, true)
 					end
@@ -1307,9 +1330,9 @@ local function Deliver(event, ...)
 					end
 					if chatType == "EMOTE" then body = "* " .. body end
 					if mentioned then
-						text, r, g, b = INDENT .. body, C.orange[1], C.orange[2], C.orange[3]
+						text, r, g, b = BODY .. body, C.orange[1], C.orange[2], C.orange[3]
 					else
-						text, r, g, b = INDENT .. body, calm[1], calm[2], calm[3]
+						text, r, g, b = BODY .. body, calm[1], calm[2], calm[3]
 					end
 				end
 				w.lastKey, w.lastT = key, now
