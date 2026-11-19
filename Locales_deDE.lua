@@ -230,7 +230,7 @@ L.CW_PLUS_TIP = "Öffnet ein neues Fenster, das nur den Chat zeigt, den du ausw�
 
 -- Writing in windows & tour
 L.CW_WRITE = "Nachricht schreiben..."
-L.CW_TARGET_TIP = "Wohin deine Nachricht geht. Klicken zum Wählen."
+L.CW_TARGET_TIP = "Wohin deine Nachricht geht. Klicken zum Wählen. (/w Name, /g, /p, /2 …)"
 L.CW_NO_TARGET = "Wählen"
 L.CW_NO_TARGET_HINT = "Dieses Fenster hat noch kein Ziel: Wähle im Filter z. B. Gilde oder klicke auf einen Namen."
 L.TUT_TITLE = "ChatPilot Forever - Rundgang"

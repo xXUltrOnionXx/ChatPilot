@@ -224,7 +224,7 @@ L.CW_PLUS_TIP = "Ouvre une nouvelle fenêtre qui n'affiche que le chat choisi. D
 
 -- Writing in windows & tour
 L.CW_WRITE = "Écrire un message..."
-L.CW_TARGET_TIP = "Où va ton message. Clique pour choisir."
+L.CW_TARGET_TIP = "Où va ton message. Clique pour choisir. (/w Name, /g, /p, /2 …)"
 L.CW_NO_TARGET = "Choisir"
 L.CW_NO_TARGET_HINT = "Cette fenêtre n'a pas encore de destination : choisis par ex. Guilde dans le filtre, ou clique sur un nom."
 L.TUT_TITLE = "ChatPilot Forever - Visite"

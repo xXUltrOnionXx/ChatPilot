@@ -224,7 +224,7 @@ L.CW_PLUS_TIP = "선택한 채팅만 보여주는 새 창을 엽니다. 다른 �
 
 -- Writing in windows & tour
 L.CW_WRITE = "메시지 입력..."
-L.CW_TARGET_TIP = "메시지를 보낼 곳. 클릭하여 선택."
+L.CW_TARGET_TIP = "메시지를 보낼 곳. 클릭하여 선택. (/w Name, /g, /p, /2 …)"
 L.CW_NO_TARGET = "선택"
 L.CW_NO_TARGET_HINT = "이 창에는 아직 보낼 곳이 없습니다: 필터에서 길드 등을 고르거나 이름을 클릭하세요."
 L.TUT_TITLE = "ChatPilot Forever - 둘러보기"

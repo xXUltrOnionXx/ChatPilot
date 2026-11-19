@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.2
+- Neu: Chat-Befehle direkt im eigenen Fenster – wie beim normalen Chat. `/w Name` + Leertaste oder Enter wird zum festen Ziel (der Befehl verschwindet, der Name lässt sich nicht mehr versehentlich buchstabenweise löschen). Was du danach schreibst, wird aus dem Fenster geflüstert und springt nicht mehr in den normalen Chat
+- Funktioniert auch für `/g`, `/o`, `/p`, `/ra`, `/i`, `/s`, `/y`, `/e`, Kanäle wie `/2` und `/r` (Antwort an die letzte Flüsternachricht); `/w Name Text` + Enter flüstert sofort
+- Rücktaste im leeren Eingabefeld entfernt das gewählte Ziel als Ganzes und springt zurück zum automatischen Ziel
+- Andere Befehle (z. B. `/dance`) gehen wie bisher an den normalen Chat
+
 ## 1.5.1
 - Fix (wichtig): Nach dem Senden in einem eigenen Chat-Fenster bleibt das Eingabefeld nicht mehr aktiv – die Tastatur geht sofort zurück ans Spiel, wie beim normalen Chat. Vorher landeten Tastendrücke (z. B. Fähigkeiten im Kampf) im Eingabefeld
 - Sicherung: Beginnt ein Kampf, geben leere Eingabefelder der Chat-Fenster und Notizzettel die Tastatur automatisch ans Spiel zurück

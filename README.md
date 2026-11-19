@@ -80,6 +80,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
   - **Einrasten:** direkt über dem Chat ablegen – das Fenster sitzt dann über dem Chat und wandert mit.
   - **Neues Fenster mit einem Klick:** das **+** oben rechts am Chat (oder **+** im Fenster für einen neuen Tab).
   - **Direkt im Fenster schreiben:** Jedes Fenster hat ein Eingabefeld. Der Knopf links daneben zeigt, wohin die Nachricht geht – standardmäßig dorthin, woher die letzte Nachricht kam. Klick auf einen Namen = ihm flüstern. @-Vorschläge funktionieren auch hier.
+  - **Chat-Befehle wie gewohnt:** `/w Name`, `/r`, `/g`, `/p`, `/ra`, `/s`, `/y`, `/2` … werden zum Ziel des Fensters – die Nachricht bleibt im Fenster. Rücktaste im leeren Feld setzt das Ziel zurück.
   - **Glocke:** pro Fenster an-/ausschaltbar – Ton und Hinweis bei neuen Nachrichten.
   - Namen, Items und Links sind anklickbar, die letzten Nachrichten bleiben gespeichert.
 
@@ -193,6 +194,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
   - **Snap:** drop it right above the chat – it then sits on top of the chat and moves with it.
   - **New window in one click:** the **+** at the top right of the chat (or **+** in a window for a new tab).
   - **Write right in the window:** every window has its own input box. The button on its left shows where your message goes – by default back to where the last message came from. Click a name to whisper that person. @ suggestions work here too.
+  - **Chat commands as usual:** `/w Name`, `/r`, `/g`, `/p`, `/ra`, `/s`, `/y`, `/2` … become the window's target – the message stays in the window. Backspace in an empty box resets the target.
   - **Bell:** turn it on per window – sound and notice for new messages.
   - Names, items and links are clickable, recent messages are saved.
 

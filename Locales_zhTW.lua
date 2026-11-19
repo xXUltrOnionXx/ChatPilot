@@ -224,7 +224,7 @@ L.CW_PLUS_TIP = "開啟一個只顯示所選聊天內容的新視窗。拖到另
 
 -- Writing in windows & tour
 L.CW_WRITE = "輸入訊息..."
-L.CW_TARGET_TIP = "訊息發送到哪裡。點擊選擇。"
+L.CW_TARGET_TIP = "訊息發送到哪裡。點擊選擇。 (/w Name, /g, /p, /2 …)"
 L.CW_NO_TARGET = "選擇"
 L.CW_NO_TARGET_HINT = "此視窗還沒有發送目標：在過濾中選擇如公會，或點擊一個名字。"
 L.TUT_TITLE = "ChatPilot Forever - 導覽"

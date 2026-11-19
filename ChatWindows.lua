@@ -249,14 +249,16 @@ local function Targets(w)
 	return list
 end
 
-local function Remember(w, t)
+-- manual = chosen by you (button, /command, name click); otherwise it came
+-- from a received message and becomes the automatic reply target
+local function Remember(w, t, manual)
 	w.recent = w.recent or {}
 	for i, o in ipairs(w.recent) do
 		if SameTarget(o, t) then table.remove(w.recent, i) break end
 	end
 	table.insert(w.recent, 1, t)
 	while #w.recent > 8 do table.remove(w.recent) end
-	w.data.last = t
+	if not manual then w.data.last = t end
 end
 
 -- target of a received message (so "reply" goes back where it came from)
@@ -308,6 +310,78 @@ local function Send(t, text)
 	else
 		send(text, t.type)
 	end
+end
+
+-------------------------------------------------------------------------------
+-- Chat commands typed into a window ("/w Name ", "/g ", "/2 " ...): like the
+-- game's own chat they turn into the target button, so the text you type next
+-- stays in this window. Other /commands (e.g. /dance) go to the game's chat.
+-------------------------------------------------------------------------------
+local CMD_TYPE = {
+	s = "SAY", say = "SAY", sagen = "SAY",
+	y = "YELL", yell = "YELL", sh = "YELL", shout = "YELL", schreien = "YELL",
+	g = "GUILD", gu = "GUILD", guild = "GUILD", gilde = "GUILD",
+	o = "OFFICER", officer = "OFFICER", offizier = "OFFICER",
+	p = "PARTY", party = "PARTY", gruppe = "PARTY",
+	ra = "RAID", raid = "RAID", schlachtzug = "RAID",
+	i = "INSTANCE_CHAT", instance = "INSTANCE_CHAT", instanz = "INSTANCE_CHAT",
+	e = "EMOTE", em = "EMOTE", emote = "EMOTE", me = "EMOTE",
+}
+local CMD_WHISPER = { w = true, whisper = true, t = true, tell = true, send = true,
+	["flüstern"] = true, fl = true }
+local CMD_REPLY = { r = true, reply = true, antworten = true }
+
+local function ChannelTarget(n)
+	n = tonumber(n)
+	if not n then return nil end
+	local name
+	if GetChannelName then
+		local ok, id, cname = pcall(GetChannelName, n)
+		if ok and id and id ~= 0 then name = cname end
+	end
+	return { type = "CHANNEL", number = n, name = name or "" }
+end
+
+-- /r: like the game, the person who last whispered you (falls back to this window's last partner)
+local function LastTell(w)
+	local get = ChatEdit_GetLastTellTarget or (ChatFrameUtil and ChatFrameUtil.GetLastTellTarget)
+	if get then
+		local ok, name = pcall(get)
+		if ok and type(name) == "string" and name ~= "" and ns.Usable(name) then return { type = "WHISPER", name = name } end
+	end
+	for _, t in ipairs(w and w.recent or {}) do
+		if t.type == "WHISPER" or t.type == "BN_WHISPER" then return t end
+	end
+end
+
+-- Parses the start of the input. complete = true means "Enter was pressed".
+-- Returns target, rest-of-text   or nil when it is not a chat command we handle.
+local function ParseCommand(w, text, complete)
+	local cmd, after = text:match("^/(%S+)(.*)$")
+	if not cmd then return nil end
+	cmd = cmd:lower()
+	if CMD_WHISPER[cmd] then
+		local name, rest = after:match("^%s+(%S+)(.*)$")
+		if not name then return nil end
+		-- like the game: the name is taken once a space follows it (or on Enter)
+		if rest == "" and not complete then return nil end
+		return { type = "WHISPER", name = name }, (rest:gsub("^%s", ""))
+	end
+	local needSpace = not complete
+	if needSpace and after:sub(1, 1) ~= " " then return nil end
+	if after ~= "" and after:sub(1, 1) ~= " " then return nil end
+	local rest = after:gsub("^%s", "")
+	if CMD_REPLY[cmd] then
+		local t = LastTell(w)
+		if t then return t, rest end
+		return nil
+	end
+	if CMD_TYPE[cmd] then return { type = CMD_TYPE[cmd] }, rest end
+	if cmd:match("^%d+$") then
+		local t = ChannelTarget(cmd)
+		if t then return t, rest end
+	end
+	return nil
 end
 
 -------------------------------------------------------------------------------
@@ -558,7 +632,22 @@ local function CreateGroupFrame(g)
 	local function upd() ph:SetShown(eb:GetText() == "" and not eb:HasFocus()) end
 	eb:SetScript("OnEditFocusGained", function() upd(); holder:SetBorderColor(unpack(C.accent)) end)
 	eb:SetScript("OnEditFocusLost", function() upd(); holder:SetBorderColor(unpack(C.border)) end)
-	eb:SetScript("OnTextChanged", upd)
+	eb:SetScript("OnTextChanged", function(self)
+		upd()
+		local text = self:GetText() or ""
+		if text:sub(1, 1) ~= "/" then return end
+		local w = wins[g.data and g.data.active]
+		local t, rest = ParseCommand(w, text, false)
+		if t then
+			ns:CW_SetTarget(g, t)
+			self:SetText(rest or "")
+			if ns.HidePopup then ns.HidePopup() end
+		end
+	end)
+	-- Backspace in an empty box drops the chosen target as a whole (never letter by letter)
+	eb:HookScript("OnKeyDown", function(self, key)
+		if key == "BACKSPACE" and (self:GetText() or "") == "" then ns:CW_ResetTarget(g) end
+	end)
 	eb:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 	eb:SetScript("OnEnterPressed", function(self) ns:CW_Submit(g) end)
 	holder:EnableMouse(true)
@@ -955,7 +1044,22 @@ function ns:CW_SetTarget(g, t)
 	if not w then return end
 	w.target = t
 	w.pinned = true -- chosen by you: stays until you pick another one
-	Remember(w, t)
+	Remember(w, t, true)
+	self:CW_UpdateChip(g)
+end
+
+function ns:CW_ResetTarget(g)
+	local w = Current(g)
+	if not w or not w.pinned then return end
+	w.pinned = nil
+	-- back to the automatic target: where the last message came from, else the filter's default
+	local def = w.data.last
+	if not def then
+		for _, c in ipairs(CATS) do
+			if w.data.cats[c.key] and CAT_TARGETS[c.key] then def = CAT_TARGETS[c.key][1] break end
+		end
+	end
+	w.target = def
 	self:CW_UpdateChip(g)
 end
 
@@ -1020,6 +1124,16 @@ function ns:CW_Submit(g)
 	text = text:gsub("^%s+", ""):gsub("%s+$", "")
 	if text == "" then eb:ClearFocus() return end
 	local w, t = Current(g)
+	if text:sub(1, 1) == "/" then
+		local ct, rest = ParseCommand(w, text, true)
+		if ct then
+			-- "/w Name" + Enter: just set the target (like the game); with text: send it here
+			self:CW_SetTarget(g, ct)
+			t = ct
+			text = (rest or ""):gsub("^%s+", ""):gsub("%s+$", "")
+			if text == "" then eb:SetText(""); return end
+		end
+	end
 	if text:sub(1, 1) == "/" or not t or Locked() then
 		-- slash commands and restricted moments go through the game's own chat box
 		eb:SetText("")
