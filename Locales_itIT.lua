@@ -277,3 +277,4 @@ L.TUT_writing_B = "Ogni finestra ha il suo campo di testo. Il pulsante a sinistr
 L.TUT_design_B = "L'ingranaggio apre le opzioni - passa il mouse per vedere quanto spam è stato nascosto oggi. In Design e finestre scegli Moderno o il design Forever, allegro e fresco, e l'aspetto moderno della chat."
 L.WH_POPOUT = "Apri come chat"
 L.WH_POPOUT_TIP = "Apre questa conversazione in una sua finestra di chat: solo i messaggi con questa persona, la cronologia, e scrivi direttamente lì. Suggerimento: puoi anche trascinare una conversazione fuori dalla lista a sinistra."
+L.CW_DOCKED_MAIN = "\"%s\" è ora agganciata alla chat principale: la sua scheda è accanto alle tue. Trascina fuori la scheda per sganciarla."

@@ -283,3 +283,4 @@ L.TUT_writing_B = "Jedes Fenster hat ein eigenes Eingabefeld. Der Knopf links ze
 L.TUT_design_B = "Das Zahnrad öffnet die Einstellungen - Maus darüber zeigt, wie viel Spam heute ausgeblendet wurde. Unter Design & Fenster wählst du Modern oder das fröhliche, frische Forever-Design und den modernen Look für deinen Chat."
 L.WH_POPOUT = "Als Chat öffnen"
 L.WH_POPOUT_TIP = "Öffnet dieses Gespräch als eigenes Chat-Fenster: nur Nachrichten mit dieser Person, mit dem bisherigen Verlauf, und du schreibst direkt dort. Tipp: Du kannst ein Gespräch auch links aus der Liste herausziehen."
+L.CW_DOCKED_MAIN = "„%s“ ist jetzt im Hauptchat angedockt – der Tab sitzt neben deinen Chat-Tabs. Tab herausziehen zum Abdocken."

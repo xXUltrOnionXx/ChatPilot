@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.5
+- Fix: Andocken im Hauptchat klappte nicht – die Position des Hauptchats wurde bei skaliertem Chat falsch erkannt. Jetzt fragt ChatPilot das Spiel direkt, ob die Maus über dem Chat oder seinen Tabs ist
+- Fix: Ein über dem Chat eingerastetes Fenster „stahl“ das Ablegen – der Hauptchat hat jetzt Vorrang
+- Fix: Die Tab-Leiste der eigenen Fenster im Hauptchat war falsch verankert
+- Nach dem Andocken erscheint eine kurze Bestätigung im Chat
+
 ## 1.6.4
 - Fix: Tabs ragten bei vielen Tabs oder schmalen Fenstern aus dem Fenster. Die Tab-Leiste ist jetzt **scrollbar** – die Tabs behalten ihre volle Größe. Mausrad über den Tabs oder die kleinen Pfeile schieben die Leiste, der aktive Tab wird automatisch ins Bild geholt
 - Dasselbe für die eigenen Tabs im Hauptchat: Sie bleiben innerhalb der Chatbreite und lassen sich scrollen

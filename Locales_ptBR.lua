@@ -277,3 +277,4 @@ L.TUT_writing_B = "Cada janela tem seu próprio campo de texto. O botão à esqu
 L.TUT_design_B = "A engrenagem abre as opções - passe o mouse para ver quanto spam foi ocultado hoje. Em Design e janelas você escolhe Moderno ou o design Forever, alegre e fresco, e o visual moderno do chat."
 L.WH_POPOUT = "Abrir como chat"
 L.WH_POPOUT_TIP = "Abre esta conversa na sua própria janela de chat: só as mensagens com essa pessoa, o histórico, e você escreve ali mesmo. Dica: você também pode arrastar uma conversa para fora da lista à esquerda."
+L.CW_DOCKED_MAIN = "\"%s\" agora está encaixada no chat principal - a aba fica ao lado das suas. Arraste a aba para fora para desencaixar."

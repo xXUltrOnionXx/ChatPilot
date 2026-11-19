@@ -885,7 +885,8 @@ local function FinishDrag(g)
 	g.frame:StopMovingOrSizing()
 	for _, o in ipairs(groups) do o.dropHl:Hide() end
 	if ns.ShowMainDrop then ns:ShowMainDrop(false) end
-	local target = DropTarget(g)
+	local overMain = ns.OverMainChat and ns:OverMainChat()
+	local target = not overMain and DropTarget(g)
 	if target and #g.data.order == 1 then
 		-- dock as a tab
 		local w = wins[g.data.order[1]]
@@ -896,10 +897,12 @@ local function FinishDrag(g)
 		Select(target, w)
 		return
 	end
-	if ns.OverMainChat and ns:OverMainChat() then
+	if overMain then
 		g.data.snap = false
 		g.data.main = true
 		ns:CW_OpenMain(g)
+		local aw = wins[g.data.active]
+		ns.Print(L.CW_DOCKED_MAIN, aw and WindowName(aw) or "")
 		return
 	end
 	if NearMainChat(g) then
@@ -917,9 +920,10 @@ dragFrame:SetScript("OnUpdate", function()
 	local g = dragging
 	if not g then dragFrame:Hide() return end
 	if not IsMouseButtonDown("LeftButton") then return FinishDrag(g) end
-	local target = #g.data.order == 1 and DropTarget(g)
+	local overMain = ns:OverMainChat()
+	local target = not overMain and #g.data.order == 1 and DropTarget(g)
 	for _, o in ipairs(groups) do o.dropHl:SetShown(o == target) end
-	if ns.ShowMainDrop then ns:ShowMainDrop(not target and ns:OverMainChat()) end
+	if ns.ShowMainDrop then ns:ShowMainDrop(overMain) end
 end)
 
 function StartDrag(g, w)
@@ -1513,10 +1517,21 @@ local mainDrop
 function ns:OverMainChat()
 	local main = MainChat()
 	if not main or not main.IsVisible or not main:IsVisible() or not main:GetLeft() then return false end
-	local scale = UIParent:GetEffectiveScale() or 1
+	-- ask the game first (works whatever the chat's scale is), incl. the tab row above it
+	if MouseIsOver then
+		local ok, over = pcall(MouseIsOver, main, 34, -8, -6, 6)
+		if ok and over then return true end
+		local tab = rawget(main, "tab") or (main.GetName and _G[(main:GetName() or "") .. "Tab"])
+		if tab and tab.IsVisible and tab:IsVisible() then
+			local ok2, overTab = pcall(MouseIsOver, tab)
+			if ok2 and overTab then return true end
+		end
+	end
+	-- fallback: compare in real screen pixels
+	local s = (main.GetEffectiveScale and main:GetEffectiveScale()) or 1
 	local x, y = GetCursorPosition()
-	x, y = x / scale, y / scale
-	return x >= main:GetLeft() and x <= main:GetRight() and y >= main:GetBottom() and y <= main:GetTop() + 30
+	return x >= main:GetLeft() * s and x <= main:GetRight() * s
+		and y >= main:GetBottom() * s and y <= (main:GetTop() + 34) * s
 end
 
 function ns:ShowMainDrop(on)
@@ -1643,7 +1658,11 @@ function UpdateLaunchers()
 			launchRow:SetPoint("BOTTOMLEFT", main, "TOPLEFT", 0, 4)
 		end
 		-- up to the right edge of the chat, leaving room for the "+" button
-		launchRow:SetPoint("RIGHT", main, "RIGHT", -24, 0)
+		local mainL = main.GetLeft and main:GetLeft() or 0
+		local mainR = main.GetRight and main:GetRight() or (mainL + 400)
+		local startX = (gameTab and gameTab.GetRight and gameTab:GetRight()) and (gameTab:GetRight() + 3) or mainL
+		local endX = mainR - 26
+		launchRow:SetWidth(math.max(60, endX - startX))
 		launchRow.left:ClearAllPoints()
 		launchRow.left:SetPoint("BOTTOMLEFT", launchRow, "BOTTOMLEFT", 0, 1)
 		launchRow.right:ClearAllPoints()
