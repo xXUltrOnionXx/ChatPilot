@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.2
+- Neu: **Der normale Chat im neuen Look** – dieselben aufgeräumten zweizeiligen Nachrichten wie in den eigenen Fenstern: oben Kanal-Punkt, Name (Klassenfarbe, „Du“ für dich), kleine Uhrzeit und Kanal („· Handel“, „· Gilde“, „· an Tom“), darunter die Nachricht. Mehrere Nachrichten einer Person hintereinander werden gruppiert, Erwähnungen von dir sind orange. Namen und Kanäle bleiben anklickbar
+- Gilt nur, solange „Modernes Chatfenster“ an ist. **Aus = normales WoW-Design: ChatPilot lässt den normalen Chat dann komplett so, wie Blizzard ihn schreibt** (die alten Farbbalken entfallen)
+- Neu: **Chats leeren** – jedes eigene Fenster (Trichter → „Dieses Fenster leeren“), den normalen Chat (`/chatpilot clear`, `/chatpilot clear all`), den Flüster-Verlauf, die Erwähnungen oder alles auf einmal. Zweimal klicken zur Sicherheit
+- Neu: Einstellungsseite **„Gut zu wissen“** – was ChatPilot speichert und wie viel gerade gespeichert ist, Leeren-Knöpfe, normales WoW-Design, Bosskämpfe und Blizzard-Regeln kurz erklärt (`/chatpilot info`)
+
 ## 1.7.1
 - Neu: **Strukturierter Chat** in den eigenen Fenstern – klassischer WoW-Look, aber aufgeräumt: oben eine Kopfzeile mit Kanal-Punkt, Name (Klassenfarbe / „Du“), kleiner grauer Uhrzeit und Kanal-Label („· Handel“, „· an Lia“), darunter die Nachricht eingerückt. Mehrere Nachrichten einer Person hintereinander nur als weitere Textzeilen. Ruhigere Farben (Flüstern lila, Gilde grün, Handel/Allgemein hellgrau, System gedämpft mit Punkt), umbrochene Zeilen bleiben eingerückt
 - Normaler Chat: kurze Kanal-Tags – „[Handel]“ statt „[2. Handel - Deutsch 41]“ (Klick auf den Kanal funktioniert weiter)

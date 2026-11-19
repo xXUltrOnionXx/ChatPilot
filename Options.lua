@@ -659,6 +659,61 @@ local function BuildDesign(content)
 	return sf
 end
 
+-- "Good to know": what ChatPilot keeps, how to empty it, and a few plain facts
+local function InfoBox(flow, c, title, text, extra)
+	local box = CreateFrame("Frame", nil, c)
+	UI.Fill(box, C.row)
+	local head = UI.Text(box, "GameFontNormalSmall", C.accent)
+	head:SetPoint("TOPLEFT", 14, -12)
+	head:SetText(title:upper())
+	local body = UI.Text(box, "GameFontHighlight")
+	body:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -8)
+	body:SetWidth(470)
+	body:SetJustifyH("LEFT")
+	body:SetSpacing(3)
+	body:SetText(text)
+	box.body = body
+	FlowAdd(flow, box, nil, { gap = 10, height = function() return 12 + 14 + 8 + (body:GetStringHeight() or 40) + 14 + (extra or 0) end })
+	return box
+end
+
+local function BuildInfo(content)
+	local sf, c = NewPage(content)
+	local flow = NewFlow(c, PageHeader(c, L.PAGE_INFO, L.PAGE_INFO_SUB))
+
+	local store = InfoBox(flow, c, L.INFO_STORAGE, L.INFO_STORAGE_TEXT, 26 + 4 * 34)
+	local counts = UI.Text(store, "GameFontHighlightSmall", C.muted)
+	counts:SetPoint("TOPLEFT", store.body, "BOTTOMLEFT", 0, -10)
+	counts:SetWidth(470)
+	counts:SetJustifyH("LEFT")
+	local function Count()
+		counts:SetText(L.INFO_COUNTS:format(ns:SavedChatLines(), ns.CW_SavedLines and ns:CW_SavedLines() or 0,
+			ns:WhisperCount(), #(ns.db.mentions or {})))
+	end
+	local function Done(what)
+		ns.Print(L.CLEARED, what)
+		Count()
+	end
+	local b1 = UI.ConfirmButton(store, L.CLEAR_MAIN, 230, 28, function() ns:ClearMainChat(); Done(L.CLEAR_MAIN) end)
+	b1:SetPoint("TOPLEFT", counts, "BOTTOMLEFT", 0, -12)
+	local b2 = UI.ConfirmButton(store, L.CLEAR_WINDOWS, 230, 28, function() ns:CW_ClearAll(); Done(L.CLEAR_WINDOWS) end)
+	b2:SetPoint("LEFT", b1, "RIGHT", 8, 0)
+	local b3 = UI.ConfirmButton(store, L.CLEAR_WHISPERS, 230, 28, function() ns:ClearWhisperLog(); Done(L.CLEAR_WHISPERS) end)
+	b3:SetPoint("TOPLEFT", b1, "BOTTOMLEFT", 0, -6)
+	local b4 = UI.ConfirmButton(store, L.CLEAR_MENTIONS, 230, 28, function() ns:ClearMentionLog(); Done(L.CLEAR_MENTIONS) end)
+	b4:SetPoint("LEFT", b3, "RIGHT", 8, 0)
+	local b5 = UI.ConfirmButton(store, L.CLEAR_ALL, 468, 28, function() ns:ClearEverything(); Done(L.CLEAR_ALL) end)
+	b5:SetPoint("TOPLEFT", b3, "BOTTOMLEFT", 0, -10)
+	store:SetScript("OnShow", Count)
+
+	InfoBox(flow, c, L.INFO_DESIGN, L.INFO_DESIGN_TEXT)
+	InfoBox(flow, c, L.INFO_SAFE, L.INFO_SAFE_TEXT)
+	InfoBox(flow, c, L.INFO_CMDS, L.INFO_CMDS_TEXT)
+
+	sf:SetScript("OnShow", function() Count(); Relayout(flow) end)
+	return sf
+end
+
 local function BuildAbout(content)
 	local sf, c = NewPage(content)
 	local badge = UI.Badge(c, 56)
@@ -752,13 +807,15 @@ local function Build()
 	BuildWhispers(content)
 	BuildChat(content)
 	BuildDesign(content)
+	BuildInfo(content)
 	BuildAbout(content)
 	NavButton(sidebar, 1, L.PAGE_TYPING)
 	NavButton(sidebar, 2, L.PAGE_MENTIONS)
 	NavButton(sidebar, 3, L.PAGE_WHISPERS)
 	NavButton(sidebar, 4, L.PAGE_CHAT)
 	NavButton(sidebar, 5, L.PAGE_DESIGN)
-	NavButton(sidebar, 6, L.PAGE_ABOUT)
+	NavButton(sidebar, 6, L.PAGE_INFO)
+	NavButton(sidebar, 7, L.PAGE_ABOUT)
 
 	local tourBtn = UI.Button(sidebar, L.TUT_OPEN, 150, 28)
 	tourBtn:SetPoint("BOTTOMLEFT", 20, 58)
@@ -843,6 +900,15 @@ SlashCmdList.CHATPILOT = function(input)
 		if rest ~= "" and ns.UI.THEMES[rest:lower()] then ns:SetTheme(rest:lower()) else ns:OpenOptions(5) end
 	elseif cmd == "notes" or cmd == "note" then
 		ns:ToggleNotes(); ns:UpdateChatButtons()
+	elseif cmd == "clear" or cmd == "leeren" then
+		if rest:lower() == "all" or rest:lower() == "alle" then
+			ns:ClearMainChat()
+		else
+			ns:ClearMainChat(SELECTED_CHAT_FRAME or DEFAULT_CHAT_FRAME)
+		end
+		ns.Print(L.CLEARED, L.CLEAR_MAIN)
+	elseif cmd == "info" then
+		ns:OpenOptions(6)
 	elseif cmd == "copy" then
 		ns:CopyChat()
 	elseif cmd == "feedback" or cmd == "fb" then

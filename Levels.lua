@@ -282,42 +282,28 @@ ns.OnChatFrame(function(frame)
 	local orig = frame.AddMessage
 	frame.AddMessage = function(self, text, ...)
 		-- never touch secret (restricted) messages
-		if ns.S and (ns.S.showLevels or ns.S.shortSurnames or ns.S.chatStyle ~= false) and type(text) == "string" and not ns.IsSecret(text)
-			and (text:find("|Hplayer:", 1, true) or text:find("|HBNplayer:", 1, true)) then
-			local r, g, b = ...
-			local ok, out = pcall(AddLevels, text)
-			if ok and out then text = out end
-			if ns.S.chatStyle ~= false then
+		if ns.S and type(text) == "string" and not ns.IsSecret(text) then
+			if (ns.S.showLevels or ns.S.shortSurnames)
+				and (text:find("|Hplayer:", 1, true) or text:find("|HBNplayer:", 1, true)) then
+				local ok, out = pcall(AddLevels, text)
+				if ok and out then text = out end
+			end
+			-- the modern look only while "Modern chat window" is on: with the game's
+			-- normal design the chat stays exactly as Blizzard writes it
+			if ns.MainLookActive and ns.MainLookActive() then
 				-- "[2. Handel - Deutsch 41]" -> "[Handel]" (the channel link stays clickable)
 				text = text:gsub("(|Hchannel:[^|]+|h)%[(.-)%](|h)", function(open, inner, close)
 					local short = inner:gsub("^%d+%.%s*", ""):gsub("%s+%-%s+.*$", "")
 					if short == "" then return nil end
 					return open .. "[" .. short .. "]" .. close
 				end)
-			end
-			if ns.S.chatStyle ~= false and ns.UI and ns.UI.BarFor and not text:find("^|TInterface\\Buttons\\WHITE8X8") then
-				local ok2, styled = pcall(function()
-					local name = text:match("|Hplayer:([^:|]+)")
-					local me = UnitName and UnitName("player")
-					local kind, class = "other", nil
-					if name and me and (Ambiguate and Ambiguate(name, "none") == me or name == me) then
-						kind = "own"
-					elseif text:find("|HBNplayer:", 1, true) and not name then
-						return ns.UI.Bar(0.51, 0.77, 1) .. text
-					end
-					if kind ~= "own" and name and ns.PlayerInfo then
-						local info = ns:PlayerInfo(name)
-						class = info and info.class
-						if ns.FindMention then
-							local body = text:match("|h%]?|h[^:]*:%s(.*)$") or text
-							if ns:FindMention(body) then kind = "mention" end
-						end
-					end
-					return ns.UI.BarFor(kind, class, r, g, b) .. text
-				end)
-				if ok2 and styled then text = styled end
+				if ns.StyleMainLine then
+					local ok, done = pcall(ns.StyleMainLine, self, text, orig, ...)
+					if ok and done then return end
+				end
 			end
 		end
+		self.cpHint = nil
 		return orig(self, text, ...)
 	end
 end)

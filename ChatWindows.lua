@@ -1203,6 +1203,9 @@ local function ChannelLabel(chatType, channelNumber, baseName, channelString, au
 	return map[chatType] and L["CAT_" .. map[chatType]] or nil
 end
 
+-- shared with the normal chat (same look there)
+ns.ChatLook = { CALM = CALM, Dot = Dot, INDENT = INDENT, ChannelLabel = ChannelLabel, ShortChannel = ShortChannel }
+
 local function Deliver(event, ...)
 	if #groups == 0 then return end
 	local cat = EVENT_CAT[event]
@@ -1389,7 +1392,14 @@ local function BuildMenu()
 	hint:SetWidth(210)
 	hint:SetSpacing(2)
 	hint:SetText(L.CW_MENU_HINT)
-	menu:SetSize(236, 32 + #CATS * 27 + 62)
+	local clear = UI.ConfirmButton(menu, L.CW_CLEAR, 210, 24, function()
+		local w = menu.group and wins[menu.group.data.active]
+		if w then ns:CW_ClearWindow(w) end
+		menu:Hide()
+	end)
+	clear:SetPoint("TOPLEFT", 13, -32 - #CATS * 27 - 62)
+	menu.clear = clear
+	menu:SetSize(236, 32 + #CATS * 27 + 62 + 34)
 	menu:Hide()
 	tinsert(UISpecialFrames, "ChatPilotWindowMenu")
 end
@@ -1723,6 +1733,28 @@ function ns:CW_Delete(w)
 end
 
 function ns:CW_Count() return Data and #Data.windows or 0 end
+
+-- empty one window: what is shown and what is saved for it
+function ns:CW_ClearWindow(w)
+	if not w then return end
+	w.msg:Clear()
+	if w.data.lines then wipe(w.data.lines) end
+	w.lastKey, w.lastT, w.count, w.unread = nil, nil, 0, nil
+	if w.group then LayoutTabs(w.group) end
+	UpdateLaunchers()
+end
+
+function ns:CW_ClearAll()
+	for _, w in pairs(wins) do self:CW_ClearWindow(w) end
+	-- also windows that are saved but not built right now
+	if Data then for _, d in ipairs(Data.windows) do if d.lines then wipe(d.lines) end end end
+end
+
+function ns:CW_SavedLines()
+	local n = 0
+	if Data then for _, d in ipairs(Data.windows) do n = n + (d.lines and #d.lines or 0) end end
+	return n
+end
 
 function ns:CW_ToggleAll()
 	if #groups == 0 then return self:CW_New() end

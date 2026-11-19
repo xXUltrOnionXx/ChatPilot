@@ -361,6 +361,17 @@ local function Build()
 	opts:SetScript("OnClick", function() ns:OpenOptions(3) end)
 end
 
+function ns:WhisperCount()
+	local n = 0
+	for _ in pairs(Store()) do n = n + 1 end
+	return n
+end
+
+-- empty the whole whisper log (Options > Good to know)
+function ns:ClearWhisperLog()
+	wipe(Store()); selected = nil; ns.whisperSecret = 0; Changed()
+end
+
 function ns:ShowWhispers()
 	if not win then Build() end
 	selected = nil

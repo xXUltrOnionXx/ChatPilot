@@ -74,9 +74,9 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 
 ### Design & Fenster
 - **Zwei Designs:** „Modern“ (kühles Dunkelblau) oder **„Forever“** – fröhlich, frisch und hoffnungsvoll mit Meergrün, Minze und Sonnenaufgang-Gold. Gilt für alle ChatPilot-Fenster und wirkt sofort.
-- **Gesprächs-Look:** Farbbalken pro Absender (Klassenfarbe), eigene Nachrichten mit breitem Akzentbalken und „Du“, Erwähnungen mit breitem orangem Balken; in eigenen Fenstern Gruppierung aufeinanderfolgender Nachrichten und Zeitlinien nach Pausen.
+- **Gesprächs-Look:** aufgeräumte zweizeilige Nachrichten – oben Kanal-Punkt, Name (Klassenfarbe / „Du“), kleine Uhrzeit und Kanal, darunter die Nachricht; mehrere Nachrichten einer Person hintereinander werden gruppiert, Erwähnungen sind orange. In eigenen Fenstern immer, **im normalen Chat, solange „Modernes Chatfenster“ an ist**.
 - **Leuchtende Benachrichtigungen:** Neues zieht als Lichtkugel in den Zähler und leuchtet sanft, solange es ungelesen ist.
-- **Modernes Chatfenster:** Der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design. Abschaltbar. Nutzt du schon ein Addon, das den Chat gestaltet (z. B. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), lässt ChatPilot den Look automatisch in Ruhe.
+- **Modernes Chatfenster:** Der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design. Abschaltbar – **aus = normales WoW-Design, ChatPilot lässt den normalen Chat dann genau so, wie er ist.** Nutzt du schon ein Addon, das den Chat gestaltet (z. B. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), lässt ChatPilot den Look automatisch in Ruhe.
 - **Eigene Chat-Fenster:** Fenster, die nur zeigen, was du auswählst – Flüstern, Gilde, Gruppe, Schlachtzug, Sagen, Schreien, Emotes, Allgemein, Handel, andere Kanäle, Communities oder Systemnachrichten.
   - Filter über das Trichter-Symbol im Fenster.
   - **Frei verschieben** an der Titelleiste, Größe unten rechts ändern.
@@ -89,6 +89,12 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
   - **Chat-Befehle wie gewohnt:** `/w Name`, `/r`, `/g`, `/p`, `/ra`, `/s`, `/y`, `/2` … werden zum Ziel des Fensters – die Nachricht bleibt im Fenster. Rücktaste im leeren Feld setzt das Ziel zurück.
   - **Glocke:** pro Fenster an-/ausschaltbar – Ton und Hinweis bei neuen Nachrichten.
   - Namen, Items und Links sind anklickbar, die letzten Nachrichten bleiben gespeichert.
+  - **Leeren:** Trichter-Symbol → „Dieses Fenster leeren“.
+
+### Gut zu wissen
+- Eigene Einstellungsseite **„Gut zu wissen“**: zeigt, was ChatPilot speichert (Chatverlauf für nach /reload, eigene Fenster, verpasste Flüsternachrichten, Erwähnungen) und wie viel gerade gespeichert ist.
+- **Jeden Chat leeren** – normaler Chat, eigene Fenster, Flüster-Verlauf, Erwähnungen oder alles auf einmal (zweimal klicken zur Sicherheit). Spart Speicher; Einstellungen, Notizen und Fenster bleiben.
+- Dazu kurz erklärt: normales WoW-Design, Verhalten in Bosskämpfen und die Blizzard-Regeln.
 
 ### Rundgang
 - Ein moderner Schritt-für-Schritt-Rundgang erklärt alle Funktionen und hebt den passenden Knopf hervor. Er erscheint einmal nach dem Update und lässt sich jederzeit wieder ansehen: Einstellungen → „Rundgang ansehen“ oder `/chatpilot tutorial`.
@@ -111,6 +117,8 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 | `/chatpilot window` | Neues Chat-Fenster |
 | `/chatpilot tutorial` | Rundgang ansehen |
 | `/chatpilot design forever` / `modern` | Design wechseln |
+| `/chatpilot clear` / `clear all` | Aktuellen Chat-Tab / alle Chat-Tabs leeren |
+| `/chatpilot info` | „Gut zu wissen“ öffnen |
 | `/chatpilot copy` | Aktuellen Chat kopieren |
 | `/chatpilot feedback` | Feedback geben |
 | `/chatpilot add <Wort>` / `del <Wort>` / `list` | Stichwörter verwalten |
@@ -194,9 +202,9 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 
 #### Design & windows
 - **Two designs:** "Modern" (cool dark blue) or **"Forever"** – cheerful, fresh and hopeful with sea green, mint and sunrise gold. Applies to all ChatPilot windows, instantly.
-- **Conversation look:** a colour bar per sender (class colour), your own messages with a wide accent bar and "You", mentions with a wide orange bar; in your own windows consecutive messages are grouped and a time line marks pauses.
+- **Conversation look:** tidy two-line messages – channel dot, name (class colour / "You"), small time and channel on top, the message below; several messages in a row from one person are grouped, mentions are orange. Always in your own windows, **in the normal chat while "Modern chat window" is on**.
 - **Glowing notifications:** new things pull into the counter as a ball of light and glow softly while unread.
-- **Modern chat window:** the game's own chat gets a flat look with clean tabs and input box in your design. Can be turned off. If another addon already styles your chat (e.g. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), ChatPilot leaves the look alone automatically.
+- **Modern chat window:** the game's own chat gets a flat look with clean tabs and input box in your design. Can be turned off – **off = the game's normal design, ChatPilot then leaves the normal chat exactly as it is.** If another addon already styles your chat (e.g. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), ChatPilot leaves the look alone automatically.
 - **Your own chat windows:** windows that only show what you pick – whispers, guild, party, raid, say, yell, emotes, General, Trade, other channels, communities or system messages.
   - Filter via the funnel icon in the window.
   - **Move freely** by the title bar, resize at the bottom right corner.
@@ -209,6 +217,12 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
   - **Chat commands as usual:** `/w Name`, `/r`, `/g`, `/p`, `/ra`, `/s`, `/y`, `/2` … become the window's target – the message stays in the window. Backspace in an empty box resets the target.
   - **Bell:** turn it on per window – sound and notice for new messages.
   - Names, items and links are clickable, recent messages are saved.
+  - **Empty it:** funnel icon → "Empty this window".
+
+#### Good to know
+- Its own settings page **"Good to know"**: shows what ChatPilot saves (chat history for after /reload, your own windows, missed whispers, mentions) and how much is saved right now.
+- **Empty any chat** – normal chat, your own windows, whisper log, mentions or everything at once (two clicks, to be safe). Saves memory; settings, notes and windows stay.
+- Plus short notes on the normal WoW design, boss fights and Blizzard's rules.
 
 #### Guided tour
 - A modern step-by-step tour explains every feature and highlights the matching button. It shows up once after the update and can be watched again any time: settings → "Watch the tour" or `/chatpilot tutorial`.
@@ -231,6 +245,8 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 | `/chatpilot window` | New chat window |
 | `/chatpilot tutorial` | Watch the tour |
 | `/chatpilot design forever` / `modern` | Switch design |
+| `/chatpilot clear` / `clear all` | Empty the current chat tab / all chat tabs |
+| `/chatpilot info` | Open "Good to know" |
 | `/chatpilot copy` | Copy current chat |
 | `/chatpilot feedback` | Give feedback |
 | `/chatpilot add <word>` / `del <word>` / `list` | Manage keywords |

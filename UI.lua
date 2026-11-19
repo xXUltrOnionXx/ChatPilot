@@ -281,6 +281,30 @@ function UI.Button(parent, text, w, h, style)
 	return b
 end
 
+-- Button that needs a second click within 3 seconds (for things that delete).
+function UI.ConfirmButton(parent, text, w, h, onConfirm, confirmText)
+	local b = UI.Button(parent, text, w, h)
+	local function Reset()
+		b.armed = nil
+		b.label:SetText(text)
+		UI.Ink(b.label, C.text)
+	end
+	b:SetScript("OnClick", function()
+		if not b.armed then
+			b.armed = GetTime()
+			b.label:SetText(confirmText or (ns.L and ns.L.CLEAR_CONFIRM) or "?")
+			UI.Ink(b.label, C.orange)
+			local stamp = b.armed
+			C_Timer.After(3, function() if b.armed == stamp then Reset() end end)
+			return
+		end
+		Reset()
+		onConfirm(b)
+	end)
+	b:HookScript("OnHide", Reset)
+	return b
+end
+
 -- On/off switch.
 function UI.Toggle(parent, onChange)
 	local t = CreateFrame("Button", nil, parent)
