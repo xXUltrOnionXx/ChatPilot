@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1
+- Fix: In den eigenen Chat-Fenstern verschwand beim Drüberfahren der Text im Ziel-Menü und die Symbole oben im Fenster (Glocke, Filter, +, ×)
+- Ziel-Knopf zeigt Kanäle kürzer („1. Allgemein“ statt „1. Allgemein - Sturmwind“)
+
 ## 1.4.0
 - Neu: zweites Design „Forever“ – fröhlich, frisch, hoffnungsvoll (Meergrün, Minze, Sonnenaufgang-Gold). Umschalten unter Einstellungen → Design & Fenster, wirkt sofort
 - Neu: modernes Chatfenster – der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design (abschaltbar)

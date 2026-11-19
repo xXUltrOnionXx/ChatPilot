@@ -216,7 +216,9 @@ local function TargetLabel(t)
 		local n = t.type == "WHISPER" and Ambiguate and Ambiguate(t.name, "none") or t.name
 		return "@" .. n
 	elseif t.type == "CHANNEL" then
-		return tostring(t.number) .. ". " .. (t.name or "")
+		-- "Allgemein - Sturmwind" -> "Allgemein" (short enough for the button)
+		local n = (t.name or ""):gsub("%s+%-%s+.*$", "")
+		return tostring(t.number) .. ". " .. n
 	end
 	return L[TYPE_LABEL[t.type] or ""] or t.type
 end
@@ -387,16 +389,19 @@ local function HeaderButton(g, tip, onClick)
 	local b = CreateFrame("Button", nil, g.header)
 	b:SetSize(22, 20)
 	b.lines = {}
-	local hl = b:CreateTexture(nil, "HIGHLIGHT")
+	-- hover background sits BEHIND the icon (a HIGHLIGHT layer would cover it)
+	local hl = b:CreateTexture(nil, "BACKGROUND")
 	hl:SetAllPoints()
 	UI.Paint(hl, C.rowHover)
+	hl:Hide()
 	b.tip = tip
 	b:SetScript("OnEnter", function(self)
+		hl:Show()
 		GameTooltip:SetOwner(self, "ANCHOR_TOP")
 		GameTooltip:SetText(self.tip)
 		GameTooltip:Show()
 	end)
-	b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	b:SetScript("OnLeave", function() hl:Hide(); GameTooltip:Hide() end)
 	b:SetScript("OnClick", onClick)
 	return b
 end
@@ -965,9 +970,12 @@ function ns:CW_TargetMenu(g)
 			r:SetHeight(22)
 			r:SetPoint("TOPLEFT", 4, -4 - (i - 1) * 22)
 			r:SetPoint("TOPRIGHT", -4, -4 - (i - 1) * 22)
-			local hl = r:CreateTexture(nil, "HIGHLIGHT")
+			local hl = r:CreateTexture(nil, "BACKGROUND")
 			hl:SetAllPoints()
 			UI.Paint(hl, C.rowHover)
+			hl:Hide()
+			r:SetScript("OnEnter", function() hl:Show() end)
+			r:SetScript("OnLeave", function() hl:Hide() end)
 			r.text = UI.NoShadow(r:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall"))
 			r.text:SetPoint("LEFT", 8, 0)
 			tmenu.rows[i] = r
