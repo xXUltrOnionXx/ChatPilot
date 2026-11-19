@@ -926,6 +926,7 @@ local function CreateMessageFrame(w)
 	m:SetMaxLines(500)
 	m:SetFading(false)
 	if m.SetSpacing then m:SetSpacing(2) end
+	if m.SetIndentedWordWrap then m:SetIndentedWordWrap(true) end
 	if m.SetHyperlinksEnabled then m:SetHyperlinksEnabled(true) end
 	m:EnableMouseWheel(true)
 	m:SetScript("OnMouseWheel", function(self, delta)
@@ -1153,6 +1154,55 @@ local function AddLine(w, text, r, g, b, save)
 	end
 end
 
+-------------------------------------------------------------------------------
+-- Structured layout for ChatPilot's windows (classic WoW feel, but tidy):
+--   (o) Name  21:17 · Trade        <- header: channel dot, name, small time, label
+--       message text                <- the message, indented, calm colour
+-- More messages from the same person right after: only the text lines.
+-- System messages: a single muted line with a dot.
+-------------------------------------------------------------------------------
+local CALM = {
+	WHISPER = { 0.86, 0.68, 1 }, WHISPER_INFORM = { 0.86, 0.68, 1 },
+	BN_WHISPER = { 0.55, 0.80, 1 }, BN_WHISPER_INFORM = { 0.55, 0.80, 1 },
+	GUILD = { 0.52, 0.89, 0.55 }, OFFICER = { 0.40, 0.80, 0.45 }, GUILD_ACHIEVEMENT = { 0.52, 0.89, 0.55 },
+	PARTY = { 0.64, 0.72, 1 }, PARTY_LEADER = { 0.64, 0.72, 1 },
+	RAID = { 1, 0.70, 0.45 }, RAID_LEADER = { 1, 0.70, 0.45 }, RAID_WARNING = { 1, 0.45, 0.30 },
+	INSTANCE_CHAT = { 1, 0.70, 0.45 }, INSTANCE_CHAT_LEADER = { 1, 0.70, 0.45 },
+	SAY = { 0.95, 0.95, 0.95 }, YELL = { 1, 0.48, 0.45 }, EMOTE = { 1, 0.66, 0.38 },
+	CHANNEL = { 0.85, 0.85, 0.85 }, COMMUNITIES_CHANNEL = { 0.56, 0.88, 0.82 },
+	SYSTEM = { 0.78, 0.83, 0.55 }, TEXT_EMOTE = { 1, 0.66, 0.38 },
+}
+local DOT_TEX = "Interface\\CHARACTERFRAME\\TempPortraitAlphaMask"
+local INDENT = "      "
+
+local function Dot(c)
+	return ("|T%s:9:9:0:0:64:64:0:64:0:64:%d:%d:%d|t"):format(DOT_TEX,
+		math.floor(c[1] * 255 + 0.5), math.floor(c[2] * 255 + 0.5), math.floor(c[3] * 255 + 0.5))
+end
+
+local function ShortChannel(name)
+	name = tostring(name or "")
+	name = name:gsub("^%d+%.%s*", ""):gsub("%s+%-%s+.*$", "")
+	return name
+end
+
+-- label after the time: where the message was written
+local function ChannelLabel(chatType, channelNumber, baseName, channelString, author)
+	if chatType == "CHANNEL" then
+		local n = ShortChannel(baseName ~= "" and baseName or channelString)
+		return n ~= "" and n or tostring(channelNumber or "")
+	elseif chatType == "WHISPER" or chatType == "BN_WHISPER" then return L.CAT_whisper
+	elseif chatType == "WHISPER_INFORM" or chatType == "BN_WHISPER_INFORM" then
+		local to = chatType == "WHISPER_INFORM" and Ambiguate and Ambiguate(author or "", "none") or author
+		return L.CW_TO:format(to or "?")
+	elseif chatType == "COMMUNITIES_CHANNEL" then return ResolveChannel(channelString, baseName)
+	end
+	local map = { GUILD = "guild", OFFICER = "guild", PARTY = "party", PARTY_LEADER = "party", RAID = "raid",
+		RAID_LEADER = "raid", RAID_WARNING = "raid", INSTANCE_CHAT = "raid", INSTANCE_CHAT_LEADER = "raid",
+		SAY = "say", YELL = "yell", EMOTE = "emote" }
+	return map[chatType] and L["CAT_" .. map[chatType]] or nil
+end
+
 local function Deliver(event, ...)
 	if #groups == 0 then return end
 	local cat = EVENT_CAT[event]
@@ -1207,25 +1257,61 @@ local function Deliver(event, ...)
 	for _, w in ipairs(targets) do
 		local args, n = RunFilters(w.msg, event, ...)
 		if args then
-			styleOwn = styled and isOwn and true or false
-			local ok, text, r, g, b = pcall(Format, event, unpack(args, 1, n))
-			styleOwn = false
-			if ok and text and styled then
+			local ok, text, r, g, b
+			if styled then
+				ok = true
 				local now = time()
+				local calm = CALM[chatType] or { r or 1, g or 1, b or 1 }
 				-- a calm divider after a longer pause
 				if w.lastT and now - w.lastT > 900 then
 					AddLine(w, UI.Hex(C.muted) .. "—  " .. date("%H:%M", now) .. "  —|r", 1, 1, 1, true)
 					w.lastKey = nil
 				end
-				local bar = UI.BarFor(isSystem and "system" or isOwn and "own" or mentioned and "mention" or "other", class, r, g, b)
-				if not isSystem and w.lastKey == key and w.lastT and now - w.lastT <= 120 then
-					-- same person again: no repeated name and time, just the text, indented
-					local body = args[1]
-					if type(body) == "string" then text = bar .. "    " .. body end
+				local body = args[1]
+				if type(body) ~= "string" then body = tostring(body or "") end
+				if chatType == "GUILD_ACHIEVEMENT" then
+					-- "%s has earned ..." -> fill in the name, show it as a notice
+					local okF, full = pcall(Format, event, unpack(args, 1, n))
+					body = okF and full and full:gsub("^.-|r ", "") or body
+					isSystem = true
+				end
+				if isSystem then
+					-- system notice: one muted line with a dot
+					text, r, g, b = Dot(calm) .. "  " .. body, calm[1], calm[2], calm[3]
+					w.lastKey = nil
 				else
-					text = bar .. text
+					if not (w.lastKey == key and w.lastT and now - w.lastT <= 120) then
+						-- header: dot, name (class colour / "You"), small time, label
+						styleOwn = isOwn and true or false
+						local link = PlayerLink(chatType, author, select(11, ...), guid, select(13, ...), channelNumber)
+						styleOwn = false
+						if chatType:find("_INFORM$") then
+							link = ("|Hplayer:%s:%s:%s:|h[%s]|h"):format(UnitName("player") or "", tostring(select(11, ...) or 0), "WHISPER", UI.Hex(C.accent) .. L.WH_YOU .. "|r")
+						end
+						if (ns.S.showLevels or ns.S.shortSurnames) and ns.AddLevels then
+							local okL, out = pcall(ns.AddLevels, link)
+							if okL and out then link = out end
+						end
+						local dotc = isOwn and C.accent or mentioned and C.orange or calm
+						local label = ChannelLabel(chatType, channelNumber, select(9, ...), select(4, ...), author)
+						local head = Dot(dotc) .. "  " .. link .. "  " .. UI.Hex(C.muted) .. date("%H:%M", now)
+							.. (label and (" · " .. label) or "") .. "|r"
+						AddLine(w, head, 1, 1, 1, true)
+					end
+					local lang = select(3, ...)
+					if type(lang) == "string" and lang ~= "" and GetDefaultLanguage and lang ~= GetDefaultLanguage("player") then
+						body = "[" .. lang .. "] " .. body
+					end
+					if chatType == "EMOTE" then body = "* " .. body end
+					if mentioned then
+						text, r, g, b = INDENT .. body, C.orange[1], C.orange[2], C.orange[3]
+					else
+						text, r, g, b = INDENT .. body, calm[1], calm[2], calm[3]
+					end
 				end
 				w.lastKey, w.lastT = key, now
+			else
+				ok, text, r, g, b = pcall(Format, event, unpack(args, 1, n))
 			end
 			if ok and text then
 				AddLine(w, text, r, g, b, true)

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1
+- Neu: **Strukturierter Chat** in den eigenen Fenstern – klassischer WoW-Look, aber aufgeräumt: oben eine Kopfzeile mit Kanal-Punkt, Name (Klassenfarbe / „Du“), kleiner grauer Uhrzeit und Kanal-Label („· Handel“, „· an Lia“), darunter die Nachricht eingerückt. Mehrere Nachrichten einer Person hintereinander nur als weitere Textzeilen. Ruhigere Farben (Flüstern lila, Gilde grün, Handel/Allgemein hellgrau, System gedämpft mit Punkt), umbrochene Zeilen bleiben eingerückt
+- Normaler Chat: kurze Kanal-Tags – „[Handel]“ statt „[2. Handel - Deutsch 41]“ (Klick auf den Kanal funktioniert weiter)
+- Dunklerer, leicht transparenter Hintergrund für Chat und eigene Fenster
+
 ## 1.7.0
 - Neu: **Gesprächs-Look** nach gängigen Chat-Design-Regeln – vor jeder Nachricht ein schmaler Farbbalken in der Klassenfarbe des Absenders, so lassen sich die Antworten aller sofort auseinanderhalten. **Eigene Nachrichten** haben einen breiten Balken in der Akzentfarbe (in eigenen Fenstern steht „Du“ statt des Namens), **Erwähnungen von dir** einen breiten orangen Balken, Systemmeldungen einen grauen
 - In den eigenen Fenstern: mehrere Nachrichten einer Person hintereinander werden **gruppiert** (Name und Uhrzeit nur einmal, der Rest eingerückt), nach längeren Pausen erscheint eine **Zeitlinie**, und die Zeilen haben etwas mehr Abstand

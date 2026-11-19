@@ -287,6 +287,14 @@ ns.OnChatFrame(function(frame)
 			local r, g, b = ...
 			local ok, out = pcall(AddLevels, text)
 			if ok and out then text = out end
+			if ns.S.chatStyle ~= false then
+				-- "[2. Handel - Deutsch 41]" -> "[Handel]" (the channel link stays clickable)
+				text = text:gsub("(|Hchannel:[^|]+|h)%[(.-)%](|h)", function(open, inner, close)
+					local short = inner:gsub("^%d+%.%s*", ""):gsub("%s+%-%s+.*$", "")
+					if short == "" then return nil end
+					return open .. "[" .. short .. "]" .. close
+				end)
+			end
 			if ns.S.chatStyle ~= false and ns.UI and ns.UI.BarFor and not text:find("^|TInterface\\Buttons\\WHITE8X8") then
 				local ok2, styled = pcall(function()
 					local name = text:match("|Hplayer:([^:|]+)")
