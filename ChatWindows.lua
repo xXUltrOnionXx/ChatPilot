@@ -185,17 +185,29 @@ local function Place(g)
 	local main = MainChat()
 	if g.bg then UI.Paint(g.bg, (d.main and main) and C.bg or C.chatBg) end
 	local docked = d.main and main and true or false
-	-- docked: always drawn above the chat (no fighting over who is in front, no
-	-- flicker) and sized by the chat itself, so there is no resize grip
-	f:SetFrameStrata(docked and "HIGH" or "MEDIUM")
-	f:SetToplevel(not docked)
+	-- Docked: the window is hung onto the chat itself, so it is always exactly
+	-- one step above the chat (no flicker) - and bank, bags, vendors and other
+	-- game windows still open on top of it as usual. Its size comes from the
+	-- chat, so there is no resize grip.
 	if g.grip then g.grip:SetShown(not docked) end
 	if docked then
+		local host = main
+		local sel = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK)
+		if sel and sel.IsShown and sel:IsShown() then host = sel end
+		f:SetToplevel(false)
+		if f:GetParent() ~= host then f:SetParent(host) end
+		f:SetFrameStrata(host.GetFrameStrata and host:GetFrameStrata() or "LOW")
+		f:SetFrameLevel(((host.GetFrameLevel and host:GetFrameLevel()) or 1) + 20)
 		-- docked into the main chat: lies exactly over it, opened by its tab
-		f:SetPoint("TOPLEFT", main, "TOPLEFT", -4, 4)
-		f:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", 4, -6)
+		f:SetPoint("TOPLEFT", host, "TOPLEFT", -4, 4)
+		f:SetPoint("BOTTOMRIGHT", host, "BOTTOMRIGHT", 4, -6)
 		f:SetShown(g.mainOpen and true or false)
-	elseif d.snap and main then
+		return
+	end
+	if f:GetParent() ~= UIParent then f:SetParent(UIParent) end
+	f:SetFrameStrata("MEDIUM")
+	f:SetToplevel(true)
+	if d.snap and main then
 		f:SetPoint("BOTTOMLEFT", main, "TOPLEFT", -4, 34)
 		f:SetPoint("BOTTOMRIGHT", main, "TOPRIGHT", 4, 34)
 		f:SetHeight(d.h or 180)
@@ -1607,7 +1619,6 @@ local launchers = {}
 local function CreateLauncher(w)
 	local b = CreateFrame("Button", nil, UIParent)
 	b:SetHeight(22)
-	b:SetFrameStrata("MEDIUM")
 	b:RegisterForClicks("LeftButtonUp")
 	b:RegisterForDrag("LeftButton")
 	b.bg = UI.Fill(b, C.btn)
@@ -1655,7 +1666,7 @@ function UpdateLaunchers()
 	local gameTab = LastGameTab()
 	if not launchRow and main then
 		launchRow = TabRow(UIParent)
-		launchRow:SetFrameStrata("MEDIUM")
+		launchRow:SetFrameStrata((main.GetFrameStrata and main:GetFrameStrata()) or "LOW")
 		launchRow:SetHeight(22)
 	end
 	if launchRow then
@@ -1675,7 +1686,7 @@ function UpdateLaunchers()
 		launchRow.left:SetPoint("BOTTOMLEFT", launchRow, "BOTTOMLEFT", 0, 1)
 		launchRow.right:ClearAllPoints()
 		launchRow.right:SetPoint("BOTTOMRIGHT", launchRow, "BOTTOMRIGHT", 0, 1)
-		launchRow.left:SetFrameStrata("MEDIUM"); launchRow.right:SetFrameStrata("MEDIUM")
+		launchRow.left:SetFrameStrata(launchRow:GetFrameStrata()); launchRow.right:SetFrameStrata(launchRow:GetFrameStrata())
 		launchRow.left:SetFrameLevel(launchRow:GetFrameLevel() + 6)
 		launchRow.right:SetFrameLevel(launchRow:GetFrameLevel() + 6)
 	end
@@ -1812,7 +1823,7 @@ local function BuildPlus()
 	plus = CreateFrame("Button", nil, UIParent) -- not the chat itself: stays visible on every chat tab
 	plus:SetSize(22, 22)
 	plus:SetPoint("BOTTOMRIGHT", main, "TOPRIGHT", 4, 6)
-	plus:SetFrameStrata("MEDIUM")
+	plus:SetFrameStrata((main.GetFrameStrata and main:GetFrameStrata()) or "LOW") -- not above bank/bags
 	plus.bg = UI.Fill(plus, C.btn)
 	UI.Border(plus, C.border)
 	plus.lines = {}
