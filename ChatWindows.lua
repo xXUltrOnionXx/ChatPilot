@@ -461,40 +461,141 @@ end
 local TAB_GAP, TAB_MAX = 2, 200
 
 -- clip: frame that cuts off what is outside; strip: holds the tabs
+-- Dropdown with all tabs of a row: full names, active marked, unread dot.
+-- Click = select, drag an entry out = undock it (like dragging the tab).
+local dropMenu
+local function ShowTabDropdown(anchor, items, onPick, onDrag)
+	if not dropMenu then
+		dropMenu = CreateFrame("Frame", "ChatPilotTabDropdown", UIParent)
+		dropMenu:SetFrameStrata("DIALOG")
+		dropMenu:SetClampedToScreen(true)
+		dropMenu:EnableMouse(true)
+		UI.Fill(dropMenu, C.bg)
+		UI.Border(dropMenu, C.border)
+		local glow = UI.Glow(dropMenu)
+		glow:SetPoint("TOPLEFT", 1, -1)
+		glow:SetPoint("TOPRIGHT", -1, -1)
+		glow:SetHeight(2)
+		dropMenu.hint = UI.Text(dropMenu, "GameFontHighlightSmall", C.muted)
+		dropMenu.hint:SetPoint("BOTTOMLEFT", 10, 7)
+		dropMenu.hint:SetPoint("RIGHT", -10, 0)
+		dropMenu.hint:SetText(L.CW_DROP_HINT)
+		dropMenu.rows = {}
+		tinsert(UISpecialFrames, "ChatPilotTabDropdown")
+		dropMenu:Hide()
+	end
+	if dropMenu:IsShown() and dropMenu.anchor == anchor then dropMenu:Hide() return end
+	dropMenu.anchor = anchor
+	local width = 200
+	for i, it in ipairs(items) do
+		local r = dropMenu.rows[i]
+		if not r then
+			r = CreateFrame("Button", nil, dropMenu)
+			r:SetHeight(24)
+			r:SetPoint("TOPLEFT", 4, -6 - (i - 1) * 24)
+			r:SetPoint("TOPRIGHT", -4, -6 - (i - 1) * 24)
+			r:RegisterForDrag("LeftButton")
+			r.hl = r:CreateTexture(nil, "BACKGROUND")
+			r.hl:SetAllPoints()
+			UI.Paint(r.hl, C.rowHover)
+			r.sel = r:CreateTexture(nil, "BORDER")
+			r.sel:SetPoint("TOPLEFT")
+			r.sel:SetPoint("BOTTOMLEFT")
+			r.sel:SetWidth(3)
+			UI.Paint(r.sel, C.accent)
+			r.text = UI.Text(r, "GameFontHighlight", C.text)
+			r.text:SetPoint("LEFT", 12, 0)
+			r.text:SetWordWrap(false)
+			r.dot = r:CreateTexture(nil, "OVERLAY")
+			r.dot:SetSize(6, 6)
+			r.dot:SetPoint("RIGHT", -8, 0)
+			UI.Paint(r.dot, C.orange)
+			r:SetScript("OnEnter", function(self) self.hl:Show() end)
+			r:SetScript("OnLeave", function(self) if not self.active then self.hl:Hide() end end)
+			dropMenu.rows[i] = r
+		end
+		r.active = it.active
+		r.hl:SetShown(it.active and true or false)
+		r.sel:SetShown(it.active and true or false)
+		r.text:SetText(it.label)
+		UI.Ink(r.text, it.active and C.text or C.muted)
+		r.dot:SetShown(it.unread and not it.active or false)
+		width = math.max(width, (r.text:GetStringWidth() or 100) + 40)
+		r:SetScript("OnClick", function() dropMenu:Hide(); onPick(it) end)
+		r:SetScript("OnDragStart", function() dropMenu:Hide(); if onDrag then onDrag(it) end end)
+		r:Show()
+	end
+	for i = #items + 1, #dropMenu.rows do dropMenu.rows[i]:Hide() end
+	dropMenu:SetSize(math.min(width, 360), #items * 24 + 12 + 22)
+	dropMenu:ClearAllPoints()
+	dropMenu:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, -2)
+	dropMenu:Show()
+end
+
+-- Scrollable tab row with a dropdown. Tabs keep their full size; when they
+-- don't all fit, a small ▾ button at the end lists every tab with its full
+-- name. The mouse wheel over the tabs still scrolls the row, and the active
+-- tab is always brought into view.
+local DROP_W = 20
 local function TabRow(parent)
 	local clip = CreateFrame("Frame", nil, parent)
 	if clip.SetClipsChildren then clip:SetClipsChildren(true) end
 	clip.strip = CreateFrame("Frame", nil, clip)
 	clip.strip:SetSize(1, 1)
 	clip.scroll, clip.width = 0, 0
-	local function Arrow(dir)
-		local b = CreateFrame("Button", nil, parent)
-		b:SetSize(14, 20)
-		b.bg = UI.Fill(b, C.panel)
-		local t = b:CreateTexture(nil, "OVERLAY")
-		t:SetSize(7, 2)
-		t:SetPoint("CENTER", 0, 2)
-		t:SetRotation(math.rad(dir < 0 and 45 or -45))
+
+	-- ▾ button (outside the clipped area, so it is never cut off)
+	local drop = CreateFrame("Button", nil, parent)
+	drop:SetSize(DROP_W, 20)
+	drop.bg = UI.Fill(drop, C.row)
+	UI.Border(drop, C.border)
+	for k = -1, 1, 2 do
+		local t = drop:CreateTexture(nil, "OVERLAY")
+		t:SetSize(6, 2)
+		t:SetPoint("CENTER", k * 2, 0)
+		t:SetRotation(math.rad(k * -45))
 		UI.Paint(t, C.accent)
-		local t2 = b:CreateTexture(nil, "OVERLAY")
-		t2:SetSize(7, 2)
-		t2:SetPoint("CENTER", 0, -2)
-		t2:SetRotation(math.rad(dir < 0 and -45 or 45))
-		UI.Paint(t2, C.accent)
-		b:SetScript("OnClick", function() clip:ScrollBy(dir * 90) end)
-		b:Hide()
-		return b
 	end
-	clip.left, clip.right = Arrow(-1), Arrow(1)
+	drop.dot = drop:CreateTexture(nil, "OVERLAY")
+	drop.dot:SetSize(5, 5)
+	drop.dot:SetPoint("TOPRIGHT", -2, -2)
+	UI.Paint(drop.dot, C.orange)
+	drop:SetPoint("BOTTOMRIGHT", clip, "BOTTOMRIGHT", 0, 1)
+	drop:SetScript("OnEnter", function(self)
+		UI.Paint(self.bg, C.rowHover)
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:SetText(L.CW_DROP_TIP)
+		GameTooltip:Show()
+	end)
+	drop:SetScript("OnLeave", function(self) UI.Paint(self.bg, C.row); GameTooltip:Hide() end)
+	drop:SetScript("OnClick", function(self)
+		GameTooltip:Hide()
+		if clip.items then ShowTabDropdown(self, clip.items(), clip.onPick, clip.onDrag) end
+	end)
+	drop:Hide()
+	clip.drop = drop
+
+	function clip:Overflow() return self.width > (self:GetWidth() or 0) + 0.5 end
+	function clip:View()
+		local v = self:GetWidth() or 0
+		if self:Overflow() then v = v - DROP_W - 4 end
+		return math.max(0, v)
+	end
 	function clip:Apply()
-		local view = self:GetWidth() or 0
-		local maxScroll = math.max(0, self.width - view)
+		local over = self:Overflow()
+		local maxScroll = math.max(0, self.width - self:View())
 		self.scroll = math.max(0, math.min(self.scroll, maxScroll))
 		self.strip:ClearAllPoints()
 		self.strip:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -self.scroll, 0)
 		self.strip:SetSize(math.max(1, self.width), self:GetHeight() or 22)
-		self.left:SetShown(self.scroll > 0)
-		self.right:SetShown(self.scroll < maxScroll - 0.5)
+		self.drop:SetShown(over and self:IsShown())
+		self.drop:SetFrameStrata(self:GetFrameStrata())
+		self.drop:SetFrameLevel(self:GetFrameLevel() + 8)
+		local unreadHidden = false
+		if over and self.items then
+			for _, it in ipairs(self.items()) do if it.unread and not it.active then unreadHidden = true end end
+		end
+		self.drop.dot:SetShown(unreadHidden)
 	end
 	function clip:ScrollBy(dx)
 		self.scroll = self.scroll + dx
@@ -502,7 +603,7 @@ local function TabRow(parent)
 	end
 	-- make sure the tab from x1 to x2 is visible
 	function clip:Reveal(x1, x2)
-		local view = self:GetWidth() or 0
+		local view = self:View()
 		if x1 < self.scroll then self.scroll = x1
 		elseif x2 > self.scroll + view then self.scroll = x2 - view end
 		self:Apply()
@@ -510,6 +611,8 @@ local function TabRow(parent)
 	clip:EnableMouseWheel(true)
 	clip:SetScript("OnMouseWheel", function(self, delta) self:ScrollBy(-delta * 60) end)
 	clip:SetScript("OnSizeChanged", function(self) self:Apply() end)
+	clip:HookScript("OnHide", function(self) self.drop:Hide() end)
+	clip:HookScript("OnShow", function(self) self:Apply() end)
 	return clip
 end
 
@@ -519,10 +622,16 @@ function LayoutTabs(g)
 		g.tabRow = TabRow(g.header)
 		g.tabRow:SetPoint("BOTTOMLEFT", g.header, "BOTTOMLEFT", 4, 0)
 		g.tabRow:SetPoint("TOPRIGHT", g.bell, "TOPLEFT", -4, 0)
-		g.tabRow.left:SetPoint("BOTTOMLEFT", g.tabRow, "BOTTOMLEFT", 0, 1)
-		g.tabRow.right:SetPoint("BOTTOMRIGHT", g.tabRow, "BOTTOMRIGHT", 0, 1)
-		g.tabRow.left:SetFrameLevel(g.header:GetFrameLevel() + 6)
-		g.tabRow.right:SetFrameLevel(g.header:GetFrameLevel() + 6)
+		g.tabRow.items = function()
+			local list = {}
+			for _, id in ipairs(g.data and g.data.order or {}) do
+				local w = wins[id]
+				if w then list[#list + 1] = { label = WindowName(w), w = w, unread = w.unread, active = g.data.active == id } end
+			end
+			return list
+		end
+		g.tabRow.onPick = function(it) Select(g, it.w) end
+		g.tabRow.onDrag = function(it) if it.w.group then StartDrag(it.w.group, it.w) end end
 	end
 	local row = g.tabRow
 	local x, ax1, ax2 = 0, nil, nil
@@ -1682,13 +1791,19 @@ function UpdateLaunchers()
 		local startX = (gameTab and gameTab.GetRight and gameTab:GetRight()) and (gameTab:GetRight() + 3) or mainL
 		local endX = mainR - 26
 		launchRow:SetWidth(math.max(60, endX - startX))
-		launchRow.left:ClearAllPoints()
-		launchRow.left:SetPoint("BOTTOMLEFT", launchRow, "BOTTOMLEFT", 0, 1)
-		launchRow.right:ClearAllPoints()
-		launchRow.right:SetPoint("BOTTOMRIGHT", launchRow, "BOTTOMRIGHT", 0, 1)
-		launchRow.left:SetFrameStrata(launchRow:GetFrameStrata()); launchRow.right:SetFrameStrata(launchRow:GetFrameStrata())
-		launchRow.left:SetFrameLevel(launchRow:GetFrameLevel() + 6)
-		launchRow.right:SetFrameLevel(launchRow:GetFrameLevel() + 6)
+		if not launchRow.items then
+			launchRow.items = function()
+				local list = {}
+				for _, w in ipairs(launchers) do
+					local g = w.group
+					list[#list + 1] = { label = WindowName(w), w = w, unread = w.unread,
+						active = g and g.mainOpen and g.data and g.data.active == w.data.id }
+				end
+				return list
+			end
+			launchRow.onPick = function(it) if it.w.group then ns:CW_OpenMain(it.w.group, it.w) end end
+			launchRow.onDrag = function(it) if it.w.group then StartDrag(it.w.group, it.w) end end
+		end
 	end
 	local x, ax1, ax2 = 0, nil, nil
 	for _, g in ipairs(groups) do

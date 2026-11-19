@@ -284,3 +284,5 @@ L.TUT_design_B = "Das Zahnrad öffnet die Einstellungen - Maus darüber zeigt, w
 L.WH_POPOUT = "Als Chat öffnen"
 L.WH_POPOUT_TIP = "Öffnet dieses Gespräch als eigenes Chat-Fenster: nur Nachrichten mit dieser Person, mit dem bisherigen Verlauf, und du schreibst direkt dort. Tipp: Du kannst ein Gespräch auch links aus der Liste herausziehen."
 L.CW_DOCKED_MAIN = "„%s“ ist jetzt im Hauptchat angedockt – der Tab sitzt neben deinen Chat-Tabs. Tab herausziehen zum Abdocken."
+L.CW_DROP_TIP = "Alle Tabs"
+L.CW_DROP_HINT = "Klick: zeigen  ·  herausziehen: abdocken"

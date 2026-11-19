@@ -278,3 +278,5 @@ L.TUT_design_B = "L'ingranaggio apre le opzioni - passa il mouse per vedere quan
 L.WH_POPOUT = "Apri come chat"
 L.WH_POPOUT_TIP = "Apre questa conversazione in una sua finestra di chat: solo i messaggi con questa persona, la cronologia, e scrivi direttamente lì. Suggerimento: puoi anche trascinare una conversazione fuori dalla lista a sinistra."
 L.CW_DOCKED_MAIN = "\"%s\" è ora agganciata alla chat principale: la sua scheda è accanto alle tue. Trascina fuori la scheda per sganciarla."
+L.CW_DROP_TIP = "Tutte le schede"
+L.CW_DROP_HINT = "Clic: mostra  ·  trascina fuori: sgancia"

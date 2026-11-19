@@ -286,3 +286,5 @@ L.TUT_design_B = "The gear opens the settings - hover it to see how much spam wa
 L.WH_POPOUT = "Open as chat"
 L.WH_POPOUT_TIP = "Opens this conversation as its own chat window: only messages with this person, the history so far, and you write right there. Tip: you can also drag a conversation out of the list on the left."
 L.CW_DOCKED_MAIN = "\"%s\" is now docked in the main chat - its tab sits next to your chat tabs. Drag the tab out to undock."
+L.CW_DROP_TIP = "All tabs"
+L.CW_DROP_HINT = "Click: show  ·  drag out: undock"

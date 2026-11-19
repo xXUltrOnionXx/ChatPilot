@@ -278,3 +278,5 @@ L.TUT_design_B = "A engrenagem abre as opções - passe o mouse para ver quanto 
 L.WH_POPOUT = "Abrir como chat"
 L.WH_POPOUT_TIP = "Abre esta conversa na sua própria janela de chat: só as mensagens com essa pessoa, o histórico, e você escreve ali mesmo. Dica: você também pode arrastar uma conversa para fora da lista à esquerda."
 L.CW_DOCKED_MAIN = "\"%s\" agora está encaixada no chat principal - a aba fica ao lado das suas. Arraste a aba para fora para desencaixar."
+L.CW_DROP_TIP = "Todas as abas"
+L.CW_DROP_HINT = "Clique: mostrar  ·  arrastar: desencaixar"

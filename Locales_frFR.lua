@@ -278,3 +278,5 @@ L.TUT_design_B = "La roue dentée ouvre les options - survole-la pour voir combi
 L.WH_POPOUT = "Ouvrir en chat"
 L.WH_POPOUT_TIP = "Ouvre cette conversation dans sa propre fenêtre de chat : seulement les messages avec cette personne, l'historique, et tu écris directement dedans. Astuce : tu peux aussi tirer une conversation hors de la liste à gauche."
 L.CW_DOCKED_MAIN = "« %s » est maintenant ancrée dans le chat principal - son onglet est à côté des tiens. Tire l'onglet pour la détacher."
+L.CW_DROP_TIP = "Tous les onglets"
+L.CW_DROP_HINT = "Clic : afficher  ·  tirer : détacher"

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.8
+- Tab-Leisten: Statt der Pfeile gibt es jetzt einen **Dropdown-Knopf ▾**, sobald nicht alle Tabs hineinpassen. Er listet alle Fenster mit **vollem, gut lesbarem Namen** (aktives markiert, ungelesene mit orangem Punkt). Klick = auswählen, **Eintrag herausziehen = abdocken** – genau wie beim Tab selbst. Gilt für die eigenen Fenster und für die Tabs im Hauptchat. Das Mausrad über den Tabs scrollt weiterhin
+
 ## 1.6.7
 - Fix: Ein im Hauptchat angedocktes Fenster lag über Bank, Taschen, Händler und anderen Spielfenstern. Es hängt jetzt direkt am Chat und liegt damit immer genau eine Stufe über dem Chat – flackerfrei, und Spielfenster öffnen sich wieder ganz normal darüber. Dasselbe gilt für die Tabs der angedockten Fenster und das „+“ am Chat
 
