@@ -286,3 +286,5 @@ L.WH_POPOUT_TIP = "Öffnet dieses Gespräch als eigenes Chat-Fenster: nur Nachri
 L.CW_DOCKED_MAIN = "„%s“ ist jetzt im Hauptchat angedockt – der Tab sitzt neben deinen Chat-Tabs. Tab herausziehen zum Abdocken."
 L.CW_DROP_TIP = "Alle Tabs"
 L.CW_DROP_HINT = "Klick: zeigen  ·  herausziehen: abdocken"
+L.OPT_notifyGlow = "Leuchtende Benachrichtigungen"
+L.DESC_notifyGlow = "Neue Erwähnungen, Flüsternachrichten und Nachrichten in deinen Fenstern kommen mit einem Licht, das sich in den Zähler zieht, und leuchten sanft, solange sie ungelesen sind."

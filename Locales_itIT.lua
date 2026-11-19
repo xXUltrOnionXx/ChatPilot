@@ -280,3 +280,5 @@ L.WH_POPOUT_TIP = "Apre questa conversazione in una sua finestra di chat: solo i
 L.CW_DOCKED_MAIN = "\"%s\" è ora agganciata alla chat principale: la sua scheda è accanto alle tue. Trascina fuori la scheda per sganciarla."
 L.CW_DROP_TIP = "Tutte le schede"
 L.CW_DROP_HINT = "Clic: mostra  ·  trascina fuori: sgancia"
+L.OPT_notifyGlow = "Notifiche luminose"
+L.DESC_notifyGlow = "Nuove menzioni, sussurri e messaggi arrivano con una luce che si infila nel contatore e brilla dolcemente finché non li leggi."

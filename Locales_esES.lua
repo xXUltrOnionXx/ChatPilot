@@ -281,3 +281,5 @@ L.WH_POPOUT_TIP = "Abre esta conversación en su propia ventana de chat: solo lo
 L.CW_DOCKED_MAIN = "\"%s\" ya está acoplada al chat principal: su pestaña está junto a las tuyas. Arrastra la pestaña fuera para desacoplarla."
 L.CW_DROP_TIP = "Todas las pestañas"
 L.CW_DROP_HINT = "Clic: mostrar  ·  arrastrar: desacoplar"
+L.OPT_notifyGlow = "Notificaciones luminosas"
+L.DESC_notifyGlow = "Las nuevas menciones, susurros y mensajes llegan con una luz que se mete en el contador y brilla suavemente mientras no se lean."

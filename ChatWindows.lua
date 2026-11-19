@@ -412,6 +412,16 @@ local function ParseCommand(w, text, complete)
 	return nil
 end
 
+-- glowing light on a tab's unread dot: pulls in when it turns on, then breathes
+local function DotGlow(btn, on)
+	if not btn or not btn.dot then return end
+	on = on and ns.S and ns.S.notifyGlow ~= false or false
+	btn.orb = rawget(btn, "orb") or UI.Orb(btn.dot, 14, C.orange)
+	local was = rawget(btn, "glowOn")
+	btn.glowOn = on
+	if on and not was then btn.orb:Pop() else btn.orb:SetActive(on) end
+end
+
 -------------------------------------------------------------------------------
 -- Tabs
 -------------------------------------------------------------------------------
@@ -596,6 +606,7 @@ local function TabRow(parent)
 			for _, it in ipairs(self.items()) do if it.unread and not it.active then unreadHidden = true end end
 		end
 		self.drop.dot:SetShown(unreadHidden)
+		DotGlow(self.drop, unreadHidden)
 	end
 	function clip:ScrollBy(dx)
 		self.scroll = self.scroll + dx
@@ -653,6 +664,7 @@ function LayoutTabs(g)
 		t.line:SetShown(active)
 		UI.Ink(t.text, active and C.text or C.muted)
 		t.dot:SetShown(not active and w.unread and true or false)
+		DotGlow(t, not active and w.unread)
 		t:Show()
 	end
 	row.width = math.max(0, x - TAB_GAP)
@@ -1827,6 +1839,7 @@ function UpdateLaunchers()
 				UI.Ink(b.text, active and C.text or C.muted)
 				if active then w.unread = false end
 				b.dot:SetShown(w.unread and not active or false)
+				DotGlow(b, w.unread and not active)
 				b:Show()
 				launchers[#launchers + 1] = w
 			end

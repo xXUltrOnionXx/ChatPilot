@@ -288,3 +288,5 @@ L.WH_POPOUT_TIP = "Opens this conversation as its own chat window: only messages
 L.CW_DOCKED_MAIN = "\"%s\" is now docked in the main chat - its tab sits next to your chat tabs. Drag the tab out to undock."
 L.CW_DROP_TIP = "All tabs"
 L.CW_DROP_HINT = "Click: show  ·  drag out: undock"
+L.OPT_notifyGlow = "Glowing notifications"
+L.DESC_notifyGlow = "New mentions, whispers and messages in your windows arrive with a light that pulls into the counter, then glows softly while unread."

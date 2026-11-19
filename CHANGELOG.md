@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.9
+- Neu: **Leuchtende Benachrichtigungen** – kommt eine neue Erwähnung, Flüsternachricht oder Nachricht in einem eigenen Fenster, zieht sich eine weiche Lichtkugel in den Zähler bzw. den Punkt am Tab, blitzt kurz auf und leuchtet danach sanft „atmend“, solange etwas ungelesen ist. Abschaltbar unter Design & Fenster
+
 ## 1.6.8
 - Tab-Leisten: Statt der Pfeile gibt es jetzt einen **Dropdown-Knopf ▾**, sobald nicht alle Tabs hineinpassen. Er listet alle Fenster mit **vollem, gut lesbarem Namen** (aktives markiert, ungelesene mit orangem Punkt). Klick = auswählen, **Eintrag herausziehen = abdocken** – genau wie beim Tab selbst. Gilt für die eigenen Fenster und für die Tabs im Hauptchat. Das Mausrad über den Tabs scrollt weiterhin
 

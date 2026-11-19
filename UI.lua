@@ -351,3 +351,88 @@ function UI.ScrollArea(parent)
 	sf.child = child
 	return sf
 end
+
+-------------------------------------------------------------------------------
+-- Notification orb: a soft ball of light that pulls itself into a badge or
+-- dot when something new arrives, flashes once and then gently "breathes"
+-- while it stays unread. Pure textures and one OnUpdate - nothing protected.
+-------------------------------------------------------------------------------
+local GLOW_TEX = "Interface\\GLUES\\MODELS\\UI_Draenei\\GenericGlow64"
+local BALL_TEX = "Interface\\CHARACTERFRAME\\TempPortraitAlphaMask"
+
+local function Ease(t) return 1 - (1 - t) ^ 3 end
+
+-- target: the region the light pulls into (badge or dot). size: resting glow size.
+function UI.Orb(target, size, color)
+	size = size or 26
+	local o = CreateFrame("Frame", nil, target:GetParent() or target)
+	o:SetPoint("CENTER", target, "CENTER")
+	o:SetSize(1, 1)
+	o:SetFrameLevel(math.max(0, (target.GetFrameLevel and target:GetFrameLevel() or 1) - 1))
+	o:EnableMouse(false)
+	o.color = color or C.orange
+	o.halo = o:CreateTexture(nil, "BACKGROUND")
+	o.halo:SetTexture(GLOW_TEX)
+	o.halo:SetBlendMode("ADD")
+	o.halo:SetPoint("CENTER")
+	o.ball = o:CreateTexture(nil, "ARTWORK")
+	o.ball:SetTexture(BALL_TEX)
+	o.ball:SetBlendMode("ADD")
+	o.ball:SetPoint("CENTER")
+	o.size, o.t, o.mode = size, 0, "off"
+	local function Tint(tex, a)
+		local c = o.color
+		tex:SetVertexColor(c[1], c[2], c[3], a)
+	end
+	o:SetScript("OnUpdate", function(self, e)
+		self.t = self.t + e
+		if self.mode == "pull" then
+			-- big faint light rushes in and becomes bright and small
+			local p = math.min(1, self.t / 0.45)
+			local k = Ease(p)
+			local s = self.size * (3.2 - 2.2 * k)
+			self.halo:SetSize(s * 1.6, s * 1.6)
+			Tint(self.halo, 0.25 + 0.75 * k)
+			local b = self.size * (1.8 - 1.35 * k)
+			self.ball:SetSize(b, b)
+			Tint(self.ball, 0.15 + 0.6 * k)
+			if p >= 1 then self.mode, self.t = "flash", 0 end
+		elseif self.mode == "flash" then
+			-- short bright flash in the badge
+			local p = math.min(1, self.t / 0.25)
+			local s = self.size * (1 + 0.5 * math.sin(p * math.pi))
+			self.halo:SetSize(s * 1.6, s * 1.6)
+			Tint(self.halo, 1)
+			self.ball:SetSize(self.size * 0.45, self.size * 0.45)
+			Tint(self.ball, 0.75 * (1 - p))
+			if p >= 1 then self.mode, self.t = "breathe", 0 end
+		elseif self.mode == "breathe" then
+			-- calm pulse while unread
+			local w = 0.5 + 0.5 * math.sin(self.t * 3)
+			local s = self.size * (1.15 + 0.25 * w)
+			self.halo:SetSize(s * 1.4, s * 1.4)
+			Tint(self.halo, 0.35 + 0.45 * w)
+			Tint(self.ball, 0)
+		else
+			self:Hide()
+		end
+	end)
+	-- something new arrived: play the pull-in
+	function o:Pop()
+		self.mode, self.t = "pull", 0
+		self:Show()
+	end
+	-- unread or not (keeps breathing, or switches off)
+	function o:SetActive(on)
+		if on then
+			if self.mode == "off" then self.mode, self.t = "breathe", 0 end
+			self:Show()
+		else
+			self.mode = "off"
+			self:Hide()
+		end
+	end
+	o:Hide()
+	return o
+end
+

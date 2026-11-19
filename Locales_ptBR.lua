@@ -280,3 +280,5 @@ L.WH_POPOUT_TIP = "Abre esta conversa na sua própria janela de chat: só as men
 L.CW_DOCKED_MAIN = "\"%s\" agora está encaixada no chat principal - a aba fica ao lado das suas. Arraste a aba para fora para desencaixar."
 L.CW_DROP_TIP = "Todas as abas"
 L.CW_DROP_HINT = "Clique: mostrar  ·  arrastar: desencaixar"
+L.OPT_notifyGlow = "Notificações luminosas"
+L.DESC_notifyGlow = "Novas menções, sussurros e mensagens chegam com uma luz que entra no contador e brilha suavemente enquanto não forem lidas."

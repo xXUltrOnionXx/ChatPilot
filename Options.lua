@@ -621,6 +621,7 @@ local function BuildDesign(content)
 	box:SetScript("OnShow", function() for n, tile in pairs(tiles) do tile:SetPicked(n == (ns.S.theme or "modern")) end end)
 	FlowAdd(flow, box)
 
+	ToggleRow(flow, "notifyGlow", nil, function() ns:UpdateChatButtons() end)
 	local skinRow = ToggleRow(flow, "chatSkin", nil, function(v)
 		if v then ns:SkinAllChats() else ns.Print(L.CHATSKIN_RELOAD) end
 	end)

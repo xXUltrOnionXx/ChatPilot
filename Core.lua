@@ -36,6 +36,7 @@ ns.defaults = {
 	shortSurnames = true,
 	playerInfo = true,
 	tabWheel = true,
+	notifyGlow = true,
 	snippets = true,
 	abbrevTips = true,
 	markForeign = true,

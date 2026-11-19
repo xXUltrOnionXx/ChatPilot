@@ -280,3 +280,5 @@ L.WH_POPOUT_TIP = "Ouvre cette conversation dans sa propre fenêtre de chat : se
 L.CW_DOCKED_MAIN = "« %s » est maintenant ancrée dans le chat principal - son onglet est à côté des tiens. Tire l'onglet pour la détacher."
 L.CW_DROP_TIP = "Tous les onglets"
 L.CW_DROP_HINT = "Clic : afficher  ·  tirer : détacher"
+L.OPT_notifyGlow = "Notifications lumineuses"
+L.DESC_notifyGlow = "Nouvelles mentions, chuchotements et messages arrivent avec une lumière qui se glisse dans le compteur, puis brille doucement tant qu'ils ne sont pas lus."

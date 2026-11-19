@@ -74,6 +74,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 
 ### Design & Fenster
 - **Zwei Designs:** „Modern“ (kühles Dunkelblau) oder **„Forever“** – fröhlich, frisch und hoffnungsvoll mit Meergrün, Minze und Sonnenaufgang-Gold. Gilt für alle ChatPilot-Fenster und wirkt sofort.
+- **Leuchtende Benachrichtigungen:** Neues zieht als Lichtkugel in den Zähler und leuchtet sanft, solange es ungelesen ist.
 - **Modernes Chatfenster:** Der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design. Abschaltbar. Nutzt du schon ein Addon, das den Chat gestaltet (z. B. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), lässt ChatPilot den Look automatisch in Ruhe.
 - **Eigene Chat-Fenster:** Fenster, die nur zeigen, was du auswählst – Flüstern, Gilde, Gruppe, Schlachtzug, Sagen, Schreien, Emotes, Allgemein, Handel, andere Kanäle, Communities oder Systemnachrichten.
   - Filter über das Trichter-Symbol im Fenster.
@@ -192,6 +193,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 
 #### Design & windows
 - **Two designs:** "Modern" (cool dark blue) or **"Forever"** – cheerful, fresh and hopeful with sea green, mint and sunrise gold. Applies to all ChatPilot windows, instantly.
+- **Glowing notifications:** new things pull into the counter as a ball of light and glow softly while unread.
 - **Modern chat window:** the game's own chat gets a flat look with clean tabs and input box in your design. Can be turned off. If another addon already styles your chat (e.g. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), ChatPilot leaves the look alone automatically.
 - **Your own chat windows:** windows that only show what you pick – whispers, guild, party, raid, say, yell, emotes, General, Trade, other channels, communities or system messages.
   - Filter via the funnel icon in the window.

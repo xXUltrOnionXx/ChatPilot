@@ -280,3 +280,5 @@ L.WH_POPOUT_TIP = "把這段對話以獨立聊天視窗開啟：只顯示與此�
 L.CW_DOCKED_MAIN = "「%s」已停靠到主聊天框 - 它的標籤在你的聊天標籤旁邊。把標籤拖出即可分離。"
 L.CW_DROP_TIP = "全部標籤"
 L.CW_DROP_HINT = "點擊：顯示  ·  拖出：分離"
+L.OPT_notifyGlow = "發光通知"
+L.DESC_notifyGlow = "新的提及、密語和視窗訊息到來時，一團光會收進計數中，未讀期間柔和發光。"

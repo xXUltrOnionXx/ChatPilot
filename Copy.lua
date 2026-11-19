@@ -209,11 +209,20 @@ local function AddBadge(b)
 	b.badge.text:SetPoint("CENTER", 0, 0)
 	b.badge.text:SetTextColor(unpack(C.dark))
 	b.badge:Hide()
+	b.orb = UI.Orb(b.badge, 22, C.orange)
 end
 
 local function SetBadge(b, n)
 	b.badge:SetShown(n > 0)
 	b.badge.text:SetText(n > 9 and "9+" or tostring(n))
+	local last = rawget(b, "lastCount") or 0
+	b.lastCount = n
+	if not b.orb then return end
+	if n > last and ns.S and ns.S.notifyGlow ~= false then
+		b.orb:Pop()                         -- new: light pulls into the badge
+	else
+		b.orb:SetActive(n > 0 and ns.S and ns.S.notifyGlow ~= false)
+	end
 end
 
 -- for the tutorial spotlight: a button of the first chat's button bar
