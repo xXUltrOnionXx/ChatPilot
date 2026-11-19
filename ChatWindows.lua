@@ -801,6 +801,50 @@ local function Restore()
 	end
 end
 
+-------------------------------------------------------------------------------
+-- "+" at the top right of the main chat: new chat window in one click
+-------------------------------------------------------------------------------
+local plus
+local function BuildPlus()
+	local main = ChatFrame1 or DEFAULT_CHAT_FRAME
+	if plus or not main or not main.GetName then return end
+	plus = CreateFrame("Button", nil, main)
+	plus:SetSize(22, 22)
+	plus:SetPoint("BOTTOMRIGHT", main, "TOPRIGHT", 4, 6)
+	plus:SetFrameStrata("MEDIUM")
+	plus.bg = UI.Fill(plus, C.btn)
+	UI.Border(plus, C.border)
+	plus.lines = {}
+	IconLine(plus, 10, 2)
+	IconLine(plus, 2, 10)
+	for _, t in ipairs(plus.lines) do UI.Paint(t, C.accent) end
+	plus:SetAlpha(0.85)
+	plus:SetScript("OnEnter", function(self)
+		self:SetAlpha(1)
+		UI.Paint(self.bg, C.rowHover)
+		self:SetBorderColor(unpack(C.accent))
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:SetText(L.CW_NEW)
+		GameTooltip:AddLine(L.CW_PLUS_TIP, 0.8, 0.8, 0.8, true)
+		GameTooltip:Show()
+	end)
+	plus:SetScript("OnLeave", function(self)
+		self:SetAlpha(0.85)
+		UI.Paint(self.bg, C.btn)
+		self:SetBorderColor(unpack(C.border))
+		GameTooltip:Hide()
+	end)
+	plus:SetScript("OnClick", function()
+		GameTooltip:Hide()
+		ns:CW_New()
+	end)
+end
+
+function ns:CW_UpdatePlus()
+	if not plus then BuildPlus() end
+	if plus then plus:SetShown(self.S.copyButton and true or false) end
+end
+
 UI.OnTheme(function()
 	for _, g in ipairs(groups) do LayoutTabs(g) end
 end)
@@ -813,7 +857,9 @@ function ns:OnLogin()
 	d.windows = d.windows or {}
 	d.groups = d.groups or {}
 	pcall(Restore)
+	self:CW_UpdatePlus()
 end
 
+ns._cwPlus = function() return plus end
 ns._cw = { wins = wins, groups = groups, Format = Format, Deliver = Deliver, FinishDrag = FinishDrag,
 	StartDrag = StartDrag, ChannelCat = ChannelCat } -- for tests

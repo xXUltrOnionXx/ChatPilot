@@ -217,6 +217,7 @@ local function SetBadge(b, n)
 end
 
 function ns:UpdateChatButtons()
+	if self.CW_UpdatePlus and self.loggedIn then self:CW_UpdatePlus() end
 	local unread = self.unread or 0
 	for _, bar in ipairs(bars) do
 		bar:SetShown(self.S.copyButton)
