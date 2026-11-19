@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.5.2
+## 1.6.0
+- Neu: **Eigene Fenster im Hauptchat andocken** – ein Fenster auf den Hauptchat ziehen (er leuchtet auf), dann bekommt es einen eigenen Tab neben den normalen Chat-Tabs. Klick auf den Tab zeigt das Fenster genau dort, Klick auf einen normalen Tab wechselt zurück. Tab herausziehen = wieder freies Fenster. Neue Nachrichten zeigen einen orangen Punkt am Tab
+- Neu: **Mausrad über den Chat-Tabs** blättert durch die Tabs – auch zu den eigenen Fenstern im Hauptchat. Abschaltbar unter Chat-Hilfen
+- Funktioniert mit dem modernen Chatfenster und mit dem originalen WoW-Look
+- Schönere Glocke in den eigenen Fenstern: echtes Glocken-Symbol statt gezeichneter Pixel (an = farbig, aus = grau und durchgestrichen)
 - Neu: **Spieler-Info beim Drüberfahren** – Maus über einen Namen im Chat (und in den eigenen Fenstern) zeigt vollen Namen in Klassenfarbe, Stufe, Klasse und ob die Person in Gruppe, Gilde oder Freundesliste ist. Die @-Vorschläge zeigen die Stufe gleich mit. Abschaltbar unter Chat-Hilfen
 - Neu: Chat-Befehle direkt im eigenen Fenster – wie beim normalen Chat. `/w Name` + Leertaste oder Enter wird zum festen Ziel (der Befehl verschwindet, der Name lässt sich nicht mehr versehentlich buchstabenweise löschen). Was du danach schreibst, wird aus dem Fenster geflüstert und springt nicht mehr in den normalen Chat
 - Funktioniert auch für `/g`, `/o`, `/p`, `/ra`, `/i`, `/s`, `/y`, `/e`, Kanäle wie `/2` und `/r` (Antwort an die letzte Flüsternachricht); `/w Name Text` + Enter flüstert sofort

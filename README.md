@@ -79,6 +79,8 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
   - **Frei verschieben** an der Titelleiste, Größe unten rechts ändern.
   - **Andocken:** ein Fenster auf die Titelleiste eines anderen ziehen – es wird ein Tab. Tab wieder herausziehen zum Abdocken.
   - **Einrasten:** direkt über dem Chat ablegen – das Fenster sitzt dann über dem Chat und wandert mit.
+  - **Im Hauptchat andocken:** auf den Hauptchat ziehen – das Fenster bekommt einen eigenen Tab neben den normalen Chat-Tabs und erscheint per Klick genau im Hauptchat. Tab herausziehen zum Abdocken.
+  - **Mausrad über den Chat-Tabs** blättert durch alle Tabs, auch durch die eigenen Fenster im Hauptchat.
   - **Neues Fenster mit einem Klick:** das **+** oben rechts am Chat (oder **+** im Fenster für einen neuen Tab).
   - **Direkt im Fenster schreiben:** Jedes Fenster hat ein Eingabefeld. Der Knopf links daneben zeigt, wohin die Nachricht geht – standardmäßig dorthin, woher die letzte Nachricht kam. Klick auf einen Namen = ihm flüstern. @-Vorschläge funktionieren auch hier.
   - **Chat-Befehle wie gewohnt:** `/w Name`, `/r`, `/g`, `/p`, `/ra`, `/s`, `/y`, `/2` … werden zum Ziel des Fensters – die Nachricht bleibt im Fenster. Rücktaste im leeren Feld setzt das Ziel zurück.
@@ -194,6 +196,8 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
   - **Move freely** by the title bar, resize at the bottom right corner.
   - **Dock:** drop a window onto another window's title bar – it becomes a tab. Drag the tab out again to undock.
   - **Snap:** drop it right above the chat – it then sits on top of the chat and moves with it.
+  - **Dock into the main chat:** drop it onto the main chat – it gets its own tab next to the game's chat tabs and shows up right in the main chat when clicked. Drag the tab out to undock.
+  - **Mouse wheel over the chat tabs** flips through all tabs, including your own windows in the main chat.
   - **New window in one click:** the **+** at the top right of the chat (or **+** in a window for a new tab).
   - **Write right in the window:** every window has its own input box. The button on its left shows where your message goes – by default back to where the last message came from. Click a name to whisper that person. @ suggestions work here too.
   - **Chat commands as usual:** `/w Name`, `/r`, `/g`, `/p`, `/ra`, `/s`, `/y`, `/2` … become the window's target – the message stays in the window. Backspace in an empty box resets the target.

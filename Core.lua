@@ -35,6 +35,7 @@ ns.defaults = {
 	showLevels = true,
 	shortSurnames = true,
 	playerInfo = true,
+	tabWheel = true,
 	snippets = true,
 	abbrevTips = true,
 	markForeign = true,

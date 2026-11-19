@@ -175,11 +175,20 @@ end
 
 local function MainChat() return DEFAULT_CHAT_FRAME or ChatFrame1 end
 
+local UpdateLaunchers -- forward (tabs of windows docked into the main chat)
+
 local function Place(g)
 	local f, d = g.frame, g.data
 	f:ClearAllPoints()
 	local main = MainChat()
-	if d.snap and main then
+	if g.bg then UI.Paint(g.bg, (d.main and main) and C.bg or C.chatBg) end
+	if d.main and main then
+		-- docked into the main chat: lies exactly over it, opened by its tab
+		f:SetPoint("TOPLEFT", main, "TOPLEFT", -4, 4)
+		f:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", 4, -6)
+		f:SetFrameLevel((main:GetFrameLevel() or 1) + 10)
+		f:SetShown(g.mainOpen and true or false)
+	elseif d.snap and main then
 		f:SetPoint("BOTTOMLEFT", main, "TOPLEFT", -4, 34)
 		f:SetPoint("BOTTOMRIGHT", main, "TOPRIGHT", 4, 34)
 		f:SetHeight(d.h or 180)
@@ -455,6 +464,7 @@ function Select(g, w)
 	LayoutTabs(g)
 	ns:CW_UpdateChip(g)
 	ns:CW_UpdateBell(g)
+	if g.data.main and UpdateLaunchers then UpdateLaunchers() end
 	if menu and menu:IsShown() and menu.group == g then ns:CW_OpenMenu(g) end
 end
 
@@ -504,7 +514,7 @@ local function CreateGroupFrame(g)
 	if f.SetResizeBounds then f:SetResizeBounds(MIN_W, MIN_H, MAX_W, MAX_H)
 	elseif f.SetMinResize then f:SetMinResize(MIN_W, MIN_H); f:SetMaxResize(MAX_W, MAX_H) end
 	f:EnableMouse(true)
-	UI.Fill(f, C.chatBg)
+	g.bg = UI.Fill(f, C.chatBg)
 	UI.Border(f, C.border)
 	g.frame = f
 
@@ -572,13 +582,12 @@ local function CreateGroupFrame(g)
 	-- bell: notify me about new messages in this window (on/off)
 	g.bell = HeaderButton(g, L.CW_BELL_OFF, function() ns:CW_ToggleBell(g) end)
 	g.bell:SetPoint("RIGHT", g.filter, "LEFT", -1, 0)
-	IconLine(g.bell, 2, 2, nil, 0, 6)      -- knob
-	IconLine(g.bell, 4, 2, nil, 0, 4)
-	IconLine(g.bell, 6, 3, nil, 0, 2)      -- dome
-	IconLine(g.bell, 8, 3, nil, 0, -1)
-	IconLine(g.bell, 10, 2, nil, 0, -3)
-	IconLine(g.bell, 12, 2, nil, 0, -5)    -- rim
-	IconLine(g.bell, 3, 2, nil, 0, -7)     -- clapper
+	-- a real bell icon from the game (smooth at any UI scale), cropped to the bell
+	g.bell.icon = g.bell:CreateTexture(nil, "ARTWORK")
+	g.bell.icon:SetSize(15, 15)
+	g.bell.icon:SetPoint("CENTER")
+	g.bell.icon:SetTexture("Interface\\Icons\\INV_Misc_Bell_01")
+	g.bell.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 	g.bell.slash = g.bell:CreateTexture(nil, "OVERLAY")
 	g.bell.slash:SetSize(16, 2)
 	g.bell.slash:SetPoint("CENTER")
@@ -744,7 +753,7 @@ function NewGroup(gdata)
 		local w = wins[id]
 		if w then Attach(g, w) end
 	end
-	g.frame:Show()
+	if not gdata.main then g.frame:Show() end
 	LayoutTabs(g)
 	return g
 end
@@ -794,6 +803,7 @@ local function FinishDrag(g)
 	dragFrame:Hide()
 	g.frame:StopMovingOrSizing()
 	for _, o in ipairs(groups) do o.dropHl:Hide() end
+	if ns.ShowMainDrop then ns:ShowMainDrop(false) end
 	local target = DropTarget(g)
 	if target and #g.data.order == 1 then
 		-- dock as a tab
@@ -803,6 +813,12 @@ local function FinishDrag(g)
 		table.insert(target.data.order, w.data.id)
 		Attach(target, w)
 		Select(target, w)
+		return
+	end
+	if ns.OverMainChat and ns:OverMainChat() then
+		g.data.snap = false
+		g.data.main = true
+		ns:CW_OpenMain(g)
 		return
 	end
 	if NearMainChat(g) then
@@ -822,6 +838,7 @@ dragFrame:SetScript("OnUpdate", function()
 	if not IsMouseButtonDown("LeftButton") then return FinishDrag(g) end
 	local target = #g.data.order == 1 and DropTarget(g)
 	for _, o in ipairs(groups) do o.dropHl:SetShown(o == target) end
+	if ns.ShowMainDrop then ns:ShowMainDrop(not target and ns:OverMainChat()) end
 end)
 
 function StartDrag(g, w)
@@ -837,6 +854,18 @@ function StartDrag(g, w)
 		Data.groups[#Data.groups + 1] = d
 		g = NewGroup(d)
 		Select(g, w)
+	end
+	if g.data.main then
+		-- pulled out of the main chat: becomes a free window under the mouse
+		local scale = UIParent:GetEffectiveScale() or 1
+		local cx, cy = GetCursorPosition()
+		g.data.main = false
+		g.mainOpen = false
+		g.data.w, g.data.h = math.floor(g.frame:GetWidth()), math.floor(g.frame:GetHeight())
+		g.data.x, g.data.y = math.floor(cx / scale - 40), math.floor(cy / scale + 10)
+		Place(g)
+		g.frame:Show()
+		if UpdateLaunchers then UpdateLaunchers() end
 	end
 	if g.data.snap then
 		Save(g)
@@ -884,7 +913,11 @@ local function AddLine(w, text, r, g, b, save)
 		if not w.unread then
 			w.unread = true
 			LayoutTabs(w.group)
+			if UpdateLaunchers then UpdateLaunchers() end
 		end
+	elseif w.group and w.group.data and w.group.data.main and not w.group.mainOpen and not w.unread then
+		w.unread = true
+		if UpdateLaunchers then UpdateLaunchers() end
 	end
 end
 
@@ -1162,7 +1195,8 @@ function ns:CW_UpdateBell(g)
 	local w = g and g.data and wins[g.data.active]
 	if not w then return end
 	local on = w.data.bell and true or false
-	for _, t in ipairs(g.bell.lines) do UI.Paint(t, on and C.orange or C.muted) end
+	if g.bell.icon.SetDesaturated then g.bell.icon:SetDesaturated(not on) end
+	g.bell.icon:SetAlpha(on and 1 or 0.45)
 	g.bell.slash:SetShown(not on)
 	g.bell.tip = on and L.CW_BELL_ON or L.CW_BELL_OFF
 end
@@ -1229,7 +1263,8 @@ function ns:CW_New(cats, into)
 	if not Data then return end
 	if Data.hidden then
 		Data.hidden = false
-		for _, o in ipairs(groups) do o.frame:Show() end
+		for _, o in ipairs(groups) do o.frame:SetShown(not o.data.main or o.mainOpen or false) end
+		UpdateLaunchers()
 	end
 	Data.nextId = (Data.nextId or 0) + 1
 	local wdata = { id = Data.nextId, cats = {}, lines = {} }
@@ -1259,17 +1294,27 @@ function ns:CW_Delete(w)
 	if g and g.data then RemoveFromGroup(g, w) end
 	w.msg:Hide()
 	w.tab:Hide()
+	if w.launch then w.launch:Hide() end
 	wins[w.data.id] = nil
 	for i, d in ipairs(Data.windows) do if d == w.data then table.remove(Data.windows, i) break end end
+	UpdateLaunchers()
 end
 
 function ns:CW_Count() return Data and #Data.windows or 0 end
 
 function ns:CW_ToggleAll()
 	if #groups == 0 then return self:CW_New() end
-	local show = not groups[1].frame:IsShown()
-	for _, g in ipairs(groups) do g.frame:SetShown(show) end
+	local show = Data and Data.hidden or false
+	for _, g in ipairs(groups) do
+		if g.data.main then
+			if not show then g.mainOpen = false end
+			g.frame:SetShown(show and g.mainOpen or false)
+		else
+			g.frame:SetShown(show)
+		end
+	end
 	if Data then Data.hidden = not show end
+	UpdateLaunchers()
 end
 
 local function Restore()
@@ -1302,9 +1347,238 @@ local function Restore()
 		if not byId[d.active] then d.active = d.order[1] end
 		local g = NewGroup(d)
 		Select(g, wins[d.active])
-		if Data.hidden then g.frame:Hide() end
+		if Data.hidden or d.main then g.frame:Hide() end
 	end
 end
+
+-------------------------------------------------------------------------------
+-- Docking into the main chat. A window dropped onto the main chat gets its own
+-- tab next to the game's chat tabs; clicking it shows the window exactly over
+-- the main chat, clicking one of the game's tabs switches back. (Addons cannot
+-- put frames into the game's own tab bar, so this works alongside it.)
+-------------------------------------------------------------------------------
+local mainDrop
+
+function ns:OverMainChat()
+	local main = MainChat()
+	if not main or not main.IsVisible or not main:IsVisible() or not main:GetLeft() then return false end
+	local scale = UIParent:GetEffectiveScale() or 1
+	local x, y = GetCursorPosition()
+	x, y = x / scale, y / scale
+	return x >= main:GetLeft() and x <= main:GetRight() and y >= main:GetBottom() and y <= main:GetTop() + 30
+end
+
+function ns:ShowMainDrop(on)
+	local main = MainChat()
+	if not main then return end
+	if not mainDrop then
+		mainDrop = CreateFrame("Frame", nil, UIParent)
+		mainDrop:SetFrameStrata("DIALOG")
+		local t = mainDrop:CreateTexture(nil, "OVERLAY")
+		t:SetAllPoints()
+		UI.Paint(t, C.accentDim)
+		UI.Border(mainDrop, C.accent)
+		mainDrop.text = UI.Text(mainDrop, "GameFontHighlightLarge", C.accent)
+		mainDrop.text:SetPoint("CENTER")
+		mainDrop.text:SetText(L.CW_DOCK_MAIN)
+	end
+	mainDrop:ClearAllPoints()
+	mainDrop:SetPoint("TOPLEFT", main, "TOPLEFT", -4, 30)
+	mainDrop:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", 4, -6)
+	mainDrop:SetShown(on and true or false)
+end
+
+local function CloseMainOverlays(except)
+	local changed = false
+	for _, g in ipairs(groups) do
+		if g.data and g.data.main and g ~= except and g.mainOpen then
+			g.mainOpen = false
+			g.frame:Hide()
+			changed = true
+		end
+	end
+	return changed
+end
+
+function ns:CW_OpenMain(g, w)
+	if not g or not g.data then return end
+	CloseMainOverlays(g)
+	g.mainOpen = true
+	if Data then Data.hidden = false end
+	Place(g)
+	g.frame:Show()
+	g.frame:Raise()
+	Select(g, w or wins[g.data.active])
+	UpdateLaunchers()
+end
+
+-- rightmost visible tab of the game's main chat dock
+local function LastGameTab()
+	local main = MainChat()
+	local mainTab = main and (rawget(main, "tab") or (main.GetName and _G[(main:GetName() or "") .. "Tab"]))
+	if not mainTab or not mainTab.GetBottom or not mainTab:GetBottom() then return mainTab end
+	local best, right = mainTab, mainTab:GetRight() or 0
+	for i = 1, (NUM_CHAT_WINDOWS or 10) do
+		local tab = _G["ChatFrame" .. i .. "Tab"]
+		if tab and tab:IsVisible() and tab:GetRight() and math.abs((tab:GetBottom() or 0) - mainTab:GetBottom()) < 8
+			and tab:GetRight() > right then
+			best, right = tab, tab:GetRight()
+		end
+	end
+	return best
+end
+
+local launchers = {}
+
+local function CreateLauncher(w)
+	local b = CreateFrame("Button", nil, UIParent)
+	b:SetHeight(22)
+	b:SetFrameStrata("MEDIUM")
+	b:RegisterForClicks("LeftButtonUp")
+	b:RegisterForDrag("LeftButton")
+	b.bg = UI.Fill(b, C.btn)
+	b.hl = b:CreateTexture(nil, "BORDER")
+	b.hl:SetAllPoints()
+	UI.Paint(b.hl, C.accentDim)
+	b.hl:Hide()
+	b.line = UI.Glow(b, "OVERLAY")
+	b.line:SetPoint("BOTTOMLEFT", 3, 0)
+	b.line:SetPoint("BOTTOMRIGHT", -3, 0)
+	b.line:SetHeight(2)
+	b.text = UI.Text(b, "GameFontHighlightSmall", C.muted)
+	b.text:SetPoint("LEFT", 9, 0)
+	b.text:SetWordWrap(false)
+	b.dot = b:CreateTexture(nil, "OVERLAY")
+	b.dot:SetSize(5, 5)
+	b.dot:SetPoint("TOPRIGHT", -3, -3)
+	UI.Paint(b.dot, C.orange)
+	b:SetScript("OnClick", function()
+		local g = w.group
+		if not g then return end
+		if g.mainOpen and g.data.active == w.data.id then return end
+		ns:CW_OpenMain(g, w)
+	end)
+	b:SetScript("OnDragStart", function() if w.group then StartDrag(w.group, w) end end)
+	b:SetScript("OnEnter", function(self)
+		self.hl:Show()
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:SetText(WindowName(w))
+		GameTooltip:AddLine(L.CW_MAIN_TAB_TIP, 0.8, 0.8, 0.8, true)
+		GameTooltip:Show()
+	end)
+	b:SetScript("OnLeave", function(self) self.hl:Hide(); GameTooltip:Hide() end)
+	b:EnableMouseWheel(true)
+	b:SetScript("OnMouseWheel", function(_, delta) ns:CW_TabWheel(delta) end)
+	return b
+end
+
+function UpdateLaunchers()
+	wipe(launchers)
+	local anchor = LastGameTab()
+	local main = MainChat()
+	local hidden = Data and Data.hidden
+	for _, g in ipairs(groups) do
+		for _, id in ipairs(g.data and g.data.main and g.data.order or {}) do
+			local w = wins[id]
+			if w then
+				w.launch = w.launch or CreateLauncher(w)
+				local b = w.launch
+				b.text:SetText(WindowName(w))
+				local width = math.min((b.text:GetStringWidth() or 60) + 20, 150)
+				b:SetWidth(width)
+				b.text:SetWidth(width - 14)
+				b:ClearAllPoints()
+				if anchor then
+					b:SetPoint("BOTTOMLEFT", anchor, "BOTTOMRIGHT", 3, 0)
+				elseif main then
+					b:SetPoint("BOTTOMLEFT", main, "TOPLEFT", 0, 4)
+				end
+				local active = g.mainOpen and g.data.active == id
+				b.line:SetShown(active)
+				UI.Ink(b.text, active and C.text or C.muted)
+				if active then w.unread = false end
+				b.dot:SetShown(w.unread and not active or false)
+				b:SetShown(not hidden)
+				anchor = b
+				launchers[#launchers + 1] = w
+			end
+		end
+	end
+	-- windows that are no longer docked into the main chat lose their tab
+	for _, w in pairs(wins) do
+		if w.launch and not (w.group and w.group.data and w.group.data.main) then w.launch:Hide() end
+	end
+end
+ns.CW_UpdateLaunchers = function() UpdateLaunchers() end
+
+-- the game's tabs keep working: picking one of them hides our window again
+local function OnGameTabSelected()
+	if CloseMainOverlays() then UpdateLaunchers() end
+end
+if type(FCF_SelectDockFrame) == "function" then hooksecurefunc("FCF_SelectDockFrame", OnGameTabSelected) end
+if type(FCF_Tab_OnClick) == "function" then
+	hooksecurefunc("FCF_Tab_OnClick", function(_, button) if button ~= "RightButton" then OnGameTabSelected() end end)
+end
+for _, name in ipairs({ "FCFDock_UpdateTabs", "FCF_DockUpdate", "FCF_OpenTemporaryWindow", "FCF_Close" }) do
+	if type(_G[name]) == "function" then hooksecurefunc(name, function() C_Timer.After(0, UpdateLaunchers) end) end
+end
+
+-------------------------------------------------------------------------------
+-- Mouse wheel over the chat tabs: flip through them (game tabs + our tabs)
+-------------------------------------------------------------------------------
+local function GameTabFrames()
+	local list = {}
+	local dock = GENERAL_CHAT_DOCK
+	local frames = dock and FCFDock_GetChatFrames and FCFDock_GetChatFrames(dock)
+	if type(frames) == "table" then
+		for _, f in ipairs(frames) do
+			local tab = rawget(f, "tab") or _G[(f:GetName() or "") .. "Tab"]
+			if tab and tab:IsShown() then list[#list + 1] = f end
+		end
+	else
+		local main = MainChat()
+		if main then list[1] = main end
+	end
+	return list
+end
+
+function ns:CW_TabWheel(delta)
+	if not self.S or not self.S.tabWheel then return end
+	local frames = GameTabFrames()
+	local entries = {}
+	for _, f in ipairs(frames) do entries[#entries + 1] = { frame = f } end
+	for _, w in ipairs(launchers) do
+		if w.launch and w.launch:IsShown() then entries[#entries + 1] = { win = w } end
+	end
+	if #entries < 2 then return end
+	local cur = 1
+	local sel = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK)
+	for i, e in ipairs(entries) do
+		if e.frame and e.frame == sel then cur = i end
+	end
+	for i, e in ipairs(entries) do
+		local g = e.win and e.win.group
+		if g and g.mainOpen and g.data.active == e.win.data.id then cur = i end
+	end
+	local nxt = math.max(1, math.min(#entries, cur - (delta > 0 and 1 or -1)))
+	if nxt == cur then return end
+	local e = entries[nxt]
+	if e.win then
+		self:CW_OpenMain(e.win.group, e.win)
+	else
+		OnGameTabSelected()
+		if FCF_SelectDockFrame then pcall(FCF_SelectDockFrame, e.frame) end
+		if FCFDock_ScrollToSelectedTab and GENERAL_CHAT_DOCK then pcall(FCFDock_ScrollToSelectedTab, GENERAL_CHAT_DOCK) end
+	end
+end
+
+ns.OnChatFrame(function(frame)
+	local tab = rawget(frame, "tab") or _G[(frame:GetName() or "") .. "Tab"]
+	if not tab or rawget(tab, "ChatPilotWheel") then return end
+	tab.ChatPilotWheel = true
+	tab:EnableMouseWheel(true)
+	tab:HookScript("OnMouseWheel", function(_, delta) ns:CW_TabWheel(delta) end)
+end)
 
 -------------------------------------------------------------------------------
 -- "+" at the top right of the main chat: new chat window in one click
@@ -1363,8 +1637,10 @@ function ns:OnLogin()
 	d.groups = d.groups or {}
 	pcall(Restore)
 	self:CW_UpdatePlus()
+	C_Timer.After(1, function() UpdateLaunchers() end)
 end
 
 ns._cwPlus = function() return plus end
+ns._cwLaunchers = function() return launchers end
 ns._cw = { wins = wins, groups = groups, Format = Format, Deliver = Deliver, FinishDrag = FinishDrag,
 	StartDrag = StartDrag, ChannelCat = ChannelCat } -- for tests

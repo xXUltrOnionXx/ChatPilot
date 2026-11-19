@@ -517,6 +517,7 @@ local function BuildChat(content)
 		if not v and ns.HideNotes then ns:HideNotes() end
 		ns:UpdateChatButtons()
 	end)
+	ToggleRow(flow, "tabWheel")
 	local btn = ToggleRow(flow, "copyButton", nil, function() ns:UpdateChatButtons() end)
 	ToggleRow(flow, "buttonsTop", btn, function() ns:UpdateChatButtons() end)
 	ToggleRow(flow, "buttonBackground", btn, function() ns:UpdateChatButtons() end)
