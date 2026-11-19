@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1
+- Fix: Der Zeichenzähler (z. B. „42/255“) ist jetzt in allen Eingabefeldern zuverlässig sichtbar – im normalen Chat, im Community-Fenster und in den eigenen Chat-Fenstern. Er erscheint, sobald das Feld aktiv ist (auch bei 0), wird ab 80 % orange und am Limit rot, und kann von keinem Hintergrund mehr verdeckt werden
+- Eigene Chat-Fenster nutzen dasselbe Limit wie der normale Chat (255 Zeichen), der Text läuft nicht mehr unter den Zähler
+
 ## 1.6.0
 - Neu: **Eigene Fenster im Hauptchat andocken** – ein Fenster auf den Hauptchat ziehen (er leuchtet auf), dann bekommt es einen eigenen Tab neben den normalen Chat-Tabs. Klick auf den Tab zeigt das Fenster genau dort, Klick auf einen normalen Tab wechselt zurück. Tab herausziehen = wieder freies Fenster. Neue Nachrichten zeigen einen orangen Punkt am Tab
 - Neu: **Mausrad über den Chat-Tabs** blättert durch die Tabs – auch zu den eigenen Fenstern im Hauptchat. Abschaltbar unter Chat-Hilfen

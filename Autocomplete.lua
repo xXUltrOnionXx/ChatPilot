@@ -302,18 +302,29 @@ end
 -------------------------------------------------------------------------------
 -- Character counter
 -------------------------------------------------------------------------------
+-- Shows "used/limit" (the game allows 255 characters per chat message) as
+-- soon as the box is active, so you always see how much room is left.
+local CHAT_LIMIT = 255
 local function UpdateCounter(box)
-	local fs = box.ChatPilotCounter
-	if not fs then return end
-	local len = #(box:GetText() or "")
-	if not ns.S or not ns.S.charCounter or len == 0 then fs:Hide() return end
-	local max = (box.GetMaxBytes and box:GetMaxBytes()) or 255
-	if not max or max <= 0 then max = 255 end
+	local holder = rawget(box, "ChatPilotCounterFrame")
+	local fs = rawget(box, "ChatPilotCounter")
+	if not fs or not holder then return end
+	local text = box:GetText() or ""
+	local len = #text
+	local active = box.HasFocus and box:HasFocus()
+	if not ns.S or not ns.S.charCounter or (len == 0 and not active) or ns.IsSecret(text) then
+		holder:Hide()
+		return
+	end
+	local max = (box.GetMaxBytes and box:GetMaxBytes()) or 0
+	if type(max) ~= "number" or max <= 0 or max > CHAT_LIMIT + 1 then max = CHAT_LIMIT end
+	if max == CHAT_LIMIT + 1 then max = CHAT_LIMIT end
 	fs:SetText(len .. "/" .. max)
-	if len >= max then fs:SetTextColor(1, 0.25, 0.25)
-	elseif len >= max * 0.8 then fs:SetTextColor(1, 0.65, 0.1)
-	else fs:SetTextColor(0.55, 0.55, 0.55) end
-	fs:Show()
+	local C = ns.UI.C
+	if len >= max then fs:SetTextColor(1, 0.3, 0.3)
+	elseif len >= max * 0.8 then fs:SetTextColor(unpack(C.orange))
+	else fs:SetTextColor(unpack(C.muted)) end
+	holder:Show()
 end
 
 -------------------------------------------------------------------------------
@@ -323,9 +334,18 @@ function ns.HookEditBox(box)
 	if not box or hooked[box] or not box.HookScript then return end
 	hooked[box] = true
 
-	box.ChatPilotCounter = box:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	box.ChatPilotCounter:SetPoint("RIGHT", box, "RIGHT", -10, 0)
-	box.ChatPilotCounter:Hide()
+	-- own little frame above the input box, so no texture can ever cover the counter
+	local holder = CreateFrame("Frame", nil, box)
+	holder:SetSize(56, 16)
+	holder:SetPoint("RIGHT", box, "RIGHT", -8, 0)
+	holder:SetFrameLevel((box:GetFrameLevel() or 1) + 5)
+	box.ChatPilotCounter = ns.UI.NoShadow(holder:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall"))
+	box.ChatPilotCounter:SetPoint("RIGHT")
+	box.ChatPilotCounter:SetJustifyH("RIGHT")
+	box.ChatPilotCounterFrame = holder
+	holder:Hide()
+	box:HookScript("OnEditFocusGained", function(self) UpdateCounter(self) end)
+	box:HookScript("OnShow", function(self) UpdateCounter(self) end)
 
 	box:HookScript("OnTextChanged", function(self, userInput)
 		UpdateCounter(self)
@@ -394,6 +414,7 @@ function ns.HookEditBox(box)
 		UpdateCounter(self)
 	end)
 	box:HookScript("OnEditFocusLost", function(self)
+		UpdateCounter(self)
 		C_Timer.After(0.2, function()
 			if state and state.box == self and not self:HasFocus() then HidePopup() end
 		end)

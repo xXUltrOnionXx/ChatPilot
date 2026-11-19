@@ -634,6 +634,8 @@ local function CreateGroupFrame(g)
 	eb:SetFontObject(ChatFontNormal or UI.MessageFont())
 	eb:SetAutoFocus(false)
 	eb:SetMaxLetters(255)
+	if eb.SetMaxBytes then eb:SetMaxBytes(256) end -- same limit as the game's chat (255 bytes)
+	eb:SetTextInsets(0, 52, 0, 0)                  -- room for the "123/255" counter
 	eb:SetAltArrowKeyMode(false)
 	local ph = UI.Text(holder, "GameFontHighlightSmall", C.muted)
 	ph:SetPoint("LEFT", 9, 0)
