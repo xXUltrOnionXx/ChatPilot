@@ -37,6 +37,7 @@ ns.defaults = {
 	playerInfo = true,
 	tabWheel = true,
 	notifyGlow = true,
+	chatStyle = true,
 	snippets = true,
 	abbrevTips = true,
 	markForeign = true,

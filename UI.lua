@@ -436,3 +436,25 @@ function UI.Orb(target, size, color)
 	return o
 end
 
+-------------------------------------------------------------------------------
+-- Conversation look for chat lines: a thin colour bar in front of each
+-- message. Colour = the sender (class colour), your own messages use the
+-- design's accent colour, mentions of you are orange. Colour is never the only
+-- hint: names / "You" stay in the text.
+-------------------------------------------------------------------------------
+function UI.Bar(r, g, b, width)
+	return ("|TInterface\\Buttons\\WHITE8X8:0:%d:0:0:8:8:0:8:0:8:%d:%d:%d|t "):format(width or 3,
+		math.floor((r or 1) * 255 + 0.5), math.floor((g or 1) * 255 + 0.5), math.floor((b or 1) * 255 + 0.5))
+end
+
+-- own messages and mentions get a wide bar, so they stand out by shape too
+-- (a mage's blue or a druid's orange can look similar to the accent colours)
+function UI.BarFor(kind, classFile, r, g, b)
+	if kind == "own" then return UI.Bar(C.accent[1], C.accent[2], C.accent[3], 6) end
+	if kind == "mention" then return UI.Bar(C.orange[1], C.orange[2], C.orange[3], 6) end
+	if kind == "system" then return UI.Bar(C.muted[1], C.muted[2], C.muted[3]) end
+	local cc = classFile and RAID_CLASS_COLORS and RAID_CLASS_COLORS[classFile]
+	if cc then return UI.Bar(cc.r, cc.g, cc.b) end
+	return UI.Bar(r, g, b)
+end
+

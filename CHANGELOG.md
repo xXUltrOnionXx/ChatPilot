@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0
+- Neu: **Gesprächs-Look** nach gängigen Chat-Design-Regeln – vor jeder Nachricht ein schmaler Farbbalken in der Klassenfarbe des Absenders, so lassen sich die Antworten aller sofort auseinanderhalten. **Eigene Nachrichten** haben einen breiten Balken in der Akzentfarbe (in eigenen Fenstern steht „Du“ statt des Namens), **Erwähnungen von dir** einen breiten orangen Balken, Systemmeldungen einen grauen
+- In den eigenen Fenstern: mehrere Nachrichten einer Person hintereinander werden **gruppiert** (Name und Uhrzeit nur einmal, der Rest eingerückt), nach längeren Pausen erscheint eine **Zeitlinie**, und die Zeilen haben etwas mehr Abstand
+- Gilt auch für den normalen Chat (Balken). Abschaltbar unter Design & Fenster → „Gesprächs-Look“
+
 ## 1.6.9
 - Neu: **Leuchtende Benachrichtigungen** – kommt eine neue Erwähnung, Flüsternachricht oder Nachricht in einem eigenen Fenster, zieht sich eine weiche Lichtkugel in den Zähler bzw. den Punkt am Tab, blitzt kurz auf und leuchtet danach sanft „atmend“, solange etwas ungelesen ist. Abschaltbar unter Design & Fenster
 

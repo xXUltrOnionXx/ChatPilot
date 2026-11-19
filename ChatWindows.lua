@@ -87,7 +87,12 @@ local function ResolveChannel(channelString, baseName)
 	return channelString or "?"
 end
 
+local styleOwn = false -- set while formatting one of your own messages
+
 local function PlayerLink(chatType, author, lineID, guid, bnID, channelNumber)
+	if styleOwn and not chatType:find("_INFORM$") then
+		return ("|Hplayer:%s:%s:%s:|h[%s]|h"):format(author, tostring(lineID or 0), chatType, UI.Hex(C.accent) .. L.WH_YOU .. "|r")
+	end
 	if chatType:find("^BN_") then
 		return ("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h"):format(author, tostring(bnID or 0), tostring(lineID or 0),
 			chatType, author, author)
@@ -920,6 +925,7 @@ local function CreateMessageFrame(w)
 	m:SetJustifyH("LEFT")
 	m:SetMaxLines(500)
 	m:SetFading(false)
+	if m.SetSpacing then m:SetSpacing(2) end
 	if m.SetHyperlinksEnabled then m:SetHyperlinksEnabled(true) end
 	m:EnableMouseWheel(true)
 	m:SetScript("OnMouseWheel", function(self, delta)
@@ -1183,10 +1189,44 @@ local function Deliver(event, ...)
 		return
 	end
 
+	-- who wrote it (for grouping and the colour bar)
+	local chatType = event:sub(10)
+	local guid = select(12, ...)
+	local channelNumber = select(8, ...)
+	local isSystem = chatType == "SYSTEM" or chatType == "TEXT_EMOTE" or not author or author == ""
+	local isOwn = not isSystem and (chatType:find("_INFORM$") or (Ambiguate and Ambiguate(author, "none") == UnitName("player")))
+	local class
+	if not isSystem and type(guid) == "string" and guid ~= "" and GetPlayerInfoByGUID then
+		local okc, _, cf = pcall(GetPlayerInfoByGUID, guid)
+		if okc then class = cf end
+	end
+	local mentioned = not isOwn and not isSystem and ns.FindMention and ns:FindMention(msg)
+	local key = (isSystem and "~system" or tostring(ns.Normalize(author) or author)) .. "|" .. chatType .. "|" .. tostring(channelNumber or "")
+	local styled = ns.S.chatStyle ~= false
+
 	for _, w in ipairs(targets) do
 		local args, n = RunFilters(w.msg, event, ...)
 		if args then
+			styleOwn = styled and isOwn and true or false
 			local ok, text, r, g, b = pcall(Format, event, unpack(args, 1, n))
+			styleOwn = false
+			if ok and text and styled then
+				local now = time()
+				-- a calm divider after a longer pause
+				if w.lastT and now - w.lastT > 900 then
+					AddLine(w, UI.Hex(C.muted) .. "—  " .. date("%H:%M", now) .. "  —|r", 1, 1, 1, true)
+					w.lastKey = nil
+				end
+				local bar = UI.BarFor(isSystem and "system" or isOwn and "own" or mentioned and "mention" or "other", class, r, g, b)
+				if not isSystem and w.lastKey == key and w.lastT and now - w.lastT <= 120 then
+					-- same person again: no repeated name and time, just the text, indented
+					local body = args[1]
+					if type(body) == "string" then text = bar .. "    " .. body end
+				else
+					text = bar .. text
+				end
+				w.lastKey, w.lastT = key, now
+			end
 			if ok and text then
 				AddLine(w, text, r, g, b, true)
 				ns:CW_Notify(w, event, (...), select(2, ...))

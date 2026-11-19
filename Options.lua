@@ -622,6 +622,7 @@ local function BuildDesign(content)
 	FlowAdd(flow, box)
 
 	ToggleRow(flow, "notifyGlow", nil, function() ns:UpdateChatButtons() end)
+	ToggleRow(flow, "chatStyle")
 	local skinRow = ToggleRow(flow, "chatSkin", nil, function(v)
 		if v then ns:SkinAllChats() else ns.Print(L.CHATSKIN_RELOAD) end
 	end)
