@@ -127,16 +127,30 @@ local function SkinFrame(frame)
 		end
 	end
 
-	-- our flat background sits just below the chat text
-	local skin = CreateFrame("Frame", nil, frame)
-	skin:SetPoint("TOPLEFT", -4, 4)
-	skin:SetPoint("BOTTOMRIGHT", 4, -6)
-	skin:SetFrameLevel(math.max(0, frame:GetFrameLevel() - 1))
-	UI.Fill(skin, C.chatBg)
-	UI.Border(skin, C.border)
-	local glow = UI.Glow(skin)
-	glow:SetPoint("TOPLEFT", 1, -1)
-	glow:SetPoint("TOPRIGHT", -1, -1)
+	-- our flat background: textures on the chat frame itself, in its lowest
+	-- layer, so they are always drawn underneath the chat text
+	local skin = {}
+	local bg = Mine(frame:CreateTexture(nil, "BACKGROUND", nil, -8))
+	bg:SetPoint("TOPLEFT", -4, 4)
+	bg:SetPoint("BOTTOMRIGHT", 4, -6)
+	UI.Paint(bg, C.chatBg)
+	skin.bg = bg
+	local function Edge(a, b, w, h)
+		local t = Mine(frame:CreateTexture(nil, "BACKGROUND", nil, -7))
+		t:SetPoint(a, bg, a)
+		t:SetPoint(b, bg, b)
+		if w then t:SetWidth(w) end
+		if h then t:SetHeight(h) end
+		UI.Paint(t, C.border)
+	end
+	Edge("TOPLEFT", "TOPRIGHT", nil, 1)
+	Edge("BOTTOMLEFT", "BOTTOMRIGHT", nil, 1)
+	Edge("TOPLEFT", "BOTTOMLEFT", 1, nil)
+	Edge("TOPRIGHT", "BOTTOMRIGHT", 1, nil)
+	local glow = Mine(UI.Glow(frame, "BACKGROUND"))
+	glow:SetDrawLayer("BACKGROUND", -6)
+	glow:SetPoint("TOPLEFT", bg, "TOPLEFT", 1, -1)
+	glow:SetPoint("TOPRIGHT", bg, "TOPRIGHT", -1, -1)
 	glow:SetHeight(1)
 	glow:SetAlpha(0.7)
 	frame.ChatPilotSkin = skin

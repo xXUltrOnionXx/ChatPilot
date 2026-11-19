@@ -3,6 +3,13 @@
 ## 1.4.1
 - Fix: In den eigenen Chat-Fenstern verschwand beim Drüberfahren der Text im Ziel-Menü und die Symbole oben im Fenster (Glocke, Filter, +, ×)
 - Ziel-Knopf zeigt Kanäle kürzer („1. Allgemein“ statt „1. Allgemein - Sturmwind“)
+- Fix: Das „+“ am Chat verschwand, wenn ein anderer angedockter Chat-Tab (z. B. Kampflog) ausgewählt war
+- Fix: Der Hintergrund des modernen Chatfensters liegt jetzt sicher immer unter dem Chattext
+- Fix: Viele Tabs in einem Fenster schieben sich nicht mehr unter die Symbole oben rechts
+- Fix: Nach einer Filteränderung zeigt der Ziel-Knopf sofort ein passendes Ziel
+- Fix: Ein neues Fenster bei „alle versteckt“ zeigt die anderen Fenster wieder, damit „Alle zeigen / verstecken“ stimmt
+- Fix: Kanalnamen mit Sonderzeichen konnten eine Nachricht in den eigenen Fenstern verschlucken
+- Fix: Der ausgewählte Bereich in den Einstellungen behält beim Design-Wechsel seine Farbe
 
 ## 1.4.0
 - Neu: zweites Design „Forever“ – fröhlich, frisch, hoffnungsvoll (Meergrün, Minze, Sonnenaufgang-Gold). Umschalten unter Einstellungen → Design & Fenster, wirkt sofort

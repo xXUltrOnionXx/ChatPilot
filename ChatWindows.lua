@@ -83,7 +83,8 @@ local function ResolveChannel(channelString, baseName)
 		local ok, name = pcall(resolve, channelString)
 		if ok and type(name) == "string" and name ~= "" then return name end
 	end
-	return baseName ~= "" and baseName or channelString or "?"
+	if type(baseName) == "string" and baseName ~= "" then return baseName end
+	return channelString or "?"
 end
 
 local function PlayerLink(chatType, author, lineID, guid, bnID, channelNumber)
@@ -120,9 +121,10 @@ local function Format(event, msg, author, language, channelString, target, flags
 
 	local prefix
 	if chatType == "CHANNEL" then
-		prefix = ("[%s. %s] %%s: "):format(tostring(channelNumber or "?"), baseName ~= "" and baseName or ResolveChannel(channelString, baseName))
+		local cname = (type(baseName) == "string" and baseName ~= "") and baseName or ResolveChannel(channelString, baseName)
+		prefix = ("[%s. %s] %%s: "):format(tostring(channelNumber or "?"), (tostring(cname):gsub("%%", "%%%%")))
 	elseif chatType == "COMMUNITIES_CHANNEL" then
-		prefix = "[" .. ResolveChannel(channelString, baseName) .. "] %s: "
+		prefix = "[" .. (tostring(ResolveChannel(channelString, baseName)):gsub("%%", "%%%%")) .. "] %s: "
 	else
 		local global = FORMATS[chatType] and _G[FORMATS[chatType]]
 		prefix = type(global) == "string" and global or FALLBACK[chatType] or "%s: "
@@ -346,7 +348,7 @@ end
 
 function LayoutTabs(g)
 	local x = 4
-	local maxW = math.max(60, (g.frame:GetWidth() or 300) - 90)
+	local maxW = math.max(60, (g.frame:GetWidth() or 300) - 104)
 	local n = #g.data.order
 	for _, id in ipairs(g.data.order) do
 		local w = wins[id]
@@ -879,6 +881,8 @@ local function BuildMenu()
 			if not w then return end
 			w.data.cats[c.key] = v or nil
 			LayoutTabs(menu.group)
+			if not w.data.last then w.target = nil end
+			ns:CW_UpdateChip(menu.group)
 		end)
 		r.toggle:SetPoint("RIGHT", -6, 0)
 		menu.rows[c.key] = r
@@ -1096,6 +1100,10 @@ end
 -- cats: table of category keys (optional). into: dock into this group.
 function ns:CW_New(cats, into)
 	if not Data then return end
+	if Data.hidden then
+		Data.hidden = false
+		for _, o in ipairs(groups) do o.frame:Show() end
+	end
 	Data.nextId = (Data.nextId or 0) + 1
 	local wdata = { id = Data.nextId, cats = {}, lines = {} }
 	for k, v in pairs(cats or { whisper = true }) do wdata.cats[k] = v end
@@ -1178,7 +1186,7 @@ local plus
 local function BuildPlus()
 	local main = ChatFrame1 or DEFAULT_CHAT_FRAME
 	if plus or not main or not main.GetName then return end
-	plus = CreateFrame("Button", nil, main)
+	plus = CreateFrame("Button", nil, UIParent) -- not the chat itself: stays visible on every chat tab
 	plus:SetSize(22, 22)
 	plus:SetPoint("BOTTOMRIGHT", main, "TOPRIGHT", 4, 6)
 	plus:SetFrameStrata("MEDIUM")

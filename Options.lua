@@ -693,7 +693,7 @@ local function SelectPage(index)
 		local sel = i == index
 		b.bar:SetShown(sel)
 		b.bg:SetShown(sel)
-		b.label:SetTextColor(unpack(sel and C.text or C.muted))
+		UI.Ink(b.label, sel and C.text or C.muted)
 	end
 end
 
