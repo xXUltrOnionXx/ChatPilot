@@ -184,11 +184,16 @@ local function Place(g)
 	f:ClearAllPoints()
 	local main = MainChat()
 	if g.bg then UI.Paint(g.bg, (d.main and main) and C.bg or C.chatBg) end
-	if d.main and main then
+	local docked = d.main and main and true or false
+	-- docked: always drawn above the chat (no fighting over who is in front, no
+	-- flicker) and sized by the chat itself, so there is no resize grip
+	f:SetFrameStrata(docked and "HIGH" or "MEDIUM")
+	f:SetToplevel(not docked)
+	if g.grip then g.grip:SetShown(not docked) end
+	if docked then
 		-- docked into the main chat: lies exactly over it, opened by its tab
 		f:SetPoint("TOPLEFT", main, "TOPLEFT", -4, 4)
 		f:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", 4, -6)
-		f:SetFrameLevel((main:GetFrameLevel() or 1) + 10)
 		f:SetShown(g.mainOpen and true or false)
 	elseif d.snap and main then
 		f:SetPoint("BOTTOMLEFT", main, "TOPLEFT", -4, 34)
@@ -747,6 +752,7 @@ local function CreateGroupFrame(g)
 	if ns.HookEditBox then ns.HookEditBox(eb) end -- @ names, #snippets, {raid icons}
 
 	local grip = CreateFrame("Button", nil, f)
+	g.grip = grip
 	grip:SetSize(12, 12)
 	grip:SetPoint("BOTTOMRIGHT", -1, 1)
 	grip:SetFrameLevel(f:GetFrameLevel() + 5)
@@ -758,6 +764,7 @@ local function CreateGroupFrame(g)
 		UI.Paint(t, C.muted)
 	end
 	grip:SetScript("OnMouseDown", function()
+		if g.data.main then return end
 		if g.data.snap then
 			-- snapped windows keep the chat's width: only the height changes
 			Save(g); g.data.snap = false; Place(g)
@@ -765,6 +772,7 @@ local function CreateGroupFrame(g)
 		f:StartSizing("BOTTOMRIGHT")
 	end)
 	grip:SetScript("OnMouseUp", function()
+		if g.data.main then return end
 		f:StopMovingOrSizing()
 		Save(g)
 		LayoutTabs(g)
@@ -1718,9 +1726,24 @@ if type(FCF_SelectDockFrame) == "function" then hooksecurefunc("FCF_SelectDockFr
 if type(FCF_Tab_OnClick) == "function" then
 	hooksecurefunc("FCF_Tab_OnClick", function(_, button) if button ~= "RightButton" then OnGameTabSelected() end end)
 end
-for _, name in ipairs({ "FCFDock_UpdateTabs", "FCF_DockUpdate", "FCF_OpenTemporaryWindow", "FCF_Close" }) do
-	if type(_G[name]) == "function" then hooksecurefunc(name, function() C_Timer.After(0, UpdateLaunchers) end) end
-end
+-- The game moves its tabs now and then (new whisper tab, closed tab, docking).
+-- A calm watcher re-lays out our tabs only when the game's last tab really moved.
+local watch = CreateFrame("Frame")
+local lastSig, elapsedSince = nil, 0
+watch:SetScript("OnUpdate", function(_, e)
+	elapsedSince = elapsedSince + e
+	if elapsedSince < 0.4 then return end
+	elapsedSince = 0
+	if #launchers == 0 then return end
+	local tab = LastGameTab()
+	local main = MainChat()
+	local sig = tostring(tab) .. ":" .. tostring(tab and tab.GetRight and math.floor((tab:GetRight() or 0) + 0.5))
+		.. ":" .. tostring(main and main.GetRight and math.floor((main:GetRight() or 0) + 0.5))
+	if sig ~= lastSig then
+		lastSig = sig
+		UpdateLaunchers()
+	end
+end)
 
 -------------------------------------------------------------------------------
 -- Mouse wheel over the chat tabs: flip through them (game tabs + our tabs)

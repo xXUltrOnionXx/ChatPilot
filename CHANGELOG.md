@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.6
+- Fix: Im Hauptchat angedockte Fenster flackerten – sie liegen jetzt immer fest über dem Chat, statt mit ihm um den Vordergrund zu „kämpfen“, und ihre Tabs werden nur noch neu ausgerichtet, wenn sich die Chat-Tabs wirklich bewegt haben
+- Fix: Größe ändern bei angedockten Fenstern brachte alles durcheinander. Angedockte Fenster haben jetzt keinen Größengriff mehr – sie sind immer genau so groß wie der Hauptchat (Größe über den Chat selbst ändern). Herausgezogen bekommen sie ihren Griff zurück
+
 ## 1.6.5
 - Fix: Andocken im Hauptchat klappte nicht – die Position des Hauptchats wurde bei skaliertem Chat falsch erkannt. Jetzt fragt ChatPilot das Spiel direkt, ob die Maus über dem Chat oder seinen Tabs ist
 - Fix: Ein über dem Chat eingerastetes Fenster „stahl“ das Ablegen – der Hauptchat hat jetzt Vorrang
