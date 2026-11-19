@@ -133,7 +133,7 @@ end
 -- header + text block. Drawn after the game has laid out the visible lines
 -- (secure hook: the chat itself is never changed by this).
 -------------------------------------------------------------------------------
-local GAP = 4 -- space between two blocks
+local GAP = 5 -- space between two blocks
 
 local function Block(frame, deco, k)
 	local b = deco.pool[k]
@@ -147,12 +147,24 @@ local function Block(frame, deco, k)
 	return b
 end
 
+-- only the part of a block that is inside the chat area (the game keeps lines
+-- ready above the visible area; those must not get a block)
+local function Inside(frame, top, bottom)
+	local ft, fb = frame:GetTop(), frame:GetBottom()
+	local tt, bb = top:GetTop(), bottom:GetBottom()
+	if not (ft and fb and tt and bb) then return true, false, false end
+	if bb >= ft - 1 or tt <= fb + 1 then return false end
+	return true, tt > ft, bb < fb
+end
+
 local function Place(frame, deco, k, top, bottom, r, g, bl)
+	local ok, clipTop, clipBottom = Inside(frame, top, bottom)
+	if not ok then return false end
 	local b = Block(frame, deco, k)
 	b.top = top
 	b.bg:ClearAllPoints()
-	b.bg:SetPoint("TOP", top, "TOP", 0, 2)
-	b.bg:SetPoint("BOTTOM", bottom, "BOTTOM", 0, -1)
+	if clipTop then b.bg:SetPoint("TOP", frame, "TOP", 0, 0) else b.bg:SetPoint("TOP", top, "TOP", 0, 1) end
+	if clipBottom then b.bg:SetPoint("BOTTOM", frame, "BOTTOM", 0, 0) else b.bg:SetPoint("BOTTOM", bottom, "BOTTOM", 0, 0) end
 	b.bg:SetPoint("LEFT", frame, "LEFT", -6, 0)
 	b.bg:SetPoint("RIGHT", frame, "RIGHT", 2, 0)
 	b.bar:ClearAllPoints()
@@ -162,6 +174,7 @@ local function Place(frame, deco, k, top, bottom, r, g, bl)
 	b.r, b.g, b.b = r, g, bl
 	b.bg:SetVertexColor(1, 1, 1)
 	b.bg:Show(); b.bar:Show()
+	return true
 end
 
 local function Fade(deco)
@@ -169,6 +182,7 @@ local function Fade(deco)
 	for k = 1, deco.used do
 		local b = deco.pool[k]
 		local a = b.top and b.top.GetAlpha and b.top:GetAlpha() or 1
+		if b.top and b.top.IsShown and not b.top:IsShown() then a = 0 end
 		b.bg:SetAlpha(0.055 * a)
 		b.bar:SetAlpha(0.9 * a)
 	end
@@ -198,20 +212,15 @@ local function Redraw(frame)
 				bottom = bottom or fs
 				top = fs
 			elseif kind == "head" then
-				n = n + 1
-				Place(frame, deco, n, fs, bottom or fs, tonumber(hr, 16) / 255, tonumber(hg, 16) / 255, tonumber(hb, 16) / 255)
+				if Place(frame, deco, n + 1, fs, bottom or fs, tonumber(hr, 16) / 255, tonumber(hg, 16) / 255, tonumber(hb, 16) / 255) then n = n + 1 end
 				bottom, top = nil, nil
 			elseif bottom then
 				-- text lines whose header is not on screen
-				n = n + 1
-				Place(frame, deco, n, top, bottom, C.muted[1], C.muted[2], C.muted[3])
+				if Place(frame, deco, n + 1, top, bottom, C.muted[1], C.muted[2], C.muted[3]) then n = n + 1 end
 				bottom, top = nil, nil
 			end
 		end
-		if bottom then
-			n = n + 1
-			Place(frame, deco, n, top, bottom, C.muted[1], C.muted[2], C.muted[3])
-		end
+		if bottom and Place(frame, deco, n + 1, top, bottom, C.muted[1], C.muted[2], C.muted[3]) then n = n + 1 end
 	end
 	for k = n + 1, #deco.pool do deco.pool[k].bg:Hide(); deco.pool[k].bar:Hide(); deco.pool[k].top = nil end
 	deco.used = n
@@ -235,11 +244,12 @@ function ns.DecorateMessages(frame, active)
 	hooksecurefunc(frame, "RefreshDisplay", function(self) pcall(Redraw, self) end)
 	if frame.HookScript then
 		local acc = 0
-		frame:HookScript("OnUpdate", function(_, elapsed)
+		frame:HookScript("OnUpdate", function(self, elapsed)
 			acc = acc + (elapsed or 0)
-			if acc < 0.1 or deco.used == 0 then return end
+			if acc < 0.15 then return end
 			acc = 0
-			Fade(deco)
+			-- re-align now and then: the game may move lines after drawing them
+			if deco.used > 0 or deco.active() then pcall(Redraw, self) end
 		end)
 	end
 end

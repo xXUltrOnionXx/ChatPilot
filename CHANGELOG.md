@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.4
+- Fix: Über dem Chat erschienen leere Streifen und Kästen – das waren Blöcke von Zeilen, die schon aus dem sichtbaren Bereich gescrollt waren. Blöcke werden jetzt nur noch innerhalb der Chatfläche gezeichnet (angeschnittene Blöcke am Rand werden sauber abgeschnitten) und laufend an die Zeilen angepasst
+- Etwas mehr Luft zwischen den Nachrichten-Blöcken
+
 ## 1.7.3
 - Aufgeräumterer Chat: Jede Nachricht (Kopfzeile + Text) steht jetzt in einem eigenen **Block mit ganz leichtem grauem Hintergrund und einem farbigen Strich links** – in der Klassenfarbe des Absenders, in deiner Akzentfarbe für eigene Nachrichten, orange bei Erwähnungen. So sieht man sofort, wo eine Nachricht anfängt und aufhört und wer schreibt
 - Namen ohne eckige Klammern, Text ohne Einrückung – umbrochene Zeilen stehen sauber untereinander
