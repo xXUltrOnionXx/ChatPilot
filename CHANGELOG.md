@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.2
+- Rundgang aktualisiert: neuer Schritt „Kurze Namen, mehr Infos“ (kurze Nachnamen + Spieler-Info), Andocken im Hauptchat und Mausrad über den Tabs, Chat-Befehle (/w, /r, /g …) in den eigenen Fenstern, Glocke, Spam-Zähler am Zahnrad und Zeichenzähler. Erscheint nach dem Update einmal automatisch
+- Rundgang: Hintergrund deutlich stärker abgedunkelt – nur der erklärte Knopf bleibt hell (Spotlight)
+
 ## 1.6.1
 - Fix: Der Zeichenzähler (z. B. „42/255“) ist jetzt in allen Eingabefeldern zuverlässig sichtbar – im normalen Chat, im Community-Fenster und in den eigenen Chat-Fenstern. Er erscheint, sobald das Feld aktiv ist (auch bei 0), wird ab 80 % orange und am Limit rot, und kann von keinem Hintergrund mehr verdeckt werden
 - Eigene Chat-Fenster nutzen dasselbe Limit wie der normale Chat (255 Zeichen), der Text läuft nicht mehr unter den Zähler

@@ -7,7 +7,7 @@ local C = UI.C
 -- features and can be watched again any time (/chatpilot tutorial, or the
 -- button in the settings). It only shows information.
 
-local TUTORIAL_VERSION = 1
+local TUTORIAL_VERSION = 2 -- raise when the tour gets new steps: shows once more after the update
 local W, H = 540, 330
 local tut, spot, overlay
 local index = 1
@@ -115,6 +115,26 @@ local PICTURES = {
 		UI.Border(plus, C.accent)
 		Lines(plus, C.accent, { { 10, 2 }, { 2, 10 } })
 	end,
+	names = function(p)
+		local line = CreateFrame("Frame", nil, p)
+		line:SetSize(120, 22)
+		line:SetPoint("CENTER", 0, 30)
+		UI.Fill(line, C.row)
+		local t = UI.Text(line, "GameFontHighlight", C.text)
+		t:SetPoint("LEFT", 8, 0)
+		t:SetText("|cff3fc7eb[Frost W.]|r: hi!")
+		local card = CreateFrame("Frame", nil, p)
+		card:SetSize(112, 52)
+		card:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 14, -6)
+		UI.Fill(card, C.bg)
+		UI.Border(card, C.accent)
+		local n = UI.Text(card, "GameFontHighlightSmall", C.text)
+		n:SetPoint("TOPLEFT", 7, -6)
+		n:SetText("|cff3fc7ebFrost Winterborn|r")
+		local l = UI.Text(card, "GameFontHighlightSmall", C.muted)
+		l:SetPoint("TOPLEFT", n, "BOTTOMLEFT", 0, -4)
+		l:SetText(L.PI_LEVEL:format(18) .. " · " .. ((LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE.MAGE) or "Mage"))
+	end,
 	writing = function(p)
 		local row = CreateFrame("Frame", nil, p)
 		row:SetSize(96, 26)
@@ -194,13 +214,46 @@ local function Spotlight()
 	return spot
 end
 
+-- darkens the whole screen except a hole around the highlighted button
+local function LayoutDim(target)
+	if not overlay or not overlay.dim then return end
+	local d = overlay.dim
+	for _, t in ipairs(d) do t:ClearAllPoints() end
+	if not target then
+		d[1]:SetAllPoints(overlay)
+		for k = 2, 4 do d[k]:Hide() end
+		d[1]:Show()
+		return
+	end
+	local pad = 6
+	-- top, bottom, left, right of the hole
+	d[1]:SetPoint("TOPLEFT", overlay, "TOPLEFT")
+	d[1]:SetPoint("TOPRIGHT", overlay, "TOPRIGHT")
+	d[1]:SetPoint("BOTTOM", target, "TOP", 0, pad)
+	d[2]:SetPoint("BOTTOMLEFT", overlay, "BOTTOMLEFT")
+	d[2]:SetPoint("BOTTOMRIGHT", overlay, "BOTTOMRIGHT")
+	d[2]:SetPoint("TOP", target, "BOTTOM", 0, -pad)
+	d[3]:SetPoint("TOPLEFT", d[1], "BOTTOMLEFT")
+	d[3]:SetPoint("BOTTOMLEFT", d[2], "TOPLEFT")
+	d[3]:SetPoint("RIGHT", target, "LEFT", -pad, 0)
+	d[4]:SetPoint("TOPRIGHT", d[1], "BOTTOMRIGHT")
+	d[4]:SetPoint("BOTTOMRIGHT", d[2], "TOPRIGHT")
+	d[4]:SetPoint("LEFT", target, "RIGHT", pad, 0)
+	for _, t in ipairs(d) do t:Show() end
+end
+
 local function ShowSpot(target)
 	local s = Spotlight()
-	if not target or not target.IsVisible or not target:IsVisible() then s:Hide() return end
+	if not target or not target.IsVisible or not target:IsVisible() then
+		s:Hide()
+		LayoutDim(nil)
+		return
+	end
 	s:ClearAllPoints()
 	s:SetPoint("TOPLEFT", target, "TOPLEFT", -5, 5)
 	s:SetPoint("BOTTOMRIGHT", target, "BOTTOMRIGHT", 5, -5)
 	s:Show()
+	LayoutDim(target)
 end
 
 -------------------------------------------------------------------------------
@@ -212,6 +265,7 @@ local STEPS = {
 	{ key = "mentions", target = function() return ns.ChatBarButton and ns.ChatBarButton("mentions") end },
 	{ key = "whispers", target = function() return ns.ChatBarButton and ns.ChatBarButton("whispers") end },
 	{ key = "notes", target = function() return ns.ChatBarButton and ns.ChatBarButton("notes") end },
+	{ key = "names" },
 	{ key = "windows", target = function() return ns._cwPlus and ns._cwPlus() end },
 	{ key = "writing" },
 	{ key = "design", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
@@ -224,9 +278,13 @@ local function Build()
 	overlay:SetAllPoints(UIParent)
 	overlay:SetFrameStrata("DIALOG")
 	overlay:EnableMouse(false)
-	local dim = overlay:CreateTexture(nil, "BACKGROUND")
-	dim:SetAllPoints()
-	dim:SetColorTexture(0, 0, 0, 0.35)
+	-- strong dim made of four pieces, so the button a step talks about can stay bright
+	overlay.dim = {}
+	for k = 1, 4 do
+		local t = overlay:CreateTexture(nil, "BACKGROUND")
+		t:SetColorTexture(0, 0, 0, 0.72)
+		overlay.dim[k] = t
+	end
 	overlay:Hide()
 
 	tut = UI.Window("ChatPilotTutorial", L.TUT_TITLE, W, H)

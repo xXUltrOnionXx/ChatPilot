@@ -273,3 +273,11 @@ L.CW_DOCK_MAIN = "Hier ablegen: im Hauptchat andocken"
 L.CW_MAIN_TAB_TIP = "Klicken zeigt dieses Fenster im Hauptchat. Tab herausziehen zum Abdocken."
 L.OPT_tabWheel = "Mausrad blättert durch Chat-Tabs"
 L.DESC_tabWheel = "Maus über die Chat-Tabs und Mausrad drehen wechselt zwischen ihnen - auch zu deinen eigenen Fenstern im Hauptchat."
+
+-- Tour v2
+L.TUT_typing_B = "Tippe @ im Chat und wähle mit den Pfeiltasten einen Namen. Enter oder Tab setzt ihn ein - gesendet wird noch nichts. # zeigt deine Textbausteine, { die Zielmarkierungen. Der Zähler rechts zeigt, wie viel Platz noch ist (255 Zeichen)."
+L.TUT_names_T = "Kurze Namen, mehr Infos"
+L.TUT_names_B = "Lange Forever-Namen werden kurz: \"Frost Winterborn\" erscheint als \"Frost W.\". Maus über einen Namen zeigt vollen Namen, Stufe, Klasse und ob die Person in Gruppe, Gilde oder Freundesliste ist. Kurze Nachnamen lassen sich unter Chat-Hilfen ausschalten."
+L.TUT_windows_B = "Das + oben rechts am Chat öffnet ein Fenster, das nur zeigt, was du auswählst: Flüstern, Gilde, Allgemein ... Auf ein anderes Fenster ziehen macht es zum Tab, direkt über dem Chat rastet es ein, auf den Hauptchat gezogen bekommt es dort einen eigenen Tab. Das Mausrad über den Chat-Tabs blättert durch sie."
+L.TUT_writing_B = "Jedes Fenster hat ein eigenes Eingabefeld. Der Knopf links zeigt, wohin deine Nachricht geht - standardmäßig dorthin, woher die letzte Nachricht kam. /w Name, /r, /g, /p, /2 ... funktionieren wie im normalen Chat, die Nachricht bleibt im Fenster. Klick auf einen Namen = flüstern. Mit der Glocke wirst du benachrichtigt."
+L.TUT_design_B = "Das Zahnrad öffnet die Einstellungen - Maus darüber zeigt, wie viel Spam heute ausgeblendet wurde. Unter Design & Fenster wählst du Modern oder das fröhliche, frische Forever-Design und den modernen Look für deinen Chat."

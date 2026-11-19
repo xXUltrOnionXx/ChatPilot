@@ -267,3 +267,11 @@ L.CW_DOCK_MAIN = "Dépose ici : ancrer dans le chat principal"
 L.CW_MAIN_TAB_TIP = "Clique pour afficher cette fenêtre dans le chat principal. Tire l'onglet pour la détacher."
 L.OPT_tabWheel = "La molette change d'onglet"
 L.DESC_tabWheel = "Survole les onglets du chat et utilise la molette pour passer de l'un à l'autre - y compris tes fenêtres ancrées."
+
+-- Tour v2
+L.TUT_typing_B = "Tape @ dans le chat et choisis un nom avec les flèches. Entrée ou Tab l'insère - rien n'est encore envoyé. # affiche tes textes, { les marqueurs de raid. Le compteur à droite montre la place restante (255 caractères)."
+L.TUT_names_T = "Noms courts, plus d'infos"
+L.TUT_names_B = "Les longs noms de Forever deviennent courts : « Frost Winterborn » s'affiche « Frost W. ». Survole un nom pour voir le nom complet, le niveau, la classe et s'il est dans ton groupe, ta guilde ou tes amis. Désactivable dans Aides du chat."
+L.TUT_windows_B = "Le + en haut à droite du chat ouvre une fenêtre qui n'affiche que ce que tu choisis : chuchotements, guilde, Général... Dépose-la sur une autre pour en faire un onglet, juste au-dessus du chat pour la fixer, ou sur le chat principal pour qu'elle y ait son propre onglet. La molette sur les onglets les fait défiler."
+L.TUT_writing_B = "Chaque fenêtre a sa propre zone de saisie. Le bouton à gauche montre où va ton message - par défaut là d'où vient le dernier. /w Nom, /r, /g, /p, /2... fonctionnent comme dans le chat normal, et le message reste dans la fenêtre. Clique sur un nom pour chuchoter. Active la cloche pour être averti."
+L.TUT_design_B = "La roue dentée ouvre les options - survole-la pour voir combien de spam a été masqué aujourd'hui. Dans Design & fenêtres, choisis Moderne ou le design Forever, joyeux et frais, et le style moderne du chat."

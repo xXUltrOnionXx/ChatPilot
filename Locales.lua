@@ -275,3 +275,11 @@ L.CW_DOCK_MAIN = "Drop here: dock into the main chat"
 L.CW_MAIN_TAB_TIP = "Click to show this window in the main chat. Drag the tab out to undock it."
 L.OPT_tabWheel = "Mouse wheel flips chat tabs"
 L.DESC_tabWheel = "Hover the chat tabs and use the mouse wheel to switch between them - including your own windows docked in the main chat."
+
+-- Tour v2
+L.TUT_typing_B = "Type @ in the chat and pick a name with the arrow keys. Enter or Tab inserts it - nothing is sent yet. # brings up your text snippets, { the raid markers. The counter on the right shows how much room is left (255 characters)."
+L.TUT_names_T = "Short names, more info"
+L.TUT_names_B = "Long Forever names become short: \"Frost Winterborn\" shows as \"Frost W.\". Hover a name to see the full name, level, class and whether they are in your group, guild or friends. You can switch off short surnames under Chat helpers."
+L.TUT_windows_B = "The + at the top right of the chat opens a window that only shows what you pick: whispers, guild, General ... Drop it onto another window to make it a tab, right above the chat to snap it, or onto the main chat to give it its own tab there. The mouse wheel over the chat tabs flips through them."
+L.TUT_writing_B = "Every window has its own input box. The button on its left shows where your message goes - by default back to where the last message came from. /w Name, /r, /g, /p, /2 ... work like in the normal chat, and the message stays in the window. Click a name to whisper. Turn on the bell to be notified."
+L.TUT_design_B = "The gear opens the settings - hover it to see how much spam was hidden today. Under Design & windows you choose Modern or the cheerful, fresh Forever design, and the modern look for your chat."

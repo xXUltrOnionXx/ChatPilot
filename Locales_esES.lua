@@ -268,3 +268,11 @@ L.CW_DOCK_MAIN = "Suelta aquí: acoplar al chat principal"
 L.CW_MAIN_TAB_TIP = "Haz clic para mostrar esta ventana en el chat principal. Arrastra la pestaña fuera para desacoplarla."
 L.OPT_tabWheel = "La rueda cambia de pestaña"
 L.DESC_tabWheel = "Pasa el ratón por las pestañas del chat y usa la rueda para cambiar entre ellas, también a tus ventanas acopladas."
+
+-- Tour v2
+L.TUT_typing_B = "Escribe @ en el chat y elige un nombre con las flechas. Intro o Tab lo inserta - aún no se envía nada. # muestra tus textos, { las marcas de banda. El contador de la derecha muestra el espacio restante (255 caracteres)."
+L.TUT_names_T = "Nombres cortos, más información"
+L.TUT_names_B = "Los nombres largos de Forever se acortan: \"Frost Winterborn\" aparece como \"Frost W.\". Pasa el ratón por un nombre para ver el nombre completo, nivel, clase y si está en tu grupo, hermandad o amigos. Se puede desactivar en Ayudas del chat."
+L.TUT_windows_B = "El + arriba a la derecha del chat abre una ventana que solo muestra lo que eliges: susurros, hermandad, General... Suéltala sobre otra para hacerla pestaña, justo encima del chat para fijarla, o sobre el chat principal para que tenga allí su propia pestaña. La rueda sobre las pestañas las recorre."
+L.TUT_writing_B = "Cada ventana tiene su propio campo de texto. El botón de la izquierda muestra a dónde va tu mensaje - por defecto adonde vino el último. /w Nombre, /r, /g, /p, /2... funcionan como en el chat normal y el mensaje se queda en la ventana. Haz clic en un nombre para susurrar. Activa la campana para recibir avisos."
+L.TUT_design_B = "El engranaje abre las opciones - pasa el ratón para ver cuánto spam se ocultó hoy. En Diseño y ventanas eliges Moderno o el diseño Forever, alegre y fresco, y el aspecto moderno del chat."

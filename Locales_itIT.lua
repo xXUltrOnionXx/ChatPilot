@@ -267,3 +267,11 @@ L.CW_DOCK_MAIN = "Rilascia qui: aggancia alla chat principale"
 L.CW_MAIN_TAB_TIP = "Clicca per mostrare questa finestra nella chat principale. Trascina fuori la scheda per sganciarla."
 L.OPT_tabWheel = "La rotellina cambia scheda"
 L.DESC_tabWheel = "Passa il mouse sulle schede della chat e usa la rotellina per cambiarle, anche verso le tue finestre agganciate."
+
+-- Tour v2
+L.TUT_typing_B = "Scrivi @ nella chat e scegli un nome con le frecce. Invio o Tab lo inserisce - non viene ancora inviato nulla. # mostra i tuoi testi, { i simboli d'incursione. Il contatore a destra mostra lo spazio rimasto (255 caratteri)."
+L.TUT_names_T = "Nomi brevi, più informazioni"
+L.TUT_names_B = "I lunghi nomi di Forever diventano brevi: \"Frost Winterborn\" appare come \"Frost W.\". Passa il mouse su un nome per vedere nome completo, livello, classe e se è nel gruppo, nella gilda o tra gli amici. Disattivabile in Aiuti chat."
+L.TUT_windows_B = "Il + in alto a destra della chat apre una finestra che mostra solo ciò che scegli: sussurri, gilda, Generale... Trascinala su un'altra per farne una scheda, appena sopra la chat per fissarla, o sulla chat principale per darle lì una sua scheda. La rotellina sulle schede le scorre."
+L.TUT_writing_B = "Ogni finestra ha il suo campo di testo. Il pulsante a sinistra mostra dove va il messaggio - di base dove è arrivato l'ultimo. /w Nome, /r, /g, /p, /2... funzionano come nella chat normale e il messaggio resta nella finestra. Clicca su un nome per sussurrare. Attiva la campanella per gli avvisi."
+L.TUT_design_B = "L'ingranaggio apre le opzioni - passa il mouse per vedere quanto spam è stato nascosto oggi. In Design e finestre scegli Moderno o il design Forever, allegro e fresco, e l'aspetto moderno della chat."

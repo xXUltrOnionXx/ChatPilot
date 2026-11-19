@@ -267,3 +267,11 @@ L.CW_DOCK_MAIN = "Solte aqui: encaixar no chat principal"
 L.CW_MAIN_TAB_TIP = "Clique para mostrar esta janela no chat principal. Arraste a aba para fora para desencaixar."
 L.OPT_tabWheel = "A roda do mouse troca de aba"
 L.DESC_tabWheel = "Passe o mouse nas abas do chat e use a roda para trocar entre elas, inclusive suas janelas encaixadas."
+
+-- Tour v2
+L.TUT_typing_B = "Digite @ no chat e escolha um nome com as setas. Enter ou Tab insere - nada é enviado ainda. # mostra seus textos prontos, { as marcas de raide. O contador à direita mostra o espaço restante (255 caracteres)."
+L.TUT_names_T = "Nomes curtos, mais informações"
+L.TUT_names_B = "Os nomes longos do Forever ficam curtos: \"Frost Winterborn\" aparece como \"Frost W.\". Passe o mouse num nome para ver nome completo, nível, classe e se está no grupo, guilda ou amigos. Dá para desligar em Ajudas do chat."
+L.TUT_windows_B = "O + no canto superior direito do chat abre uma janela que mostra só o que você escolhe: sussurros, guilda, Geral... Solte sobre outra para virar aba, logo acima do chat para fixar, ou sobre o chat principal para ter uma aba própria lá. A roda do mouse sobre as abas passa por elas."
+L.TUT_writing_B = "Cada janela tem seu próprio campo de texto. O botão à esquerda mostra para onde vai a mensagem - por padrão para onde veio a última. /w Nome, /r, /g, /p, /2... funcionam como no chat normal e a mensagem fica na janela. Clique num nome para sussurrar. Ligue o sino para ser avisado."
+L.TUT_design_B = "A engrenagem abre as opções - passe o mouse para ver quanto spam foi ocultado hoje. Em Design e janelas você escolhe Moderno ou o design Forever, alegre e fresco, e o visual moderno do chat."
