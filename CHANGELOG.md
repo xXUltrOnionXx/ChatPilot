@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+- Neu: zweites Design „Forever“ – fröhlich, frisch, hoffnungsvoll (Meergrün, Minze, Sonnenaufgang-Gold). Umschalten unter Einstellungen → Design & Fenster, wirkt sofort
+- Neu: modernes Chatfenster – der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design (abschaltbar)
+- Neu: eigene Chat-Fenster mit Filtern (Flüstern, Gilde, Gruppe, Schlachtzug, Sagen, Schreien, Emotes, Allgemein, Handel, andere Kanäle, Communities, System). Frei verschiebbar, als Tabs andockbar (auf die Titelleiste eines anderen Fensters ziehen), über dem Chat einrastbar, Größe änderbar. Die letzten Nachrichten bleiben gespeichert
+- Neue Befehle: `/chatpilot window`, `/chatpilot design forever|modern`
+
 ## 1.3.5
 - Neu: Notizzettel. Kleine Zettel, die du frei verschieben, in der Größe ändern und minimieren kannst (Knopf mit gelbem Zettel neben dem Chat). Linksklick zeigt/versteckt alle Notizen, Rechtsklick legt eine neue an. Notizen bleiben gespeichert, für alle Charaktere
 - Hinweis in der Vorschlagsliste nennt jetzt auch Enter

@@ -67,6 +67,16 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 - **Notizzettel:** Kleine Zettel, die du frei verschieben, in der Größe ändern und minimieren kannst. Linksklick auf den gelben Zettel-Knopf zeigt oder versteckt alle Notizen, Rechtsklick legt eine neue an. **+** im Zettel = neuer Zettel, **–** oder Doppelklick auf den Titel = minimieren, **×** = löschen (bei Text mit zweitem Klick). Die Notizen bleiben gespeichert, für alle deine Charaktere.
 - **Moderne Einstellungen** mit aufklappbaren Untermenüs.
 
+### Design & Fenster
+- **Zwei Designs:** „Modern“ (kühles Dunkelblau) oder **„Forever“** – fröhlich, frisch und hoffnungsvoll mit Meergrün, Minze und Sonnenaufgang-Gold. Gilt für alle ChatPilot-Fenster und wirkt sofort.
+- **Modernes Chatfenster:** Der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design. Abschaltbar.
+- **Eigene Chat-Fenster:** Fenster, die nur zeigen, was du auswählst – Flüstern, Gilde, Gruppe, Schlachtzug, Sagen, Schreien, Emotes, Allgemein, Handel, andere Kanäle, Communities oder Systemnachrichten.
+  - Filter über das Trichter-Symbol im Fenster.
+  - **Frei verschieben** an der Titelleiste, Größe unten rechts ändern.
+  - **Andocken:** ein Fenster auf die Titelleiste eines anderen ziehen – es wird ein Tab. Tab wieder herausziehen zum Abdocken.
+  - **Einrasten:** direkt über dem Chat ablegen – das Fenster sitzt dann über dem Chat und wandert mit.
+  - Namen, Items und Links sind anklickbar, die letzten Nachrichten bleiben gespeichert.
+
 ## Bedienung
 - **Zahnrad** direkt rechts neben dem Chatfenster → Einstellungen (Knöpfe wahlweise auch über dem Chat)
 - **@** daneben → Erwähnungs-Verlauf (orange Zahl = ungelesene Erwähnungen)
@@ -82,6 +92,8 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 | `/chatpilot mentions` | Erwähnungs-Verlauf |
 | `/chatpilot whispers` | Verpasste Flüsternachrichten |
 | `/chatpilot notes` | Notizen zeigen/verstecken |
+| `/chatpilot window` | Neues Chat-Fenster |
+| `/chatpilot design forever` / `modern` | Design wechseln |
 | `/chatpilot copy` | Aktuellen Chat kopieren |
 | `/chatpilot feedback` | Feedback geben |
 | `/chatpilot add <Wort>` / `del <Wort>` / `list` | Stichwörter verwalten |
@@ -160,6 +172,16 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 - **Sticky notes:** small notes you can move, resize and minimize. Left-click the yellow note button to show or hide all notes, right-click for a new one. **+** in a note = new note, **–** or double-click the title = minimize, **×** = delete (a second click if it has text). Notes are saved for all your characters.
 - **Modern settings window** with collapsible sub-menus.
 
+#### Design & windows
+- **Two designs:** "Modern" (cool dark blue) or **"Forever"** – cheerful, fresh and hopeful with sea green, mint and sunrise gold. Applies to all ChatPilot windows, instantly.
+- **Modern chat window:** the game's own chat gets a flat look with clean tabs and input box in your design. Can be turned off.
+- **Your own chat windows:** windows that only show what you pick – whispers, guild, party, raid, say, yell, emotes, General, Trade, other channels, communities or system messages.
+  - Filter via the funnel icon in the window.
+  - **Move freely** by the title bar, resize at the bottom right corner.
+  - **Dock:** drop a window onto another window's title bar – it becomes a tab. Drag the tab out again to undock.
+  - **Snap:** drop it right above the chat – it then sits on top of the chat and moves with it.
+  - Names, items and links are clickable, recent messages are saved.
+
 ### How to use
 - **Gear** right next to the chat window → settings (buttons can also sit above the chat)
 - **@** next to it → mention history (orange number = unread mentions)
@@ -175,6 +197,8 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 | `/chatpilot mentions` | Mention history |
 | `/chatpilot whispers` | Missed whispers |
 | `/chatpilot notes` | Show/hide notes |
+| `/chatpilot window` | New chat window |
+| `/chatpilot design forever` / `modern` | Switch design |
 | `/chatpilot copy` | Copy current chat |
 | `/chatpilot feedback` | Give feedback |
 | `/chatpilot add <word>` / `del <word>` / `list` | Manage keywords |

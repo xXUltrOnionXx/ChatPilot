@@ -251,30 +251,41 @@ end
 -------------------------------------------------------------------------------
 -- Link clicks and mouse-over
 -------------------------------------------------------------------------------
+-- shared with ChatPilot's own chat windows
+function ns.LinkClick(link)
+	if type(link) ~= "string" then return false end
+	if link:sub(1, #LINK_URL) == LINK_URL then
+		ns:ShowCopy(link:sub(#LINK_URL + 1), L.COPY_URL_TITLE, true)
+		return true
+	end
+	return link:sub(1, #LINK_ABBR) == LINK_ABBR
+end
+
+function ns.LinkEnter(frame, link)
+	if type(link) == "string" and link:sub(1, #LINK_ABBR) == LINK_ABBR then
+		local word = link:sub(#LINK_ABBR + 1)
+		local text = ns.Explain(word)
+		if text then
+			GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
+			GameTooltip:SetText(word:upper(), 0.83, 0.91, 1)
+			GameTooltip:AddLine(text, 1, 1, 1, true)
+			GameTooltip:Show()
+			frame.ChatPilotTip = true
+			return true
+		end
+	end
+	return false
+end
+
+function ns.LinkLeave(frame)
+	if rawget(frame, "ChatPilotTip") then
+		frame.ChatPilotTip = nil
+		GameTooltip:Hide()
+	end
+end
+
 ns.OnChatFrame(function(frame)
-	frame:HookScript("OnHyperlinkClick", function(_, link)
-		if type(link) ~= "string" then return end
-		if link:sub(1, #LINK_URL) == LINK_URL then
-			ns:ShowCopy(link:sub(#LINK_URL + 1), L.COPY_URL_TITLE, true)
-		end
-	end)
-	frame:HookScript("OnHyperlinkEnter", function(self, link)
-		if type(link) == "string" and link:sub(1, #LINK_ABBR) == LINK_ABBR then
-			local word = link:sub(#LINK_ABBR + 1)
-			local text = ns.Explain(word)
-			if text then
-				GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-				GameTooltip:SetText(word:upper(), 0.83, 0.91, 1)
-				GameTooltip:AddLine(text, 1, 1, 1, true)
-				GameTooltip:Show()
-				self.ChatPilotTip = true
-			end
-		end
-	end)
-	frame:HookScript("OnHyperlinkLeave", function(self)
-		if self.ChatPilotTip then
-			self.ChatPilotTip = nil
-			GameTooltip:Hide()
-		end
-	end)
+	frame:HookScript("OnHyperlinkClick", function(_, link) ns.LinkClick(link) end)
+	frame:HookScript("OnHyperlinkEnter", function(self, link) ns.LinkEnter(self, link) end)
+	frame:HookScript("OnHyperlinkLeave", function(self) ns.LinkLeave(self) end)
 end)

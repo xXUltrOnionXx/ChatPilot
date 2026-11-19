@@ -42,8 +42,12 @@ popup:SetFrameStrata("FULLSCREEN_DIALOG")
 popup:SetClampedToScreen(true)
 popup:SetWidth(WIDTH)
 popup:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
-popup:SetBackdropColor(0.04, 0.05, 0.08, 0.94)
-popup:SetBackdropBorderColor(0.31, 0.79, 1, 0.6)
+local function PaintPopup()
+	local C = ns.UI.C
+	popup:SetBackdropColor(unpack(C.popup))
+	popup:SetBackdropBorderColor(C.accent[1], C.accent[2], C.accent[3], 0.6)
+end
+PaintPopup()
 popup:Hide()
 
 popup.hint = ns.UI.NoShadow(popup:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall"))
@@ -65,7 +69,8 @@ local function GetRow(i)
 
 	r.sel = r:CreateTexture(nil, "BACKGROUND")
 	r.sel:SetAllPoints()
-	r.sel:SetColorTexture(0.31, 0.79, 1, 0.22)
+	local A = ns.UI.C.accent
+	r.sel:SetColorTexture(A[1], A[2], A[3], 0.22)
 
 	local hl = r:CreateTexture(nil, "HIGHLIGHT")
 	hl:SetAllPoints()
@@ -92,6 +97,12 @@ local function GetRow(i)
 	return r
 end
 
+ns.UI.OnTheme(function()
+	PaintPopup()
+	local A = ns.UI.C.accent
+	for _, r in ipairs(rows) do r.sel:SetColorTexture(A[1], A[2], A[3], 0.22) end
+end)
+
 local function SetClassIcon(tex, classFile)
 	if classFile and C_Texture and C_Texture.GetAtlasInfo then
 		local atlas = "classicon-" .. classFile:lower()
@@ -115,7 +126,7 @@ function ns.RenderPopup()
 			r.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
 			r.icon:SetTexCoord(0, 1, 0, 1)
 			r.name:SetText(item.short .. "  |cff8a94a6" .. item.snippet .. "|r")
-			r.name:SetTextColor(0.31, 0.79, 1)
+			r.name:SetTextColor(unpack(ns.UI.C.accent))
 		elseif item.icon then
 			r.icon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_" .. item.icon)
 			r.icon:SetTexCoord(0, 1, 0, 1)

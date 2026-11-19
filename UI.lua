@@ -4,27 +4,121 @@ local _, ns = ...
 local UI = {}
 ns.UI = UI
 
-local C = {
-	bg        = { 0.067, 0.075, 0.102, 0.97 },
-	panel     = { 0.090, 0.100, 0.135, 1 },
-	row       = { 0.115, 0.127, 0.168, 1 },
-	rowHover  = { 0.140, 0.155, 0.205, 1 },
-	border    = { 0.190, 0.210, 0.275, 1 },
-	accent    = { 0.31, 0.79, 1, 1 },
-	accentHi  = { 0.50, 0.86, 1, 1 },
-	accentDim = { 0.31, 0.79, 1, 0.16 },
-	text      = { 0.93, 0.95, 0.98, 1 },
-	muted     = { 0.56, 0.61, 0.69, 1 },
-	dark      = { 0.05, 0.07, 0.10, 1 },
-	orange    = { 1, 0.60, 0.12, 1 },
+-------------------------------------------------------------------------------
+-- Designs (themes). Every colour lives in the table C. Switching the design
+-- changes the values inside C and repaints everything that was painted with
+-- them, so the new look appears at once without a reload.
+-------------------------------------------------------------------------------
+local THEMES = {
+	-- cool dark blue, the original ChatPilot look
+	modern = {
+		bg        = { 0.067, 0.075, 0.102, 0.97 },
+		panel     = { 0.090, 0.100, 0.135, 1 },
+		row       = { 0.115, 0.127, 0.168, 1 },
+		rowHover  = { 0.140, 0.155, 0.205, 1 },
+		border    = { 0.190, 0.210, 0.275, 1 },
+		accent    = { 0.31, 0.79, 1, 1 },
+		accentHi  = { 0.50, 0.86, 1, 1 },
+		accentDim = { 0.31, 0.79, 1, 0.16 },
+		text      = { 0.93, 0.95, 0.98, 1 },
+		muted     = { 0.56, 0.61, 0.69, 1 },
+		dark      = { 0.05, 0.07, 0.10, 1 },
+		orange    = { 1, 0.60, 0.12, 1 },
+		btn       = { 0.11, 0.125, 0.17, 0.92 },
+		chatBg    = { 0.05, 0.06, 0.085, 0.72 },
+		popup     = { 0.04, 0.05, 0.08, 0.94 },
+		glowA     = { 0.31, 0.79, 1, 1 },
+		glowB     = { 0.31, 0.79, 1, 1 },
+	},
+	-- "Forever": cheerful, fresh and hopeful. Deep sea teal with fresh mint
+	-- and a warm sunrise gold.
+	forever = {
+		bg        = { 0.047, 0.118, 0.133, 0.97 },
+		panel     = { 0.063, 0.153, 0.169, 1 },
+		row       = { 0.082, 0.196, 0.212, 1 },
+		rowHover  = { 0.110, 0.255, 0.271, 1 },
+		border    = { 0.165, 0.341, 0.349, 1 },
+		accent    = { 0.38, 0.93, 0.68, 1 },
+		accentHi  = { 0.58, 0.98, 0.80, 1 },
+		accentDim = { 0.38, 0.93, 0.68, 0.16 },
+		text      = { 0.97, 0.99, 0.95, 1 },
+		muted     = { 0.62, 0.77, 0.74, 1 },
+		dark      = { 0.03, 0.09, 0.10, 1 },
+		orange    = { 1, 0.76, 0.28, 1 },
+		btn       = { 0.075, 0.180, 0.196, 0.92 },
+		chatBg    = { 0.035, 0.100, 0.112, 0.70 },
+		popup     = { 0.030, 0.090, 0.100, 0.95 },
+		glowA     = { 0.38, 0.93, 0.68, 1 },
+		glowB     = { 1, 0.78, 0.36, 1 },
+	},
 }
+UI.THEMES = THEMES
+UI.THEME_ORDER = { "modern", "forever" }
+
+local C = {}
+for k, v in pairs(THEMES.modern) do C[k] = { unpack(v) } end
 UI.C = C
+UI.theme = "modern"
+
+-- everything painted with a colour from C, so it can be repainted
+local painted = setmetatable({}, { __mode = "k" })  -- texture -> colour table
+local inked = setmetatable({}, { __mode = "k" })    -- fontstring -> colour table
+local glows = setmetatable({}, { __mode = "k" })    -- accent lines with a gradient
+local themeCallbacks = {}
+
+function UI.Paint(tex, color)
+	painted[tex] = color
+	tex:SetColorTexture(unpack(color))
+	return tex
+end
+
+function UI.Ink(fs, color)
+	inked[fs] = color
+	fs:SetTextColor(unpack(color))
+	return fs
+end
+
+-- A thin accent line: plain in "Modern", a mint-to-gold gradient in "Forever".
+local function PaintGlow(t)
+	t:SetColorTexture(1, 1, 1, 1)
+	if t.SetGradient and CreateColor then
+		local a, b = C.glowA, C.glowB
+		local ok = pcall(t.SetGradient, t, "HORIZONTAL", CreateColor(a[1], a[2], a[3], a[4]), CreateColor(b[1], b[2], b[3], b[4]))
+		if ok then return end
+	end
+	t:SetColorTexture(unpack(C.glowA))
+end
+function UI.Glow(parent, layer)
+	local t = parent:CreateTexture(nil, layer or "ARTWORK")
+	glows[t] = true
+	PaintGlow(t)
+	return t
+end
+
+function UI.OnTheme(fn) themeCallbacks[#themeCallbacks + 1] = fn end
+
+function UI.ApplyTheme(name)
+	local theme = THEMES[name] or THEMES.modern
+	UI.theme = THEMES[name] and name or "modern"
+	for k, v in pairs(theme) do
+		local t = C[k]
+		if t then for i = 1, 4 do t[i] = v[i] end else C[k] = { unpack(v) } end
+	end
+	for tex, color in pairs(painted) do pcall(tex.SetColorTexture, tex, unpack(color)) end
+	for fs, color in pairs(inked) do pcall(fs.SetTextColor, fs, unpack(color)) end
+	for t in pairs(glows) do pcall(PaintGlow, t) end
+	for _, fn in ipairs(themeCallbacks) do pcall(fn, UI.theme) end
+end
+
+-- colour as a |c escape, e.g. for chat lines
+function UI.Hex(color)
+	return ("|cff%02x%02x%02x"):format(color[1] * 255, color[2] * 255, color[3] * 255)
+end
 
 function UI.Fill(frame, color, layer)
 	local t = frame:CreateTexture(nil, layer or "BACKGROUND")
 	t:SetAllPoints()
-	t:SetColorTexture(unpack(color))
-	return t
+	return UI.Paint(t, color)
 end
 
 -- 1px border made of four textures (no templates needed).
@@ -33,7 +127,7 @@ function UI.Border(frame, color)
 	local edges = {}
 	local function edge(a, b, w, h)
 		local t = frame:CreateTexture(nil, "BORDER")
-		t:SetColorTexture(unpack(color))
+		UI.Paint(t, color)
 		t:SetPoint(a)
 		t:SetPoint(b)
 		if w then t:SetWidth(w) end
@@ -59,7 +153,7 @@ end
 function UI.Text(parent, template, color, layer)
 	local fs = parent:CreateFontString(nil, layer or "OVERLAY", template or "GameFontHighlight")
 	UI.NoShadow(fs)
-	fs:SetTextColor(unpack(color or C.text))
+	UI.Ink(fs, color or C.text)
 	fs:SetJustifyH("LEFT")
 	return fs
 end
@@ -73,7 +167,7 @@ function UI.Badge(parent, size)
 	fs:SetPoint("CENTER", 0, 1)
 	UI.NoShadow(fs)
 	fs:SetText("@")
-	fs:SetTextColor(unpack(C.dark))
+	UI.Ink(fs, C.dark)
 	return b
 end
 
@@ -85,7 +179,7 @@ function UI.CloseButton(parent, onClick)
 	local lines = {}
 	for i, rot in ipairs({ math.rad(45), math.rad(-45) }) do
 		local t = b:CreateTexture(nil, "ARTWORK")
-		t:SetColorTexture(unpack(C.muted))
+		UI.Paint(t, C.muted)
 		t:SetSize(13, 2)
 		t:SetPoint("CENTER")
 		t:SetRotation(rot)
@@ -133,11 +227,10 @@ function UI.Window(name, title, w, h)
 	header:SetPoint("TOPRIGHT", -1, -1)
 	header:SetHeight(42)
 	UI.Fill(header, C.panel)
-	local line = header:CreateTexture(nil, "ARTWORK")
-	line:SetColorTexture(unpack(C.border))
+	local line = UI.Glow(header)
 	line:SetPoint("BOTTOMLEFT")
 	line:SetPoint("BOTTOMRIGHT")
-	line:SetHeight(1)
+	line:SetHeight(2)
 	header:EnableMouse(true)
 	header:RegisterForDrag("LeftButton")
 	header:SetScript("OnDragStart", function() f:StartMoving() end)
@@ -175,15 +268,15 @@ function UI.Button(parent, text, w, h, style)
 	b.label = UI.NoShadow(b:CreateFontString(nil, "OVERLAY", "GameFontHighlight"))
 	b.label:SetPoint("CENTER")
 	b.label:SetText(text)
-	if style == "accent" then b.label:SetTextColor(unpack(C.dark)) end
+	if style == "accent" then UI.Ink(b.label, C.dark) end
 	b:SetScript("OnEnter", function() b.bg:SetColorTexture(unpack(hover)) end)
 	b:SetScript("OnLeave", function() b.bg:SetColorTexture(unpack(base)) end)
 	b:SetScript("OnMouseDown", function() b.label:SetPoint("CENTER", 0, -1) end)
 	b:SetScript("OnMouseUp", function() b.label:SetPoint("CENTER") end)
 	function b:SetSelected(sel)
 		base = sel and C.accent or C.row
-		self.bg:SetColorTexture(unpack(base))
-		self.label:SetTextColor(unpack(sel and C.dark or C.text))
+		UI.Paint(self.bg, base)
+		UI.Ink(self.label, sel and C.dark or C.text)
 	end
 	return b
 end
@@ -212,6 +305,7 @@ function UI.Toggle(parent, onChange)
 		if onChange then onChange(self.value) end
 	end)
 	t:SetValue(false)
+	UI.OnTheme(function() t:SetValue(t.value) end)
 	return t
 end
 

@@ -126,7 +126,7 @@ end
 local bars = {}
 local SIZE, GAP = 24, 4
 local IDLE_ALPHA = 0.9
-local BTN_BG = { 0.11, 0.125, 0.17, 0.92 }
+local BTN_BG = C.btn
 
 local function GearIcon(tex)
 	if C_Texture and C_Texture.GetAtlasInfo then

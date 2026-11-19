@@ -523,6 +523,129 @@ local function BuildChat(content)
 	return sf
 end
 
+local function ThemeTile(parent, name, onPick)
+	local t = CreateFrame("Button", nil, parent)
+	t:SetSize(236, 104)
+	local th = UI.THEMES[name]
+	local bg = t:CreateTexture(nil, "BACKGROUND")
+	bg:SetAllPoints()
+	bg:SetColorTexture(unpack(th.bg))
+	UI.Border(t, C.border)
+	-- small preview: header strip with the accent line, two "chat lines"
+	local head = t:CreateTexture(nil, "ARTWORK")
+	head:SetPoint("TOPLEFT", 1, -1)
+	head:SetPoint("TOPRIGHT", -1, -1)
+	head:SetHeight(18)
+	head:SetColorTexture(unpack(th.panel))
+	local line = t:CreateTexture(nil, "OVERLAY")
+	line:SetPoint("TOPLEFT", head, "BOTTOMLEFT")
+	line:SetPoint("TOPRIGHT", head, "BOTTOMRIGHT")
+	line:SetHeight(2)
+	line:SetColorTexture(1, 1, 1, 1)
+	if line.SetGradient and CreateColor then
+		pcall(line.SetGradient, line, "HORIZONTAL", CreateColor(unpack(th.glowA)), CreateColor(unpack(th.glowB)))
+	else
+		line:SetColorTexture(unpack(th.glowA))
+	end
+	local x = 10
+	for _, key in ipairs({ "accent", "glowB", "orange", "row" }) do
+		local sw = t:CreateTexture(nil, "OVERLAY")
+		sw:SetSize(14, 14)
+		sw:SetPoint("TOPLEFT", x, -30)
+		sw:SetColorTexture(unpack(th[key]))
+		x = x + 18
+	end
+	local label = t:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	UI.NoShadow(label)
+	label:SetPoint("TOPLEFT", 10, -52)
+	label:SetTextColor(unpack(th.text))
+	label:SetText(L["THEME_" .. name])
+	local desc = t:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	UI.NoShadow(desc)
+	desc:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -4)
+	desc:SetPoint("RIGHT", -10, 0)
+	desc:SetJustifyH("LEFT")
+	desc:SetTextColor(unpack(th.muted))
+	desc:SetText(L["THEME_" .. name .. "_DESC"])
+	t.check = t:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	UI.NoShadow(t.check)
+	t.check:SetPoint("TOPRIGHT", -8, -4)
+	t.check:SetTextColor(unpack(th.dark))
+	t:SetScript("OnClick", function() onPick(name) end)
+	function t:SetPicked(on)
+		self:SetBorderColor(unpack(on and th.accent or C.border))
+		head:SetColorTexture(unpack(on and th.accent or th.panel))
+		self.check:SetText(on and L.THEME_ACTIVE or "")
+	end
+	return t
+end
+
+local function BuildDesign(content)
+	local sf, c = NewPage(content)
+	local flow = NewFlow(c, PageHeader(c, L.PAGE_DESIGN, L.PAGE_DESIGN_SUB))
+
+	-- design choice
+	local box = CreateFrame("Frame", nil, c)
+	box:SetHeight(196)
+	UI.Fill(box, C.row)
+	local title = UI.Text(box, "GameFontHighlight")
+	title:SetPoint("TOPLEFT", 14, -12)
+	title:SetText(L.DESIGN_THEME)
+	local tiles = {}
+	local function Pick(name)
+		ns:SetTheme(name)
+		for n, tile in pairs(tiles) do tile:SetPicked(n == name) end
+		RefreshRows()
+	end
+	for i, name in ipairs(UI.THEME_ORDER) do
+		local tile = ThemeTile(box, name, Pick)
+		tile:SetPoint("TOPLEFT", 14 + (i - 1) * 248, -36)
+		tiles[name] = tile
+	end
+	local hint = UI.Text(box, "GameFontHighlightSmall", C.muted)
+	hint:SetPoint("TOPLEFT", 14, -150)
+	hint:SetPoint("RIGHT", box, "RIGHT", -150, 0)
+	hint:SetText(L.DESIGN_RELOAD_HINT)
+	local reload = UI.Button(box, L.DESIGN_RELOAD, 120, 26)
+	reload:SetPoint("TOPRIGHT", -14, -146)
+	reload:SetScript("OnClick", function()
+		if C_UI and C_UI.Reload then C_UI.Reload() elseif ReloadUI then ReloadUI() end
+	end)
+	box:SetScript("OnShow", function() for n, tile in pairs(tiles) do tile:SetPicked(n == (ns.S.theme or "modern")) end end)
+	FlowAdd(flow, box)
+
+	ToggleRow(flow, "chatSkin", nil, function(v)
+		if v then ns:SkinAllChats() else ns.Print(L.CHATSKIN_RELOAD) end
+	end)
+
+	-- own chat windows
+	local cw = CreateFrame("Frame", nil, c)
+	cw:SetHeight(170)
+	UI.Fill(cw, C.row)
+	local t2 = UI.Text(cw, "GameFontHighlight")
+	t2:SetPoint("TOPLEFT", 14, -12)
+	t2:SetText(L.CW_TITLE)
+	local d2 = UI.Text(cw, "GameFontHighlightSmall", C.muted)
+	d2:SetPoint("TOPLEFT", t2, "BOTTOMLEFT", 0, -6)
+	d2:SetPoint("RIGHT", cw, "RIGHT", -14, 0)
+	d2:SetSpacing(3)
+	d2:SetText(L.CW_DESC)
+	local new = UI.Button(cw, L.CW_NEW, 190, 28, "accent")
+	new:SetPoint("BOTTOMLEFT", 14, 14)
+	local toggle = UI.Button(cw, L.CW_TOGGLE, 170, 28)
+	toggle:SetPoint("LEFT", new, "RIGHT", 8, 0)
+	local count = UI.Text(cw, "GameFontHighlightSmall", C.muted)
+	count:SetPoint("LEFT", toggle, "RIGHT", 12, 0)
+	local function Count() count:SetText(L.CW_COUNT:format(ns:CW_Count())) end
+	new:SetScript("OnClick", function() ns:CW_New(); Count() end)
+	toggle:SetScript("OnClick", function() ns:CW_ToggleAll(); Count() end)
+	cw:SetScript("OnShow", Count)
+	FlowAdd(flow, cw)
+
+	sf:SetScript("OnShow", function() Relayout(flow) end)
+	return sf
+end
+
 local function BuildAbout(content)
 	local sf, c = NewPage(content)
 	local badge = UI.Badge(c, 56)
@@ -612,12 +735,14 @@ local function Build()
 	BuildMentions(content)
 	BuildWhispers(content)
 	BuildChat(content)
+	BuildDesign(content)
 	BuildAbout(content)
 	NavButton(sidebar, 1, L.PAGE_TYPING)
 	NavButton(sidebar, 2, L.PAGE_MENTIONS)
 	NavButton(sidebar, 3, L.PAGE_WHISPERS)
 	NavButton(sidebar, 4, L.PAGE_CHAT)
-	NavButton(sidebar, 5, L.PAGE_ABOUT)
+	NavButton(sidebar, 5, L.PAGE_DESIGN)
+	NavButton(sidebar, 6, L.PAGE_ABOUT)
 
 	local hint = UI.Text(sidebar, "GameFontHighlightSmall", C.muted)
 	hint:SetPoint("BOTTOMLEFT", 20, 16)
@@ -691,6 +816,10 @@ SlashCmdList.CHATPILOT = function(input)
 		ns:ShowMentions()
 	elseif cmd == "whispers" or cmd == "w" then
 		ns:ShowWhispers()
+	elseif cmd == "window" or cmd == "fenster" then
+		ns:CW_New()
+	elseif cmd == "design" or cmd == "theme" then
+		if rest ~= "" and ns.UI.THEMES[rest:lower()] then ns:SetTheme(rest:lower()) else ns:OpenOptions(5) end
 	elseif cmd == "notes" or cmd == "note" then
 		ns:ToggleNotes(); ns:UpdateChatButtons()
 	elseif cmd == "copy" then
