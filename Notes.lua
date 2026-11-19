@@ -315,6 +315,13 @@ function ns:ToggleNoteMinimized(n)
 	end
 end
 
+-- A fight starts: stop typing in notes (the text is already saved).
+function ns:ReleaseNoteFocus()
+	for _, f in pairs(frames) do
+		if f.eb:HasFocus() then f.eb:ClearFocus() end
+	end
+end
+
 -- Font size / bold from the settings also applies to notes.
 function ns:RefreshNotesFont()
 	for _, f in pairs(frames) do f.eb:SetFontObject(UI.MessageFont()) end

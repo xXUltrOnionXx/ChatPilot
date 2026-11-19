@@ -845,7 +845,17 @@ end
 local evFrame = CreateFrame("Frame")
 for ev in pairs(EVENT_CAT) do evFrame:RegisterEvent(ev) end
 evFrame:RegisterEvent("CHAT_MSG_CHANNEL")
+evFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 evFrame:SetScript("OnEvent", function(_, event, ...)
+	if event == "PLAYER_REGEN_DISABLED" then
+		-- a fight starts: give the keyboard back to the game if nothing is being typed
+		for _, g in ipairs(groups) do
+			local eb = g.input
+			if eb and eb:HasFocus() and (eb:GetText() or "") == "" then eb:ClearFocus() end
+		end
+		if ns.ReleaseNoteFocus then ns:ReleaseNoteFocus() end
+		return
+	end
 	if not ns.S or not ns.loggedIn then return end
 	local ok = pcall(Deliver, event, ...)
 	if not ok then return end
@@ -1019,8 +1029,11 @@ function ns:CW_Submit(g)
 	end
 	local ok = pcall(Send, t, text)
 	if ok then
-		eb:SetText("")
 		if eb.AddHistoryLine then eb:AddHistoryLine(text) end
+		eb:SetText("")
+		-- like the normal chat: after sending, the keyboard goes back to the game
+		-- (otherwise ability keys would end up in the input box in a fight)
+		eb:ClearFocus()
 	else
 		eb:SetText("")
 		eb:ClearFocus()

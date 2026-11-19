@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1
+- Fix (wichtig): Nach dem Senden in einem eigenen Chat-Fenster bleibt das Eingabefeld nicht mehr aktiv – die Tastatur geht sofort zurück ans Spiel, wie beim normalen Chat. Vorher landeten Tastendrücke (z. B. Fähigkeiten im Kampf) im Eingabefeld
+- Sicherung: Beginnt ein Kampf, geben leere Eingabefelder der Chat-Fenster und Notizzettel die Tastatur automatisch ans Spiel zurück
+
 ## 1.5.0
 - Neu: **Kurze Nachnamen** im Chat – „Frost Winterborn“ wird zu „Frost W.“. Gibt es zwei Frosts mit W, wird es automatisch „Frost Wi.“ / „Frost Wo.“. Maus über den Namen zeigt den vollen Namen; Flüstern, Einladen und Klicks nutzen weiter den vollen Namen. Auch in den eigenen Chat-Fenstern. Abschaltbar unter Chat-Hilfen
 - Neu: **Spam-Zähler** – das Zahnrad am Chat und die Einstellungen zeigen, wie viele Spam-Nachrichten heute ausgeblendet wurden
