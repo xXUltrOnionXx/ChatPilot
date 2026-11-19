@@ -112,7 +112,7 @@ end
 
 -- colour as a |c escape, e.g. for chat lines
 function UI.Hex(color)
-	return ("|cff%02x%02x%02x"):format(color[1] * 255, color[2] * 255, color[3] * 255)
+	return ("|cff%02x%02x%02x"):format(math.floor(color[1] * 255 + 0.5), math.floor(color[2] * 255 + 0.5), math.floor(color[3] * 255 + 0.5))
 end
 
 function UI.Fill(frame, color, layer)

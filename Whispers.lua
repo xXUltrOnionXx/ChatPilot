@@ -184,6 +184,7 @@ local function ShowConversation(key)
 	smf:Clear()
 	win.reply:SetShown(c ~= nil)
 	win.del:SetShown(c ~= nil)
+	win.popout:SetShown(c ~= nil)
 	win.convName:SetText(c and NameText(c) or "")
 	if not c then return end
 	if (c.unread or 0) > 0 then
@@ -231,6 +232,17 @@ local function Row(i)
 	r:SetScript("OnLeave", function(self) if self.key ~= selected then self.bg:SetColorTexture(unpack(C.row)) end end)
 	r:SetScript("OnClick", function(self) ShowConversation(self.key); ns:RefreshWhispers() end)
 	r:SetScript("OnDoubleClick", function(self) Reply(Store()[self.key]) end)
+	-- drag a conversation out of the list: it becomes its own chat window
+	r:RegisterForDrag("LeftButton")
+	r:SetScript("OnDragStart", function(self)
+		local c = Store()[self.key]
+		if c and ns.CW_OpenConversation then
+			local conv = { key = self.key, name = c.name, target = c.target, bn = c.bn, c = c.c, msgs = c.msgs }
+			ns:CW_OpenConversation(conv, true)
+			c.unread = 0
+			Changed()
+		end
+	end)
 	rows[i] = r
 	return r
 end
@@ -290,6 +302,25 @@ local function Build()
 	win.reply:SetScript("OnClick", function() Reply(Store()[selected]); win:Hide() end)
 	win.del = UI.Button(right, L.WH_DELETE, 90, 26)
 	win.del:SetPoint("RIGHT", win.reply, "LEFT", -6, 0)
+	-- open this conversation as its own chat window
+	win.popout = UI.Button(right, L.WH_POPOUT, 130, 26)
+	win.popout:SetPoint("RIGHT", win.del, "LEFT", -6, 0)
+	win.popout:SetScript("OnClick", function()
+		local c = selected and Store()[selected]
+		if c and ns.CW_OpenConversation then
+			ns:CW_OpenConversation({ key = selected, name = c.name, target = c.target, bn = c.bn, c = c.c, msgs = c.msgs })
+			c.unread = 0
+			Changed()
+			win:Hide()
+		end
+	end)
+	win.popout:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:SetText(L.WH_POPOUT)
+		GameTooltip:AddLine(L.WH_POPOUT_TIP, 0.8, 0.8, 0.8, true)
+		GameTooltip:Show()
+	end)
+	win.popout:HookScript("OnLeave", function() GameTooltip:Hide() end)
 	win.del:SetScript("OnClick", function()
 		if selected then Store()[selected] = nil; selected = nil; Changed(); ns:RefreshWhispers() end
 	end)

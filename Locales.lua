@@ -283,3 +283,5 @@ L.TUT_names_B = "Long Forever names become short: \"Frost Winterborn\" shows as 
 L.TUT_windows_B = "The + at the top right of the chat opens a window that only shows what you pick: whispers, guild, General ... Drop it onto another window to make it a tab, right above the chat to snap it, or onto the main chat to give it its own tab there. The mouse wheel over the chat tabs flips through them."
 L.TUT_writing_B = "Every window has its own input box. The button on its left shows where your message goes - by default back to where the last message came from. /w Name, /r, /g, /p, /2 ... work like in the normal chat, and the message stays in the window. Click a name to whisper. Turn on the bell to be notified."
 L.TUT_design_B = "The gear opens the settings - hover it to see how much spam was hidden today. Under Design & windows you choose Modern or the cheerful, fresh Forever design, and the modern look for your chat."
+L.WH_POPOUT = "Open as chat"
+L.WH_POPOUT_TIP = "Opens this conversation as its own chat window: only messages with this person, the history so far, and you write right there. Tip: you can also drag a conversation out of the list on the left."

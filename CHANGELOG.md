@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.3
+- Neu: **Verpasste Flüsternachrichten als eigener Chat** – im Fenster „Verpasste Flüsternachrichten“ öffnet „Als Chat öffnen“ das Gespräch als eigenes Chat-Fenster. Oder das Gespräch einfach links aus der Liste herausziehen. Das Fenster zeigt nur Nachrichten mit dieser Person, bringt den bisherigen Verlauf mit und ist gleich auf sie als Ziel eingestellt. Ist es schon offen, wird es nur nach vorne geholt
+
 ## 1.6.2
 - Rundgang aktualisiert: neuer Schritt „Kurze Namen, mehr Infos“ (kurze Nachnamen + Spieler-Info), Andocken im Hauptchat und Mausrad über den Tabs, Chat-Befehle (/w, /r, /g …) in den eigenen Fenstern, Glocke, Spam-Zähler am Zahnrad und Zeichenzähler. Erscheint nach dem Update einmal automatisch
 - Rundgang: Hintergrund deutlich stärker abgedunkelt – nur der erklärte Knopf bleibt hell (Spotlight)

@@ -51,6 +51,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 - Unbeantwortete Flüsternachrichten werden am **Brief-Knopf** neben dem Chat gezählt.
 - Ein Fenster zeigt alle Gespräche; **Antworten** öffnet dein Eingabefeld mit dem richtigen Namen (abschicken tust du selbst).
 - Kommst du aus dem **AFK** oder einem **Kampf** zurück, siehst du, wer dir geschrieben hat.
+- **Als Chat öffnen:** Ein Gespräch wird per Knopf – oder einfach aus der Liste herausgezogen – zu einem eigenen Chat-Fenster nur mit dieser Person, inklusive bisherigem Verlauf.
 - **Schriftgröße** und **normal/fett** für die Nachrichten sind einstellbar.
 - Während Bosskämpfen kann das Spiel den Text verbergen – dann zählt ChatPilot die Nachricht nur und verweist auf den Chat.
 
@@ -168,6 +169,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 - Unanswered whispers are counted on the **envelope button** next to the chat.
 - A window lists all conversations; **Reply** opens your edit box with the right name (you send it yourself).
 - When you come back from **AFK** or **combat**, you see who wrote to you.
+- **Open as chat:** turn a conversation into its own chat window with just that person – by button or by dragging it out of the list – including the history so far.
 - **Font size** and **normal/bold** text are adjustable.
 - During boss fights the game may hide the text – ChatPilot then only counts the message and points you to the chat.
 

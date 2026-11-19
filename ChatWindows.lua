@@ -153,6 +153,8 @@ local menu                    -- filter menu (shared)
 local dragging                -- group being dragged
 
 local function WindowName(w)
+	local partner = w.data.partner
+	if partner then return "@" .. (partner.label or partner.name or "?") end
 	local names = {}
 	for _, c in ipairs(CATS) do
 		if w.data.cats[c.key] then names[#names + 1] = L["CAT_" .. c.key] end
@@ -934,7 +936,20 @@ local function Deliver(event, ...)
 
 	local targets = {}
 	for _, w in pairs(wins) do
-		if w.data.cats[cat] and w.group then targets[#targets + 1] = w end
+		if w.data.cats[cat] and w.group then
+			-- a conversation window only takes whispers with its one person
+			local p = w.data.partner
+			local ok = true
+			if p and cat == "whisper" then
+				if p.bn then
+					ok = event:find("^CHAT_MSG_BN_") and select(13, ...) == p.id
+				else
+					local author = select(2, ...)
+					ok = not event:find("^CHAT_MSG_BN_") and ns.Usable(author) and ns.Normalize(author) == p.key
+				end
+			end
+			if ok then targets[#targets + 1] = w end
+		end
 	end
 	if #targets == 0 then return end
 
@@ -1287,6 +1302,63 @@ function ns:CW_New(cats, into)
 	end
 	Select(g, w)
 	self:CW_OpenMenu(g)
+	return w
+end
+
+-- A whisper conversation as its own chat window (from "Missed whispers").
+-- conv: { key, name, bn, c (class), msgs = { {t, m, o} } }. drag = start moving it under the mouse.
+function ns:CW_OpenConversation(conv, drag)
+	if not Data or not conv or not conv.key then return end
+	local bnID = conv.bn and tonumber(tostring(conv.key):match("^bn:(%d+)$"))
+	local partner = {
+		key = conv.key, bn = conv.bn and true or nil, id = bnID,
+		name = conv.target or conv.name, label = conv.name,
+	}
+	-- already open? just show it
+	for _, w in pairs(wins) do
+		local p = w.data.partner
+		if p and p.key == partner.key then
+			local g = w.group
+			if g and g.data then
+				if g.data.main then self:CW_OpenMain(g, w) else g.frame:Show(); Select(g, w) end
+				if drag then StartDrag(g, w) end
+			end
+			return w
+		end
+	end
+	Data.nextId = (Data.nextId or 0) + 1
+	local wdata = { id = Data.nextId, cats = { whisper = true }, lines = {}, partner = partner }
+	-- bring the conversation so far along
+	local wr, wg, wb = TypeColor("WHISPER")
+	local ir, ig, ib = TypeColor("WHISPER_INFORM")
+	local who = conv.bn and ("|cff82c5ff" .. (conv.name or "?") .. "|r") or ns.ClassColorText(conv.name or "?", conv.c)
+	local history = {}
+	for _, m in ipairs(conv.msgs or {}) do
+		local ts = UI.Hex(C.muted) .. date("%H:%M", m.t or time()) .. "|r "
+		local head = m.o and ("> " .. who .. ": ") or (who .. ": ")
+		history[#history + 1] = { ts .. head .. (m.m or ""), m.o and ir or wr, m.o and ig or wg, m.o and ib or wb, m.t or time() }
+	end
+	-- Battle.net names are only valid for this session, so those lines are not saved
+	if not conv.bn then wdata.lines = history end
+	Data.windows[#Data.windows + 1] = wdata
+	local w = BuildWindow(wdata)
+	if conv.bn then for _, l in ipairs(history) do w.msg:AddMessage(l[1], l[2], l[3], l[4]) end end
+	local scale = UIParent:GetEffectiveScale() or 1
+	local cx, cy = GetCursorPosition()
+	local d = { order = { wdata.id }, active = wdata.id, w = 380, h = 220,
+		x = math.floor(cx / scale - 60), y = math.floor(cy / scale + 12) }
+	if not drag then
+		d.x = math.floor((UIParent:GetWidth() or 1024) / 2 - 190)
+		d.y = math.floor((UIParent:GetHeight() or 768) / 2 + 160)
+	end
+	Data.groups[#Data.groups + 1] = d
+	if Data.hidden then Data.hidden = false end
+	local g = NewGroup(d)
+	Select(g, w)
+	local t = conv.bn and bnID and { type = "BN_WHISPER", name = conv.name, id = bnID } or { type = "WHISPER", name = partner.name }
+	self:CW_SetTarget(g, t)
+	w.msg:ScrollToBottom()
+	if drag then StartDrag(g) end
 	return w
 end
 

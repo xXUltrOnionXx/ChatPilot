@@ -275,3 +275,5 @@ L.TUT_names_B = "Os nomes longos do Forever ficam curtos: \"Frost Winterborn\" a
 L.TUT_windows_B = "O + no canto superior direito do chat abre uma janela que mostra só o que você escolhe: sussurros, guilda, Geral... Solte sobre outra para virar aba, logo acima do chat para fixar, ou sobre o chat principal para ter uma aba própria lá. A roda do mouse sobre as abas passa por elas."
 L.TUT_writing_B = "Cada janela tem seu próprio campo de texto. O botão à esquerda mostra para onde vai a mensagem - por padrão para onde veio a última. /w Nome, /r, /g, /p, /2... funcionam como no chat normal e a mensagem fica na janela. Clique num nome para sussurrar. Ligue o sino para ser avisado."
 L.TUT_design_B = "A engrenagem abre as opções - passe o mouse para ver quanto spam foi ocultado hoje. Em Design e janelas você escolhe Moderno ou o design Forever, alegre e fresco, e o visual moderno do chat."
+L.WH_POPOUT = "Abrir como chat"
+L.WH_POPOUT_TIP = "Abre esta conversa na sua própria janela de chat: só as mensagens com essa pessoa, o histórico, e você escreve ali mesmo. Dica: você também pode arrastar uma conversa para fora da lista à esquerda."
