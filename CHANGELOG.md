@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.5.2
+- Neu: **Spieler-Info beim Drüberfahren** – Maus über einen Namen im Chat (und in den eigenen Fenstern) zeigt vollen Namen in Klassenfarbe, Stufe, Klasse und ob die Person in Gruppe, Gilde oder Freundesliste ist. Die @-Vorschläge zeigen die Stufe gleich mit. Abschaltbar unter Chat-Hilfen
 - Neu: Chat-Befehle direkt im eigenen Fenster – wie beim normalen Chat. `/w Name` + Leertaste oder Enter wird zum festen Ziel (der Befehl verschwindet, der Name lässt sich nicht mehr versehentlich buchstabenweise löschen). Was du danach schreibst, wird aus dem Fenster geflüstert und springt nicht mehr in den normalen Chat
 - Funktioniert auch für `/g`, `/o`, `/p`, `/ra`, `/i`, `/s`, `/y`, `/e`, Kanäle wie `/2` und `/r` (Antwort an die letzte Flüsternachricht); `/w Name Text` + Enter flüstert sofort
 - Rücktaste im leeren Eingabefeld entfernt das gewählte Ziel als Ganzes und springt zurück zum automatischen Ziel

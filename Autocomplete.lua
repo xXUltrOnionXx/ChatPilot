@@ -139,7 +139,12 @@ function ns.RenderPopup()
 			local c = item.c and RAID_CLASS_COLORS and RAID_CLASS_COLORS[item.c]
 			if c then r.name:SetTextColor(c.r, c.g, c.b) else r.name:SetTextColor(1, 1, 1) end
 		end
-		r.tag:SetText(SRC_LABEL[item.tag] or "")
+		local tag = SRC_LABEL[item.tag] or ""
+		if item.key and ns.S and ns.S.playerInfo and ns.LevelOf then
+			local lv = ns:LevelOf(item.key)
+			if lv then tag = ns.LevelColor(lv) .. lv .. "|r" .. (tag ~= "" and ("  " .. tag) or "") end
+		end
+		r.tag:SetText(tag)
 		r.sel:SetShown(i == state.index)
 		r:Show()
 	end

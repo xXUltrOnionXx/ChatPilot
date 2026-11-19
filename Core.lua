@@ -34,6 +34,7 @@ ns.defaults = {
 	keepHistory = true,
 	showLevels = true,
 	shortSurnames = true,
+	playerInfo = true,
 	snippets = true,
 	abbrevTips = true,
 	markForeign = true,

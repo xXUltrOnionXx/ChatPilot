@@ -56,6 +56,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 
 ### Chat verstehen
 - **Stufe im Chat:** `[18:Arthas]` – farbig nach Schwierigkeit, auch bei Freunden und Gildenmitgliedern, die gerade online kommen.
+- **Spieler-Info beim Drüberfahren:** Maus über einen Namen zeigt vollen Namen, Stufe, Klasse und ob die Person in Gruppe, Gilde oder Freundesliste ist. Die @-Vorschläge zeigen die Stufe gleich mit.
 - **Kurze Nachnamen:** „Frost Winterborn“ wird zu „Frost W.“ – gibt es zwei Frosts mit W, wächst das Kürzel automatisch („Frost Wi.“ / „Frost Wo.“). Maus über den Namen zeigt den vollen Namen; Flüstern und Klicks nutzen weiter den vollen Namen.
 - **Abkürzungen erklärt:** Begriffe wie `LFG`, `WTS`, `pst`, `LF2M`, `gz` und Dungeon-Kürzel wie `SM`, `BRD`, `UBRS`, `MC` sind leicht hellblau. Fährst du mit der Maus darüber, erscheint die Erklärung. Mehrdeutige Kürzel (`AH`, `SM`, `ST` …) zählen nur in GROSSBUCHSTABEN, damit normale Wörter nicht markiert werden.
 - **Fremde Sprachen:** Nachrichten in einer Sprache, die dein Charakter nicht kann (z. B. Gemeinsprache, wenn du Horde spielst), werden grau mit dem Hinweis „(fremde Sprache – nicht lesbar)“ angezeigt oder auf Wunsch ganz ausgeblendet. **Übersetzt werden sie nicht** – das ist technisch unmöglich (der Server schickt nur das Kauderwelsch) und von Blizzard nicht erlaubt.
@@ -170,6 +171,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 
 #### Understanding chat
 - **Levels in chat:** `[18:Arthas]` – coloured by difficulty, also for friends and guild members who just came online.
+- **Player card on mouse-over:** hover a name to see the full name, level, class and whether the person is in your group, guild or friends. @ suggestions show the level too.
 - **Short surnames:** "Frost Winterborn" becomes "Frost W." – if two Frosts share the W, the tag grows automatically ("Frost Wi." / "Frost Wo."). Hover a name for the full name; whispers and clicks still use the full name.
 - **Abbreviations explained:** terms like `LFG`, `WTS`, `pst`, `LF2M`, `gz` and dungeon shortcuts like `SM`, `BRD`, `UBRS`, `MC` are tinted light blue. Hover them to see the explanation. Ambiguous ones (`AH`, `SM`, `ST` …) only count in CAPITALS, so normal words aren't marked.
 - **Foreign languages:** messages in a language your character can't speak (e.g. Orcish when you play Alliance) are greyed out with a "(foreign language – not readable)" note, or hidden entirely if you like. **They are not translated** – that's technically impossible (the server only sends scrambled text) and not allowed by Blizzard.

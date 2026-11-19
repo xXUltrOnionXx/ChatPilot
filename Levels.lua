@@ -158,6 +158,25 @@ local function LevelColor(level)
 	return "|cffb0b0b0"
 end
 
+-------------------------------------------------------------------------------
+-- Player info for the mouse-over card: level, class and how you know them
+-------------------------------------------------------------------------------
+function ns:PlayerInfo(name)
+	local key = ns.Normalize(name)
+	if not key then return nil end
+	local live = ns.live and ns.live[key]
+	local saved = ns.db and ns.db.names and ns.db.names[key]
+	local info = {
+		key = key,
+		level = ns:LevelOf(key),
+		class = (live and live.c) or (type(saved) == "table" and saved.c) or nil,
+		src = live and live.src or {},
+	}
+	return info
+end
+
+function ns.LevelColor(level) return LevelColor(level) end
+
 local function BNetLevel(data)
 	local id = tonumber(data:match("|k:(%d+)") or data:match("^[^:]*:(%d+)"))
 	if not id or not C_BattleNet or not C_BattleNet.GetAccountInfoByID then return nil end

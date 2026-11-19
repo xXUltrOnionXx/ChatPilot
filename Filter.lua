@@ -275,15 +275,36 @@ function ns.LinkClick(link)
 end
 
 function ns.LinkEnter(frame, link)
-	-- shortened surname: show the full name on mouse-over
-	if type(link) == "string" and ns.S and ns.S.shortSurnames and link:sub(1, 7) == "player:" then
+	-- player card on mouse-over: full name, level, class, how you know them
+	if type(link) == "string" and ns.S and link:sub(1, 7) == "player:" and (ns.S.playerInfo or ns.S.shortSurnames) then
 		local full = link:match("^player:([^:]+)")
-		if full and full:find("-", 1, true) then
-			GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
-			GameTooltip:SetText((full:gsub("%-", " ")), 1, 1, 1)
-			GameTooltip:Show()
-			frame.ChatPilotTip = true
-			return false -- clicks and other handlers keep working
+		if full and ns.Usable(full) then
+			local info = ns.S.playerInfo and ns.PlayerInfo and ns:PlayerInfo(full)
+			local c = info and info.class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[info.class]
+			if info or full:find("-", 1, true) then
+				GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
+				GameTooltip:SetText((full:gsub("%-", " ")), c and c.r or 1, c and c.g or 1, c and c.b or 1)
+				if info then
+					local className = info.class and ((LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[info.class])
+						or (info.class:sub(1, 1) .. info.class:sub(2):lower()))
+					if info.level or className then
+						local lvl = info.level and (ns.LevelColor(info.level) .. L.PI_LEVEL:format(info.level) .. "|r") or ""
+						local cls = className and ((c and ("|cff%02x%02x%02x"):format(math.floor(c.r * 255), math.floor(c.g * 255), math.floor(c.b * 255)) or "") .. className .. "|r") or ""
+						GameTooltip:AddLine(lvl .. ((lvl ~= "" and cls ~= "") and "  " or "") .. cls)
+					else
+						GameTooltip:AddLine(L.PI_UNKNOWN, 0.6, 0.6, 0.6)
+					end
+					local tags = {}
+					if info.src.group then tags[#tags + 1] = L.SRC_GROUP end
+					if info.src.guild then tags[#tags + 1] = L.SRC_GUILD end
+					if info.src.friend then tags[#tags + 1] = L.SRC_FRIEND end
+					if info.src.community then tags[#tags + 1] = L.SRC_COMMUNITY end
+					if #tags > 0 then GameTooltip:AddLine(table.concat(tags, " · "), 0.55, 0.85, 0.65) end
+				end
+				GameTooltip:Show()
+				frame.ChatPilotTip = true
+				return false -- clicks and other handlers keep working
+			end
 		end
 	end
 	if type(link) == "string" and link:sub(1, #LINK_ABBR) == LINK_ABBR then
