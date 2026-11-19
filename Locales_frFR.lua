@@ -253,3 +253,9 @@ L.TUT_done_T = "Tout est prêt !"
 L.TUT_done_B = "Amuse-toi bien ! Des idées ou des soucis ? /chatpilot feedback les envoie anonymement. Et cette visite t'attend toujours dans les options."
 L.CW_BELL_OFF = "Cloche désactivée : clique pour un son et un avis à chaque nouveau message de cette fenêtre"
 L.CW_BELL_ON = "Cloche activée : son et avis à chaque nouveau message. Clique pour désactiver"
+
+-- Surnames, spam counter, compatibility
+L.OPT_shortSurnames = "Noms de famille courts"
+L.DESC_shortSurnames = "« Frost Winterborn » devient « Frost W. » dans le chat. Survole un nom pour le nom complet."
+L.SPAM_TODAY = "%d messages de spam masqués aujourd'hui"
+L.CHATSKIN_CONFLICT = "Style moderne du chat en pause : %s modifie déjà ton chat."

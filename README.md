@@ -1,6 +1,6 @@
 # ChatPilot Forever
 
-**ChatPilot Forever – der intuitivere Chat für WoW: Forever.** @-Erwähnungen mit Namensvorschlägen, nie wieder verpasste Flüsternachrichten, Erwähnungs-Alarme, Stufen im Chat, Spam-Filter, Chatverlauf und mehr.
+**ChatPilot Forever – nie wieder etwas im Chat von WoW: Forever verpassen.** Schreib `@` und wähle den richtigen Spieler, werde benachrichtigt, wenn dich jemand erwähnt, und verpasse keine Flüsternachricht mehr. Dazu: kurze Nachnamen („Frost W.“), Spam-Filter, eigene Chat-Fenster und das Forever-Design.
 
 **[🇬🇧 English version below](#english)** · **[CurseForge](https://www.curseforge.com/wow/addons/chatpilot)**
 
@@ -56,9 +56,10 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 
 ### Chat verstehen
 - **Stufe im Chat:** `[18:Arthas]` – farbig nach Schwierigkeit, auch bei Freunden und Gildenmitgliedern, die gerade online kommen.
+- **Kurze Nachnamen:** „Frost Winterborn“ wird zu „Frost W.“ – gibt es zwei Frosts mit W, wächst das Kürzel automatisch („Frost Wi.“ / „Frost Wo.“). Maus über den Namen zeigt den vollen Namen; Flüstern und Klicks nutzen weiter den vollen Namen.
 - **Abkürzungen erklärt:** Begriffe wie `LFG`, `WTS`, `pst`, `LF2M`, `gz` und Dungeon-Kürzel wie `SM`, `BRD`, `UBRS`, `MC` sind leicht hellblau. Fährst du mit der Maus darüber, erscheint die Erklärung. Mehrdeutige Kürzel (`AH`, `SM`, `ST` …) zählen nur in GROSSBUCHSTABEN, damit normale Wörter nicht markiert werden.
 - **Fremde Sprachen:** Nachrichten in einer Sprache, die dein Charakter nicht kann (z. B. Gemeinsprache, wenn du Horde spielst), werden grau mit dem Hinweis „(fremde Sprache – nicht lesbar)“ angezeigt oder auf Wunsch ganz ausgeblendet. **Übersetzt werden sie nicht** – das ist technisch unmöglich (der Server schickt nur das Kauderwelsch) und von Blizzard nicht erlaubt.
-- **Werbe-Spam weg:** Goldverkäufer, bezahlte Boosts und Webseiten-Werbung werden ausgeblendet. Normaler Handel, Freunde, Gilde und Gruppe bleiben unberührt.
+- **Werbe-Spam weg:** Goldverkäufer, bezahlte Boosts und Webseiten-Werbung werden ausgeblendet. Normaler Handel, Freunde, Gilde und Gruppe bleiben unberührt. Das Zahnrad am Chat zeigt, wie viele Spam-Nachrichten heute ausgeblendet wurden.
 - **Wiederholungen weg:** Wer in öffentlichen Kanälen (Handel, Suche nach Gruppe …) innerhalb von 90 Sekunden dasselbe noch mal schreibt, wird nur einmal angezeigt.
 
 ### Noch mehr Komfort
@@ -71,7 +72,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 
 ### Design & Fenster
 - **Zwei Designs:** „Modern“ (kühles Dunkelblau) oder **„Forever“** – fröhlich, frisch und hoffnungsvoll mit Meergrün, Minze und Sonnenaufgang-Gold. Gilt für alle ChatPilot-Fenster und wirkt sofort.
-- **Modernes Chatfenster:** Der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design. Abschaltbar.
+- **Modernes Chatfenster:** Der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design. Abschaltbar. Nutzt du schon ein Addon, das den Chat gestaltet (z. B. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), lässt ChatPilot den Look automatisch in Ruhe.
 - **Eigene Chat-Fenster:** Fenster, die nur zeigen, was du auswählst – Flüstern, Gilde, Gruppe, Schlachtzug, Sagen, Schreien, Emotes, Allgemein, Handel, andere Kanäle, Communities oder Systemnachrichten.
   - Filter über das Trichter-Symbol im Fenster.
   - **Frei verschieben** an der Titelleiste, Größe unten rechts ändern.
@@ -122,7 +123,7 @@ ChatPilot wurde so gebaut, dass es die Regeln einhält:
 <a id="english"></a>
 ## 🇬🇧 English
 
-**ChatPilot Forever – a smarter, more intuitive chat for WoW: Forever.** @-mentions with name suggestions, never miss a whisper again, mention alerts, levels in chat, spam filter, chat history and more.
+**ChatPilot Forever – never miss anything in WoW: Forever chat.** Type `@` and pick the right player, get notified when someone mentions you, and never miss a whisper again. Plus: short surnames ("Frost W."), spam filter, your own chat windows and the Forever design.
 
 **[Download on CurseForge](https://www.curseforge.com/wow/addons/chatpilot)**
 
@@ -168,9 +169,10 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 
 #### Understanding chat
 - **Levels in chat:** `[18:Arthas]` – coloured by difficulty, also for friends and guild members who just came online.
+- **Short surnames:** "Frost Winterborn" becomes "Frost W." – if two Frosts share the W, the tag grows automatically ("Frost Wi." / "Frost Wo."). Hover a name for the full name; whispers and clicks still use the full name.
 - **Abbreviations explained:** terms like `LFG`, `WTS`, `pst`, `LF2M`, `gz` and dungeon shortcuts like `SM`, `BRD`, `UBRS`, `MC` are tinted light blue. Hover them to see the explanation. Ambiguous ones (`AH`, `SM`, `ST` …) only count in CAPITALS, so normal words aren't marked.
 - **Foreign languages:** messages in a language your character can't speak (e.g. Orcish when you play Alliance) are greyed out with a "(foreign language – not readable)" note, or hidden entirely if you like. **They are not translated** – that's technically impossible (the server only sends scrambled text) and not allowed by Blizzard.
-- **Ad spam gone:** gold sellers, paid boosts and website ads are hidden. Normal trading, friends, guild and group are never touched.
+- **Ad spam gone:** gold sellers, paid boosts and website ads are hidden. Normal trading, friends, guild and group are never touched. The gear next to the chat shows how many spam messages were hidden today.
 - **Repeats gone:** if someone posts the same thing again within 90 seconds in a public channel (Trade, LookingForGroup …), it's shown only once.
 
 #### More comfort
@@ -183,7 +185,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 
 #### Design & windows
 - **Two designs:** "Modern" (cool dark blue) or **"Forever"** – cheerful, fresh and hopeful with sea green, mint and sunrise gold. Applies to all ChatPilot windows, instantly.
-- **Modern chat window:** the game's own chat gets a flat look with clean tabs and input box in your design. Can be turned off.
+- **Modern chat window:** the game's own chat gets a flat look with clean tabs and input box in your design. Can be turned off. If another addon already styles your chat (e.g. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), ChatPilot leaves the look alone automatically.
 - **Your own chat windows:** windows that only show what you pick – whispers, guild, party, raid, say, yell, emotes, General, Trade, other channels, communities or system messages.
   - Filter via the funnel icon in the window.
   - **Move freely** by the title bar, resize at the bottom right corner.

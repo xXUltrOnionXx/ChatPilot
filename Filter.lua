@@ -185,6 +185,19 @@ local function CountSpam(lineID)
 	if lineID and countedLines[lineID] then return end
 	if lineID then countedLines[lineID] = true end
 	ns.spamHidden = (ns.spamHidden or 0) + 1
+	if ns.db then
+		local today = date("%Y-%m-%d")
+		local d = ns.db.spamDay
+		if type(d) ~= "table" or d.day ~= today then d = { day = today, n = 0 }; ns.db.spamDay = d end
+		d.n = d.n + 1
+	end
+end
+
+-- spam messages hidden today (survives /reload)
+function ns:SpamToday()
+	local d = self.db and self.db.spamDay
+	if type(d) == "table" and d.day == date("%Y-%m-%d") then return d.n end
+	return 0
 end
 
 -------------------------------------------------------------------------------
@@ -262,6 +275,17 @@ function ns.LinkClick(link)
 end
 
 function ns.LinkEnter(frame, link)
+	-- shortened surname: show the full name on mouse-over
+	if type(link) == "string" and ns.S and ns.S.shortSurnames and link:sub(1, 7) == "player:" then
+		local full = link:match("^player:([^:]+)")
+		if full and full:find("-", 1, true) then
+			GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
+			GameTooltip:SetText((full:gsub("%-", " ")), 1, 1, 1)
+			GameTooltip:Show()
+			frame.ChatPilotTip = true
+			return false -- clicks and other handlers keep working
+		end
+	end
 	if type(link) == "string" and link:sub(1, #LINK_ABBR) == LINK_ABBR then
 		local word = link:sub(#LINK_ABBR + 1)
 		local text = ns.Explain(word)

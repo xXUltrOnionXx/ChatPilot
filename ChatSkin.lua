@@ -167,14 +167,44 @@ local function UpdateTabs()
 	end
 end
 
+-- Other addons that restyle the chat window. If one of them is active,
+-- ChatPilot leaves the chat's look alone so the two don't fight.
+local SKIN_ADDONS = { "prat", "chatter", "elvui", "glass", "primechat", "gudachat", "bloomchat",
+	"mcawesome", "chatforever", "chat_forever", "foreverchat", "forever_chat", "betterforeverchat",
+	"foreverchatbox", "luxchat", "tukui", "basicchatmods" }
+
+function ns:ChatSkinConflict()
+	local get = (C_AddOns and C_AddOns.GetNumAddOns) or GetNumAddOns
+	local info = (C_AddOns and C_AddOns.GetAddOnInfo) or GetAddOnInfo
+	local loaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+	if not get or not info or not loaded then return nil end
+	for i = 1, get() do
+		local name, title = info(i)
+		if name and loaded(name) then
+			local low = name:lower():gsub("[%s%-%.]", "")
+			for _, pat in ipairs(SKIN_ADDONS) do
+				if low:find(pat:gsub("_", ""), 1, true) then
+					return (type(title) == "string" and title ~= "" and title:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")) or name
+				end
+			end
+		end
+	end
+end
+
 function ns:SkinAllChats()
+	local other = self:ChatSkinConflict()
+	if other then
+		self.skinConflict = other
+		ns.Print(L.CHATSKIN_CONFLICT, other)
+		return
+	end
 	for _, frame in ipairs(pending) do local ok, err = pcall(SkinFrame, frame); if not ok and ns.DEBUG then print(err) end end
 	UpdateTabs()
 end
 
 ns.OnChatFrame(function(frame)
 	pending[#pending + 1] = frame
-	if ns.S and ns.S.chatSkin and ns.loggedIn then pcall(SkinFrame, frame) end
+	if ns.S and ns.S.chatSkin and ns.loggedIn and not ns.skinConflict then pcall(SkinFrame, frame) end
 end)
 
 if type(FCF_SelectDockFrame) == "function" then

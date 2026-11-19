@@ -33,6 +33,7 @@ ns.defaults = {
 	spamFilter = true,
 	keepHistory = true,
 	showLevels = true,
+	shortSurnames = true,
 	snippets = true,
 	abbrevTips = true,
 	markForeign = true,

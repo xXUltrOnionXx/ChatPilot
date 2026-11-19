@@ -253,3 +253,9 @@ L.TUT_done_T = "준비 완료!"
 L.TUT_done_B = "즐거운 시간 되세요! 아이디어나 문제는 /chatpilot feedback으로 익명 전송할 수 있습니다. 이 둘러보기는 언제나 설정에 있습니다."
 L.CW_BELL_OFF = "알림 꺼짐: 클릭하면 이 창의 새 메시지마다 소리와 알림을 받습니다"
 L.CW_BELL_ON = "알림 켜짐: 새 메시지마다 소리와 알림. 클릭하면 끕니다"
+
+-- Surnames, spam counter, compatibility
+L.OPT_shortSurnames = "짧은 성"
+L.DESC_shortSurnames = "채팅에서 \"Frost Winterborn\"이 \"Frost W.\"로 표시됩니다. 이름 위에 마우스를 올리면 전체 이름이 보입니다."
+L.SPAM_TODAY = "오늘 스팸 메시지 %d개를 숨겼습니다"
+L.CHATSKIN_CONFLICT = "모던 채팅 모양 일시 중지: %s이(가) 이미 채팅을 꾸미고 있습니다."

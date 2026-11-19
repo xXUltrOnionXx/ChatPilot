@@ -246,6 +246,15 @@ ns.OnChatFrame(function(frame)
 	bar.chatFrame = frame
 
 	local gear = BarButton(bar, L.BTN_SETTINGS, function() ns:ToggleOptions() end)
+	gear:HookScript("OnEnter", function()
+		if ns.S and ns.S.spamFilter and ns.SpamToday then
+			local n = ns:SpamToday()
+			if n > 0 then
+				GameTooltip:AddLine(L.SPAM_TODAY:format(n), 0.55, 0.85, 0.65)
+				GameTooltip:Show()
+			end
+		end
+	end)
 	gear.icon = gear:CreateTexture(nil, "ARTWORK")
 	gear.icon:SetSize(16, 16)
 	gear.icon:SetPoint("CENTER")

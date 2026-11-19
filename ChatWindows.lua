@@ -137,7 +137,7 @@ local function Format(event, msg, author, language, channelString, target, flags
 	local ok, head = pcall(string.format, prefix, link)
 	if not ok then head = link .. ": " end
 	local text = ts .. head .. lang .. msg
-	if ns.S.showLevels and ns.AddLevels then
+	if (ns.S.showLevels or ns.S.shortSurnames) and ns.AddLevels then
 		local ok2, out = pcall(ns.AddLevels, text)
 		if ok2 and out then text = out end
 	end

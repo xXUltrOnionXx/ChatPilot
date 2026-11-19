@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0
+- Neu: **Kurze Nachnamen** im Chat – „Frost Winterborn“ wird zu „Frost W.“. Gibt es zwei Frosts mit W, wird es automatisch „Frost Wi.“ / „Frost Wo.“. Maus über den Namen zeigt den vollen Namen; Flüstern, Einladen und Klicks nutzen weiter den vollen Namen. Auch in den eigenen Chat-Fenstern. Abschaltbar unter Chat-Hilfen
+- Neu: **Spam-Zähler** – das Zahnrad am Chat und die Einstellungen zeigen, wie viele Spam-Nachrichten heute ausgeblendet wurden
+- Neu: **Verträglich mit anderen Chat-Addons** – ist z. B. Prat, ElvUI, Chat Forever, PrimeChat oder GudaChat aktiv, lässt ChatPilot den Look des Chats in Ruhe (alle anderen Funktionen laufen weiter)
+
 ## 1.4.1
 - Fix: In den eigenen Chat-Fenstern verschwand beim Drüberfahren der Text im Ziel-Menü und die Symbole oben im Fenster (Glocke, Filter, +, ×)
 - Ziel-Knopf zeigt Kanäle kürzer („1. Allgemein“ statt „1. Allgemein - Sturmwind“)

@@ -253,3 +253,9 @@ L.TUT_done_T = "一切就緒！"
 L.TUT_done_B = "玩得開心！有想法或問題？/chatpilot feedback 可匿名送出。這個導覽隨時在設定中等你。"
 L.CW_BELL_OFF = "提醒已關閉：點擊後此視窗有新訊息時播放聲音並顯示提示"
 L.CW_BELL_ON = "提醒已開啟：有新訊息時播放聲音並顯示提示。點擊關閉"
+
+-- Surnames, spam counter, compatibility
+L.OPT_shortSurnames = "簡短姓氏"
+L.DESC_shortSurnames = "聊天中「Frost Winterborn」顯示為「Frost W.」。滑鼠移到名字上可看全名。"
+L.SPAM_TODAY = "今天已隱藏 %d 則垃圾訊息"
+L.CHATSKIN_CONFLICT = "現代聊天外觀已暫停：%s 已在美化你的聊天框。"

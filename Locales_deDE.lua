@@ -259,3 +259,9 @@ L.TUT_done_T = "Alles bereit!"
 L.TUT_done_B = "Viel Spaß! Ideen oder Probleme? /chatpilot feedback schickt sie anonym. Und dieser Rundgang wartet jederzeit in den Einstellungen."
 L.CW_BELL_OFF = "Glocke aus: Klicken für Ton und Hinweis bei neuen Nachrichten in diesem Fenster"
 L.CW_BELL_ON = "Glocke an: Ton und Hinweis bei neuen Nachrichten. Klicken zum Ausschalten"
+
+-- Surnames, spam counter, compatibility
+L.OPT_shortSurnames = "Kurze Nachnamen"
+L.DESC_shortSurnames = "„Frost Winterborn“ wird im Chat zu „Frost W.“. Maus über den Namen zeigt den vollen Namen."
+L.SPAM_TODAY = "Heute %d Spam-Nachrichten ausgeblendet"
+L.CHATSKIN_CONFLICT = "Moderner Chat-Look pausiert: %s gestaltet deinen Chat bereits."

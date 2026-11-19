@@ -505,7 +505,8 @@ local function BuildChat(content)
 	local flow = NewFlow(c, PageHeader(c, L.PAGE_CHAT, L.PAGE_CHAT_SUB))
 	ToggleRow(flow, "abbrevTips")
 	ToggleRow(flow, "showLevels")
-	ToggleRow(flow, "spamFilter")
+	ToggleRow(flow, "shortSurnames")
+	local spamRow = ToggleRow(flow, "spamFilter")
 	ToggleRow(flow, "keepHistory")
 	ToggleRow(flow, "urls")
 	local foreign = ToggleRow(flow, "markForeign")
@@ -519,7 +520,11 @@ local function BuildChat(content)
 	ToggleRow(flow, "buttonsTop", btn, function() ns:UpdateChatButtons() end)
 	ToggleRow(flow, "buttonBackground", btn, function() ns:UpdateChatButtons() end)
 	ToggleRow(flow, "versionCheck")
-	sf:SetScript("OnShow", function() Relayout(flow) end)
+	sf:SetScript("OnShow", function()
+		local n = ns.SpamToday and ns:SpamToday() or 0
+		spamRow.desc:SetText(n > 0 and (L.DESC_spamFilter .. "  |cff8ad9a6" .. L.SPAM_TODAY:format(n) .. "|r") or L.DESC_spamFilter)
+		Relayout(flow)
+	end)
 	return sf
 end
 
@@ -614,8 +619,12 @@ local function BuildDesign(content)
 	box:SetScript("OnShow", function() for n, tile in pairs(tiles) do tile:SetPicked(n == (ns.S.theme or "modern")) end end)
 	FlowAdd(flow, box)
 
-	ToggleRow(flow, "chatSkin", nil, function(v)
+	local skinRow = ToggleRow(flow, "chatSkin", nil, function(v)
 		if v then ns:SkinAllChats() else ns.Print(L.CHATSKIN_RELOAD) end
+	end)
+	skinRow:HookScript("OnShow", function()
+		local other = ns.ChatSkinConflict and ns:ChatSkinConflict()
+		skinRow.desc:SetText(other and ("|cffffb84d" .. L.CHATSKIN_CONFLICT:format(other) .. "|r") or L.DESC_chatSkin)
 	end)
 
 	-- own chat windows

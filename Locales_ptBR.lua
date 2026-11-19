@@ -253,3 +253,9 @@ L.TUT_done_T = "Tudo pronto!"
 L.TUT_done_B = "Divirta-se! Ideias ou problemas? /chatpilot feedback envia de forma anônima. E este tour sempre te espera nas opções."
 L.CW_BELL_OFF = "Sino desligado: clique para receber som e aviso a cada nova mensagem nesta janela"
 L.CW_BELL_ON = "Sino ligado: som e aviso a cada nova mensagem. Clique para desligar"
+
+-- Surnames, spam counter, compatibility
+L.OPT_shortSurnames = "Sobrenomes curtos"
+L.DESC_shortSurnames = "\"Frost Winterborn\" vira \"Frost W.\" no chat. Passe o mouse no nome para ver o nome completo."
+L.SPAM_TODAY = "%d mensagens de spam ocultadas hoje"
+L.CHATSKIN_CONFLICT = "Visual moderno do chat pausado: %s já estiliza seu chat."

@@ -179,17 +179,80 @@ local function AddBNetLevels(text)
 	end))
 end
 
-local function AddLevels(text)
-	if text:find("|HBNplayer:", 1, true) then text = AddBNetLevels(text) end
-	return (text:gsub("(|Hplayer:([^|]*)|h)%[(.-)%]|h", function(open, data, inner)
-		if inner:find("^|c%x+%d+|r:") then return nil end -- already has a level
-		local name = data:match("^([^:]+)")
-		local level = name and ns:LevelOf(ns.Normalize(name))
-		if not level then
-			RequestGuildRoster() -- someone new: refresh the lists so the next line knows them
-			return nil
+-------------------------------------------------------------------------------
+-- Short surnames: "Frost Winterborn" -> "Frost W." (display only; the link,
+-- whispers, invites and clicks keep using the full name). If two people with
+-- the same first name share an initial, the tag grows: "Frost Wi." / "Frost Wo."
+-------------------------------------------------------------------------------
+local UTF8_CHAR = "[%z\1-\127\194-\244][\128-\191]*"
+local surnamesByFirst = {}  -- lower first name -> { surname = true }
+
+local function Chars(s)
+	local t = {}
+	for c in s:gmatch(UTF8_CHAR) do t[#t + 1] = c end
+	return t
+end
+
+local function SurnameTag(first, surname)
+	local key = first:lower()
+	local seen = surnamesByFirst[key]
+	if not seen then seen = {}; surnamesByFirst[key] = seen end
+	seen[surname] = true
+	local mine = Chars(surname)
+	local n = 1
+	for other in pairs(seen) do
+		if other ~= surname then
+			local o = Chars(other)
+			local same = 0
+			while same < #mine and same < #o and mine[same + 1]:lower() == o[same + 1]:lower() do same = same + 1 end
+			n = math.max(n, same + 1)
 		end
-		return open .. "[" .. LevelColor(level) .. level .. "|r:" .. inner .. "]|h"
+	end
+	if n >= #mine then return surname end
+	return table.concat(mine, "", 1, n) .. "."
+end
+ns.SurnameTag = SurnameTag
+
+local function ShortenName(name)
+	local first, surname = name:match("^([^%s%-:|%[%]]+)[%s%-]([^%s%-:|%[%]]+)$")
+	if not first then return nil end
+	return first .. " " .. SurnameTag(first, surname)
+end
+ns.ShortenName = ShortenName
+
+local function ShortenInner(inner)
+	-- keep a level prefix ("|cff..18|r:") and class colour around the name
+	local lvl, rest = inner:match("^(|c%x+%d+|r:)(.*)$")
+	rest = rest or inner
+	local c1, nm, c2 = rest:match("^(|c%x%x%x%x%x%x%x%x)(.-)(|r)$")
+	local short
+	if c1 then
+		short = ShortenName(nm)
+		short = short and (c1 .. short .. c2)
+	else
+		short = ShortenName(rest)
+	end
+	if not short then return inner end
+	return (lvl or "") .. short
+end
+
+local function AddLevels(text)
+	local S = ns.S or {}
+	if S.showLevels and text:find("|HBNplayer:", 1, true) then text = AddBNetLevels(text) end
+	return (text:gsub("(|Hplayer:([^|]*)|h)%[(.-)%]|h", function(open, data, inner)
+		local out = inner
+		if S.shortSurnames then out = ShortenInner(out) end
+		if S.showLevels and not out:find("^|c%x+%d+|r:") then
+			local name = data:match("^([^:]+)")
+			local level = name and ns:LevelOf(ns.Normalize(name))
+			if level then
+				out = LevelColor(level) .. level .. "|r:" .. out
+			else
+				RequestGuildRoster() -- someone new: refresh the lists so the next line knows them
+			end
+		end
+		if out == inner then return nil end
+		return open .. "[" .. out .. "]|h"
 	end))
 end
 ns.AddLevels = AddLevels
@@ -200,7 +263,7 @@ ns.OnChatFrame(function(frame)
 	local orig = frame.AddMessage
 	frame.AddMessage = function(self, text, ...)
 		-- never touch secret (restricted) messages
-		if ns.S and ns.S.showLevels and type(text) == "string" and not ns.IsSecret(text)
+		if ns.S and (ns.S.showLevels or ns.S.shortSurnames) and type(text) == "string" and not ns.IsSecret(text)
 			and (text:find("|Hplayer:", 1, true) or text:find("|HBNplayer:", 1, true)) then
 			local ok, out = pcall(AddLevels, text)
 			if ok and out then text = out end

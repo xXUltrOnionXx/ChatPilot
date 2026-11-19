@@ -261,3 +261,9 @@ L.TUT_done_T = "You're all set!"
 L.TUT_done_B = "Have fun! Ideas or problems? /chatpilot feedback sends them anonymously. And this tour is always waiting in the settings."
 L.CW_BELL_OFF = "Bell is off: click to get a sound and a notice for new messages in this window"
 L.CW_BELL_ON = "Bell is on: you get a sound and a notice for new messages. Click to turn off"
+
+-- Surnames, spam counter, compatibility
+L.OPT_shortSurnames = "Short surnames"
+L.DESC_shortSurnames = "\"Frost Winterborn\" becomes \"Frost W.\" in chat. Hover a name for the full name."
+L.SPAM_TODAY = "%d spam messages hidden today"
+L.CHATSKIN_CONFLICT = "Modern chat look paused: %s already styles your chat."
