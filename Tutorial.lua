@@ -7,7 +7,7 @@ local C = UI.C
 -- features and can be watched again any time (/chatpilot tutorial, or the
 -- button in the settings). It only shows information.
 
-local TUTORIAL_VERSION = 2 -- raise when the tour gets new steps: shows once more after the update
+local TUTORIAL_VERSION = 3 -- raise when the tour gets new steps: shows once more after the update
 local W, H = 540, 330
 local tut, spot, overlay
 local index = 1
@@ -174,6 +174,64 @@ local PICTURES = {
 			b:SetColorTexture(unpack(th.glowB))
 		end
 	end,
+	sounds = function(p)
+		KeyChip(p, "A", -46, 18)
+		KeyChip(p, "S", -10, 18)
+		KeyChip(p, "D", 26, 18)
+		KeyChip(p, "<", -20, -20)
+		KeyChip(p, ">", 20, -20)
+		for i = 1, 3 do
+			local w = p:CreateTexture(nil, "ARTWORK")
+			w:SetSize(3, 6 + i * 5)
+			w:SetPoint("CENTER", 52 + i * 7, 18)
+			UI.Paint(w, C.accent)
+		end
+	end,
+	tabs = function(p)
+		local x = -58
+		for i, label in ipairs({ "Gilde", "Handel-Leute" }) do
+			local t = CreateFrame("Frame", nil, p)
+			t:SetSize(i == 1 and 46 or 62, 22)
+			t:SetPoint("LEFT", p, "CENTER", x, 6)
+			x = x + (i == 1 and 48 or 64)
+			UI.Fill(t, C.btn)
+			if i == 1 then
+				local line = t:CreateTexture(nil, "OVERLAY")
+				line:SetPoint("BOTTOMLEFT", 3, 0)
+				line:SetPoint("BOTTOMRIGHT", -3, 0)
+				line:SetHeight(2)
+				UI.Paint(line, C.accent)
+			end
+			local fs = UI.Text(t, "GameFontHighlightSmall", i == 1 and C.text or C.muted)
+			fs:SetPoint("LEFT", 6, 0)
+			fs:SetWidth((i == 1 and 46 or 62) - 10)
+			fs:SetWordWrap(false)
+			fs:SetText(label)
+		end
+		local d = CreateFrame("Frame", nil, p)
+		d:SetSize(20, 20)
+		d:SetPoint("LEFT", p, "CENTER", x + 8, 6)
+		UI.Fill(d, C.row)
+		UI.Border(d, C.border)
+		Lines(d, C.accent, { { 6, 2, -2, 0, -45 }, { 6, 2, 2, 0, 45 } })
+		local tip = UI.Text(p, "GameFontHighlightSmall", C.accent)
+		tip:SetPoint("CENTER", 0, -22)
+		tip:SetText(L.TUT_RIGHTCLICK)
+	end,
+	tidy = function(p)
+		for i = 1, 3 do
+			local r = CreateFrame("Frame", nil, p)
+			r:SetSize(104, 14)
+			r:SetPoint("CENTER", -8, 24 - i * 18)
+			UI.Fill(r, i == 2 and C.accentDim or C.row)
+		end
+		local b = CreateFrame("Frame", nil, p)
+		b:SetSize(22, 22)
+		b:SetPoint("CENTER", 58, 6)
+		UI.Fill(b, C.btn)
+		UI.Border(b, C.orange)
+		Lines(b, C.orange, { { 12, 2, 0, 0, 45 }, { 12, 2, 0, 0, -45 } })
+	end,
 	done = function(p)
 		local ring = CreateFrame("Frame", nil, p)
 		ring:SetSize(60, 60)
@@ -262,13 +320,16 @@ end
 local STEPS = {
 	{ key = "welcome" },
 	{ key = "typing" },
+	{ key = "sounds" },
 	{ key = "mentions", target = function() return ns.ChatBarButton and ns.ChatBarButton("mentions") end },
 	{ key = "whispers", target = function() return ns.ChatBarButton and ns.ChatBarButton("whispers") end },
 	{ key = "notes", target = function() return ns.ChatBarButton and ns.ChatBarButton("notes") end },
 	{ key = "names" },
 	{ key = "windows", target = function() return ns._cwPlus and ns._cwPlus() end },
 	{ key = "writing" },
+	{ key = "tabs" },
 	{ key = "design", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
+	{ key = "tidy", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
 	{ key = "done" },
 }
 ns.TUTORIAL_STEPS = STEPS
