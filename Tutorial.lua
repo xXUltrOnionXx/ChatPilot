@@ -419,3 +419,5 @@ function ns:OnLogin()
 		end)
 	end
 end
+
+function ns:TutorialShown() return tut and tut:IsShown() and true or false end

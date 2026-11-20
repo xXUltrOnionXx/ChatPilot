@@ -811,6 +811,26 @@ local function BuildInfo(content)
 	return sf
 end
 
+-- Patch notes: every update so far, newest first, in the client's language
+local function BuildPatch(content)
+	local sf, c = NewPage(content)
+	local flow = NewFlow(c, PageHeader(c, L.PAGE_PATCH, L.PAGE_PATCH_SUB))
+	local top = CreateFrame("Frame", nil, c)
+	top:SetHeight(40)
+	local b = UI.Button(top, L.THX_SHOW, 220, 30)
+	b:SetPoint("LEFT", 0, 0)
+	b:SetScript("OnClick", function() if ns.ShowThanks then ns:ShowThanks() end end)
+	FlowAdd(flow, top)
+	for i, e in ipairs(ns.PATCHNOTES or {}) do
+		local lines = {}
+		for _, l in ipairs(ns:PatchLines(e)) do lines[#lines + 1] = "•  " .. l end
+		local box = InfoBox(flow, c, L.PATCH_VERSION:format(e.v) .. (i == 1 and ("  ·  " .. L.PATCH_NEWEST) or ""), table.concat(lines, "\n"))
+		if i == 1 then box.body:SetTextColor(1, 1, 1) end
+	end
+	sf:SetScript("OnShow", function() Relayout(flow) end)
+	return sf
+end
+
 local function BuildAbout(content)
 	local sf, c = NewPage(content)
 	local badge = UI.Badge(c, 56)
@@ -905,6 +925,7 @@ local function Build()
 	BuildChat(content)
 	BuildDesign(content)
 	BuildInfo(content)
+	BuildPatch(content)
 	BuildAbout(content)
 	NavButton(sidebar, 1, L.PAGE_TYPING)
 	NavButton(sidebar, 2, L.PAGE_MENTIONS)
@@ -912,7 +933,8 @@ local function Build()
 	NavButton(sidebar, 4, L.PAGE_CHAT)
 	NavButton(sidebar, 5, L.PAGE_DESIGN)
 	NavButton(sidebar, 6, L.PAGE_INFO)
-	NavButton(sidebar, 7, L.PAGE_ABOUT)
+	NavButton(sidebar, 7, L.PAGE_PATCH)
+	NavButton(sidebar, 8, L.PAGE_ABOUT)
 
 	local tourBtn = UI.Button(sidebar, L.TUT_OPEN, 150, 28)
 	tourBtn:SetPoint("BOTTOMLEFT", 20, 58)
@@ -1006,6 +1028,8 @@ SlashCmdList.CHATPILOT = function(input)
 		ns.Print(L.CLEARED, L.CLEAR_MAIN)
 	elseif cmd == "info" then
 		ns:OpenOptions(6)
+	elseif cmd == "thanks" or cmd == "danke" or cmd == "news" or cmd == "patchnotes" then
+		if ns.ShowThanks then ns:ShowThanks() end
 	elseif cmd == "copy" then
 		ns:CopyChat()
 	elseif cmd == "feedback" or cmd == "fb" then
