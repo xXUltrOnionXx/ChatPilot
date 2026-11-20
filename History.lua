@@ -4,8 +4,18 @@ local L = ns.L
 -- Keeps your chat after /reload or logging out: the last lines of every chat
 -- window are saved on logout and shown again (greyed marker) after login.
 
-local MAX_LINES = 120
+local MAX_LINES = 240
 local MARKER = "|cff4ec9ff|r|cff6b7383" -- invisible tag to recognise our separator line
+
+-- Double each Blizzard window's live scrollback once per frame, including
+-- combat log and temporary whispers, independently of the modern chat look.
+ns.OnChatFrame(function(frame)
+	if rawget(frame, "ChatPilotHistoryCapacity") or not frame.GetMaxLines or not frame.SetMaxLines then return end
+	local current = frame:GetMaxLines()
+	if type(current) ~= "number" or ns.IsSecret(current) or current <= 0 then return end
+	frame:SetMaxLines(current * 2)
+	frame.ChatPilotHistoryCapacity = true
+end)
 
 local function Save()
 	if not ns.S or not ns.S.keepHistory or not ns.playerKey then return end

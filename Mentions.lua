@@ -1,7 +1,7 @@
 local _, ns = ...
 local L = ns.L
 
-local MAX_LOG = 100
+local MAX_LOG = 200
 local lastSound = 0
 
 local function ChannelLabel(event, channelName)
