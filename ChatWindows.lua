@@ -1925,6 +1925,12 @@ local function GameSent() ns.cwLast = nil end
 -- clicking a game chat window hands Enter back to the game
 ns.OnChatFrame(function(frame)
 	pcall(frame.HookScript, frame, "OnMouseDown", GameSent)
+	-- the game's input bar and its tabs too
+	local name = frame.GetName and frame:GetName()
+	local box = rawget(frame, "editBox") or (name and _G[name .. "EditBox"])
+	if box and box.HookScript then pcall(box.HookScript, box, "OnMouseDown", GameSent) end
+	local tab = name and _G[name .. "Tab"]
+	if tab and tab.HookScript then pcall(tab.HookScript, tab, "OnMouseDown", GameSent) end
 end)
 
 local function HookFn(tbl, name, fn)
