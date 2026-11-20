@@ -677,7 +677,7 @@ local function TabRow(parent)
 	function clip:Overflow() return self.forceDrop or self.width > (self:GetWidth() or 0) + 0.5 end
 	function clip:View()
 		local v = self:GetWidth() or 0
-		if self:Overflow() then v = v - DROP_W - 4 end
+		if self:Overflow() and not self.dropOutside then v = v - DROP_W - 4 end
 		return math.max(0, v)
 	end
 	function clip:Apply()
@@ -723,9 +723,13 @@ local function TabRow(parent)
 				if sp[2] >= self.scroll - 0.5 then sp.vis = true; sp[1]:SetAlpha(1); if sp[1].EnableMouse then sp[1]:EnableMouse(true) end break end
 			end
 		end
-		-- the ▾ sits at the right edge of the row
+		-- the ▾ sits at the right edge of the row, or just outside it (main chat)
 		self.drop:ClearAllPoints()
-		self.drop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1)
+		if self.dropOutside then
+			self.drop:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 6, 1)
+		else
+			self.drop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1)
+		end
 	end
 	local apply = clip.Apply
 	function clip:Apply()
@@ -2169,7 +2173,8 @@ function UpdateLaunchers()
 		local mainL = main.GetLeft and main:GetLeft() or 0
 		local mainR = main.GetRight and main:GetRight() or (mainL + 400)
 		local startX = (gameTab and gameTab.GetRight and gameTab:GetRight()) and (gameTab:GetRight() + 3) or mainL
-		launchRow:SetWidth(math.max(60, mainR + 4 - startX))
+		launchRow:SetWidth(math.max(60, mainR - startX))
+		launchRow.dropOutside = true -- the ▾ hangs just outside the chat's right edge
 		if not launchRow.items then
 			launchRow.items = function()
 				local list = {}
@@ -2207,7 +2212,7 @@ function UpdateLaunchers()
 		end
 	end
 	if launchRow and #list > 0 then
-		local avail = (launchRow:GetWidth() or 0) - DROP_W - 6
+		local avail = launchRow:GetWidth() or 0
 		if total < avail then
 			local extra = math.floor((avail - total) / #list)
 			for i = 1, #list do widths[i] = widths[i] + extra end
