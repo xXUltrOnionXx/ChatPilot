@@ -438,6 +438,12 @@ local LayoutTabs, Select, StartDrag -- forward
 -- Long tab names run slowly from left to right and back (like a news ticker),
 -- so the whole name can be read. Short names stand still.
 local MQ_SPEED, MQ_PAUSE = 22, 1.4
+
+-- full width of a text, even when the text box itself is narrower
+local function FullWidth(fs)
+	if fs.GetUnboundedStringWidth then return fs:GetUnboundedStringWidth() or 0 end
+	return fs:GetStringWidth() or 0
+end
 local function MarqueeText(btn, left, right, font)
 	local mq = CreateFrame("Frame", nil, btn)
 	mq:SetPoint("TOPLEFT", left, 0)
@@ -450,7 +456,7 @@ local function MarqueeText(btn, left, right, font)
 	btn.mq = mq
 	local t, dir, wait = 0, 1, MQ_PAUSE
 	local function Tick(_, elapsed)
-		local over = (text:GetStringWidth() or 0) - (mq:GetWidth() or 0)
+		local over = FullWidth(text) - (mq:GetWidth() or 0)
 		if over <= 1 then text:SetPoint("LEFT", mq, "LEFT", 0, 0); mq:SetScript("OnUpdate", nil) return end
 		if wait > 0 then wait = wait - elapsed return end
 		t = t + dir * elapsed * MQ_SPEED
@@ -471,7 +477,7 @@ local function MarqueeText(btn, left, right, font)
 		if #chars > 10 then
 			-- the visible window is as wide as the first 10 characters
 			text:SetText(table.concat(chars, "", 1, 10))
-			local w10 = (text:GetStringWidth() or inner) + 1
+			local w10 = (FullWidth(text) or inner) + 1
 			text:SetText(full)
 			mq:ClearAllPoints()
 			mq:SetPoint("LEFT", btn, "LEFT", left, 0)
@@ -481,8 +487,8 @@ local function MarqueeText(btn, left, right, font)
 			mq:SetPoint("TOPLEFT", left, 0)
 			mq:SetPoint("BOTTOMRIGHT", -right, 0)
 		end
-		text:SetWidth((text:GetStringWidth() or 0) + 2)
-		local over = (text:GetStringWidth() or 0) - (mq:GetWidth() or 0)
+		text:SetWidth(FullWidth(text) + 2)
+		local over = FullWidth(text) - (mq:GetWidth() or 0)
 
 		if over > 1 then
 			if not mq:GetScript("OnUpdate") then t, dir, wait = 0, 1, MQ_PAUSE; mq:SetScript("OnUpdate", Tick) end
@@ -869,7 +875,7 @@ function LayoutTabs(g)
 	for i, id in ipairs(g.data.order) do
 		local t = wins[id].tab
 		t.text:SetText(WindowName(wins[id]))
-		widths[i] = math.min((t.text:GetStringWidth() or 60) + 22, TAB_MAX)
+		widths[i] = math.min(FullWidth(t.text) + 22, TAB_MAX)
 		total = total + widths[i] + (i > 1 and TAB_GAP or 0)
 	end
 	-- tabs fill the whole row; long names scroll inside their tab
@@ -2257,7 +2263,7 @@ function UpdateLaunchers()
 				w.launch = w.launch or CreateLauncher(w)
 				w.launch.text:SetText(WindowName(w))
 				list[#list + 1] = { g = g, id = id, w = w }
-				widths[#list] = math.min((w.launch.text:GetStringWidth() or 60) + 20, TAB_MAX)
+				widths[#list] = math.min(FullWidth(w.launch.text) + 20, TAB_MAX)
 				total = total + widths[#list] + (#list > 1 and 3 or 0)
 			end
 		end
