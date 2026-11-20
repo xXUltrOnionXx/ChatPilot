@@ -590,7 +590,7 @@ local function TabRow(parent)
 	drop:Hide()
 	clip.drop = drop
 
-	function clip:Overflow() return self.width > (self:GetWidth() or 0) + 0.5 end
+	function clip:Overflow() return self.forceDrop or self.width > (self:GetWidth() or 0) + 0.5 end
 	function clip:View()
 		local v = self:GetWidth() or 0
 		if self:Overflow() then v = v - DROP_W - 4 end
@@ -2065,12 +2065,12 @@ function UpdateLaunchers()
 		else
 			launchRow:SetPoint("BOTTOMLEFT", main, "TOPLEFT", 0, 4)
 		end
-		-- up to the right edge of the chat, leaving room for the "+" button
+		-- up to the right edge of the chat; the "+" sits right after the last tab
+		-- (and moves into the ▾ list when the tabs need the whole width)
 		local mainL = main.GetLeft and main:GetLeft() or 0
 		local mainR = main.GetRight and main:GetRight() or (mainL + 400)
 		local startX = (gameTab and gameTab.GetRight and gameTab:GetRight()) and (gameTab:GetRight() + 3) or mainL
-		local endX = mainR - 26
-		launchRow:SetWidth(math.max(60, endX - startX))
+		launchRow:SetWidth(math.max(60, mainR + 4 - startX))
 		if not launchRow.items then
 			launchRow.items = function()
 				local list = {}
@@ -2079,10 +2079,16 @@ function UpdateLaunchers()
 					list[#list + 1] = { label = WindowName(w), w = w, unread = w.unread,
 						active = g and g.mainOpen and g.data and g.data.active == w.data.id }
 				end
+				if launchRow.plusInMenu then
+					list[#list + 1] = { label = UI.Hex(C.accent) .. "+|r  " .. L.CW_NEW, isNew = true }
+				end
 				return list
 			end
-			launchRow.onPick = function(it) if it.w.group then ns:CW_OpenMain(it.w.group, it.w) end end
-			launchRow.onDrag = function(it) if it.w.group then StartDrag(it.w.group, it.w) end end
+			launchRow.onPick = function(it)
+				if it.isNew then return ns:CW_New() end
+				if it.w.group then ns:CW_OpenMain(it.w.group, it.w) end
+			end
+			launchRow.onDrag = function(it) if it.w and it.w.group then StartDrag(it.w.group, it.w) end end
 		end
 	end
 	local x, ax1, ax2 = 0, nil, nil
@@ -2118,8 +2124,14 @@ function UpdateLaunchers()
 	if launchRow then
 		launchRow.width = math.max(0, x - 3)
 		launchRow.spans = spans
+		-- room for the "+" right after the last tab?
+		local avail = launchRow:GetWidth() or 0
+		local fits = #launchers == 0 or launchRow.width + 4 + 22 <= avail
+		launchRow.plusInMenu = not fits
+		launchRow.forceDrop = not fits -- the ▾ is there, with "+ New window" in it
 		launchRow:SetShown(#launchers > 0 and not hidden)
 		if ax1 then launchRow:Reveal(ax1, ax2) else launchRow:Apply() end
+		if ns.CW_PlacePlus then ns:CW_PlacePlus(main, gameTab, launchRow, #launchers > 0 and not hidden, fits) end
 	end
 	-- windows that are no longer docked into the main chat lose their tab
 	for _, w in pairs(wins) do
@@ -2251,9 +2263,27 @@ local function BuildPlus()
 	end)
 end
 
+-- the "+" is a little tab right after the last tab, so it never takes room
+-- from the tab names; when the tabs need the whole width it is in the ▾ list
+local plusPlace = { inMenu = false }
+function ns:CW_PlacePlus(main, gameTab, row, rowShown, fits)
+	if not plus then BuildPlus() end
+	if not plus then return end
+	plusPlace.inMenu = not fits
+	plus:ClearAllPoints()
+	if rowShown then
+		plus:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", row.width + 4, 0)
+	elseif gameTab then
+		plus:SetPoint("BOTTOMLEFT", gameTab, "BOTTOMRIGHT", 4, 0)
+	else
+		plus:SetPoint("BOTTOMRIGHT", main, "TOPRIGHT", 4, 6)
+	end
+	self:CW_UpdatePlus()
+end
+
 function ns:CW_UpdatePlus()
 	if not plus then BuildPlus() end
-	if plus then plus:SetShown(self.S.copyButton and true or false) end
+	if plus then plus:SetShown(self.S.copyButton and not plusPlace.inMenu and true or false) end
 end
 
 UI.OnTheme(function()

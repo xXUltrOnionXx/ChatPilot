@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.6
+- Das **„+“ (neues Fenster) sitzt jetzt direkt hinter dem letzten Tab** – wie bei Browser-Tabs – statt fest oben rechts. Die Tab-Leiste bekommt dadurch die ganze Breite des Chats, die Namen deiner eigenen Fenster sind vollständig zu sehen
+- Wird es eng, wandert das „+“ ins ▾-Menü („+ Neues Fenster“), damit es nie Platz von den Tab-Namen nimmt
+
 ## 1.7.5
 - **Zurück zum normalen WoW-Design sofort und vollständig:** „Modernes Chatfenster“ aus stellt den normalen Chat ohne /reload wieder komplett original her – Rahmen, Tabs und Eingabefeld, und auch alle Zeilen, die schon dastehen: keine Blöcke, Level, kurzen Namen, kurzen Kanalnamen, Links oder Hervorhebungen mehr. Wieder einschalten macht alles wieder modern. Hintergrundfunktionen (Spamfilter, Erwähnungs-Hinweise, verpasste Flüsternachrichten) laufen weiter
 - **@-Suche findet auch völlig Unbekannte:** neue Quellen „In der Nähe“ (Spieler um dich herum, Mouseover, Fokus) und die **Wer-Liste** – letzte Zeile „Auf dem Server suchen: …“ (Enter oder Klick) sucht online nach dem Namen, die Treffer erscheinen direkt in der Liste. Auch Ergebnisse deines eigenen /who landen dort
