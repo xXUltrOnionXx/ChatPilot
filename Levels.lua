@@ -279,7 +279,7 @@ ns.AddLevels = AddLevels
 -- Every line the game writes is also noted as it came in (a short list per chat
 -- tab). When you switch between the modern look and the game's normal design,
 -- the tab is simply written again from that list - so old lines change too.
-local LOG_MAX = 200
+local LOG_MAX = 400
 
 local function LogLine(self, text, ...)
 	local log = rawget(self, "cpLog")
@@ -295,8 +295,7 @@ local function LogLine(self, text, ...)
 	if #log > LOG_MAX then table.remove(log, 1) end
 end
 
-ns.OnChatFrame(function(frame)
-	if not ns.mainHooks then return end -- normal WoW design: hands off the game's chat
+function ns.InstallMainChatFrame(frame)
 	if rawget(frame, "ChatPilotLevels") or not frame.AddMessage then return end
 	frame.ChatPilotLevels = true
 	local orig = frame.AddMessage
@@ -352,7 +351,7 @@ ns.OnChatFrame(function(frame)
 		self.cpHint = nil
 		self.cpReplaying = nil
 	end
-end)
+end
 
 -- after switching the look (or levels / short surnames): every chat tab anew
 function ns:RefreshMainChat()

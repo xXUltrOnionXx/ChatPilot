@@ -6,7 +6,7 @@ local UI, C = ns.UI, ns.UI.C
 -- unread. Answering (or opening the list) marks it as read. ChatPilot never
 -- answers for you: "Reply" only opens your input box with the right target.
 
-local MAX_CONV, MAX_MSG = 30, 25
+local MAX_CONV, MAX_MSG = 60, 50
 local session = { count = 0, names = {}, secret = 0 }   -- missed while AFK / in combat
 local win
 
