@@ -15,7 +15,10 @@ for _, k in ipairs(ns.TYPE_SOUNDS) do ns.KIND[k] = true end
 local function Play(name, force)
 	if ns.S and (ns.S.typeSounds or force) and PlaySoundFile then
 		local kind = (ns.KIND[ns.S.typeSound] and ns.S.typeSound or "own") .. "_"
-		PlaySoundFile(SOUND .. kind .. name .. ".ogg", "SFX")
+		-- volume: 1 quiet, 2 medium, 3 normal, 4 loud (each sound exists in all four)
+		local v = tonumber(ns.S.typeVolume) or 3
+		local suffix = (v == 3) and "" or ("_v" .. math.max(1, math.min(4, v)))
+		PlaySoundFile(SOUND .. kind .. name .. suffix .. ".ogg", "SFX")
 	end
 end
 ns.PlayTypeSound = Play

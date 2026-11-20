@@ -40,6 +40,7 @@ ns.defaults = {
 	chatStyle = true,
 	typeSounds = true,
 	typeSound = "own",
+	typeVolume = 3,
 	snippets = true,
 	abbrevTips = true,
 	markForeign = true,

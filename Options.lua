@@ -473,8 +473,29 @@ local function BuildTyping(content)
 			end)
 			seg[v] = b
 		end
-		r:SetScript("OnShow", Mark)
-		Mark()
+		-- volume
+		local nRows = math.ceil(#(ns.TYPE_SOUNDS or {}) / 5)
+		local vl = UI.Text(r, "GameFontHighlight")
+		vl:SetPoint("TOPLEFT", 14, -40 - nRows * 28)
+		vl:SetText(L.SOUND_VOLUME)
+		local vols = {}
+		local function MarkVol()
+			local cur = tonumber(ns.S.typeVolume) or 3
+			for n, b in pairs(vols) do UI.Ink(b.label, cur == n and C.accent or C.muted) end
+		end
+		for n, txt in ipairs({ L.VOL_1, L.VOL_2, L.VOL_3, L.VOL_4 }) do
+			local b = UI.Button(r, txt, 80, 24)
+			b:SetPoint("TOPLEFT", r, "TOPLEFT", 14 + (n - 1) * 84, -62 - nRows * 28)
+			b:SetScript("OnClick", function()
+				ns.S.typeVolume = n
+				MarkVol()
+				if ns.PlayTypeSound then ns.PlayTypeSound("key1", true) end
+			end)
+			vols[n] = b
+		end
+		r:SetHeight(42 + nRows * 28 + 62)
+		r:SetScript("OnShow", function() Mark(); MarkVol() end)
+		Mark(); MarkVol()
 		FlowAdd(flow, r, ts)
 		MakeExpandable(ts, ts.toggle, -14)
 	end

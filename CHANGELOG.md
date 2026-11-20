@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.7.7
-- Neu: **Tippgeräusche** – leise Tastaturgeräusche beim Schreiben im Chat, dreizehn Klänge zur Wahl: **Aufnahme 1** (Standard) und **Aufnahme 2** – echte, aufgenommene Tastaturen –, **Metallisch**, **Klassisch**, **Mechanisch**, **Weich**, **Blue Switch** (mechanische Blue Switches) sowie die bekannten Tastatur-Klangrichtungen **Creamy**, **Thocky**, **Clacky**, **Poppy**, **Clicky** und **Lego**. Vier leicht unterschiedliche Tasten, eigene Töne für Leertaste, Löschen und Senden. Alle Klänge sind sauber geschnitten: nur der Anschlag, kein Nachhall, kein Rauschen. Abschaltbar unter „Schreiben“ → „Tippgeräusche“; folgt der Effekt-Lautstärke des Spiels
+- Neu: **Tippgeräusche** – leise Tastaturgeräusche beim Schreiben im Chat, dreizehn Klänge zur Wahl: **Aufnahme 1** (Standard) und **Aufnahme 2** – echte, aufgenommene Tastaturen –, **Metallisch**, **Klassisch**, **Mechanisch**, **Weich**, **Blue Switch** (mechanische Blue Switches) sowie die bekannten Tastatur-Klangrichtungen **Creamy**, **Thocky**, **Clacky**, **Poppy**, **Clicky** und **Lego**. Vier leicht unterschiedliche Tasten, eigene Töne für Leertaste, Löschen und Senden. Lautstärke einstellbar (Leise, Mittel, Normal, Laut). Alle Klänge sind sauber geschnitten: nur der Anschlag, kein Nachhall, kein Rauschen. Abschaltbar unter „Schreiben“ → „Tippgeräusche“; folgt der Effekt-Lautstärke des Spiels
 - Neu: **Pfeiltasten bewegen den Cursor** zwischen den Buchstaben in jedem Chat-Eingabefeld – immer aktiv, kein Alt mehr nötig
 - Das ▾-Menü hängt jetzt direkt hinter dem letzten sichtbaren Tab statt am rechten Rand
 
