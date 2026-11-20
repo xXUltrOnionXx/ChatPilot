@@ -458,16 +458,39 @@ local function MarqueeText(btn, left, right, font)
 		elseif t <= 0 then t, dir, wait = 0, 1, MQ_PAUSE end
 		text:SetPoint("LEFT", mq, "LEFT", -t, 0)
 	end
-	-- call after the text or the size changed
+	-- call after the text or the size changed. Names longer than 10 characters
+	-- (spaces count too) show 10 characters at a time and run through.
+	local busy
 	function btn:UpdateMarquee()
+		if busy then return end
+		busy = true
+		local full = text:GetText() or ""
+		local chars = {}
+		for ch in full:gmatch("[%z\1-\127\194-\244][\128-\191]*") do chars[#chars + 1] = ch end
+		local inner = math.max(10, (btn:GetWidth() or 0) - left - right)
+		if #chars > 10 then
+			-- the visible window is as wide as the first 10 characters
+			text:SetText(table.concat(chars, "", 1, 10))
+			local w10 = (text:GetStringWidth() or inner) + 1
+			text:SetText(full)
+			mq:ClearAllPoints()
+			mq:SetPoint("LEFT", btn, "LEFT", left, 0)
+			mq:SetSize(math.min(inner, w10), btn:GetHeight() or 20)
+		else
+			mq:ClearAllPoints()
+			mq:SetPoint("TOPLEFT", left, 0)
+			mq:SetPoint("BOTTOMRIGHT", -right, 0)
+		end
 		text:SetWidth((text:GetStringWidth() or 0) + 2)
 		local over = (text:GetStringWidth() or 0) - (mq:GetWidth() or 0)
+
 		if over > 1 then
 			if not mq:GetScript("OnUpdate") then t, dir, wait = 0, 1, MQ_PAUSE; mq:SetScript("OnUpdate", Tick) end
 		else
 			mq:SetScript("OnUpdate", nil)
 			text:SetPoint("LEFT", mq, "LEFT", 0, 0)
 		end
+		busy = nil
 	end
 	mq:SetScript("OnSizeChanged", function() btn:UpdateMarquee() end)
 	return text
