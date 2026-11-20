@@ -3,7 +3,7 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
-	{ v = "1.7.9",
+	{ v = "1.7.10",
 		de = { "Neue Seite „Patchnotes“ in den Einstellungen: alle bisherigen Updates auf einen Blick" },
 		en = { "New \"Patch notes\" page in the settings: every update so far at a glance" },
 		fr = { "Nouvelle page « Notes de version » dans les réglages : toutes les mises à jour d'un coup d'œil" },

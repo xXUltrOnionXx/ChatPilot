@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.9
+## 1.7.10
 - Neu: Einstellungsseite **„Patchnotes“** mit allen bisherigen Updates in Kurzform, in allen 10 Sprachen (passend zur Sprache des Spiels)
 
 ## 1.7.8
