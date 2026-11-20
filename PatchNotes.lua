@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.11",
+		de = { "Tabs passen sich genau in die Leiste ein – lange Namen laufen im Tab durch", "Das ▾ im Hauptchat steht in einer Linie mit den Knöpfen neben dem Chat" },
+		en = { "Tabs fit exactly into the row – long names scroll inside the tab", "The ▾ of the main chat lines up with the buttons next to the chat" },
+		fr = { "Les onglets s'ajustent exactement à la barre – les noms longs défilent dans l'onglet", "Le ▾ du chat principal s'aligne sur les boutons à côté du chat" },
+		es = { "Las pestañas encajan justo en la barra: los nombres largos se desplazan dentro", "El ▾ del chat principal se alinea con los botones junto al chat" },
+		it = { "Le schede si adattano esattamente alla barra – i nomi lunghi scorrono nella scheda", "Il ▾ della chat principale è allineato ai pulsanti accanto alla chat" },
+		pt = { "As abas se ajustam exatamente à barra – nomes longos rolam dentro da aba", "O ▾ do chat principal fica alinhado com os botões ao lado do chat" },
+		ru = { "Вкладки точно умещаются в полосу – длинные названия прокручиваются", "▾ основного чата стоит в одну линию с кнопками рядом с чатом" },
+		ko = { "탭이 줄에 꼭 맞게 조절 – 긴 이름은 탭 안에서 흐름", "기본 채팅의 ▾가 채팅 옆 버튼과 한 줄로 정렬" },
+		zh = { "标签正好填满整行——过长的名称在标签内滚动", "主聊天的 ▾ 与聊天旁的按钮对齐" },
+		tw = { "分頁正好填滿整列——過長的名稱在分頁內捲動", "主聊天的 ▾ 與聊天旁的按鈕對齊" },
+	},
 	{ v = "1.7.10",
 		de = { "Fix: Im Fenster „Verpasste Flüsternachrichten“ verdecken die Knöpfe nicht mehr den Namen", "Im Hauptchat sitzt das ▾ jetzt außerhalb, direkt rechts neben dem Chat – die Tabs haben die volle Breite", "Neue Seite „Patchnotes“ in den Einstellungen: alle bisherigen Updates auf einen Blick" },
 		en = { "Fix: in the missed whispers window the buttons no longer cover the name", "In the main chat the ▾ now sits outside, right next to the chat – the tabs get the full width", "New \"Patch notes\" page in the settings: every update so far at a glance" },

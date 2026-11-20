@@ -557,7 +557,32 @@ end
 -- row scrolls (mouse wheel over the tabs, or the small arrows) and the active
 -- tab is always brought into view.
 -------------------------------------------------------------------------------
-local TAB_GAP, TAB_MAX = 2, 200
+local TAB_GAP, TAB_MAX, TAB_MIN = 2, 200, 64
+
+-- Widths so the tabs fill the row exactly: wider when there is room, narrower
+-- (down to TAB_MIN, the names then scroll) when there is not.
+local function FitWidths(widths, gap, avail)
+	local n = #widths
+	if n == 0 or avail <= 0 then return widths end
+	local total = gap * (n - 1)
+	for i = 1, n do total = total + widths[i] end
+	if total < avail then
+		local extra = math.floor((avail - total) / n)
+		for i = 1, n do widths[i] = widths[i] + extra end
+	elseif total > avail and n * TAB_MIN + gap * (n - 1) <= avail then
+		-- shrink the widest tabs first until everything fits
+		local room = avail - gap * (n - 1)
+		local cap = TAB_MAX
+		for _ = 1, 40 do
+			local sum = 0
+			for i = 1, n do sum = sum + math.max(TAB_MIN, math.min(widths[i], cap)) end
+			if sum <= room then break end
+			cap = cap - math.max(1, (sum - room) / n)
+		end
+		for i = 1, n do widths[i] = math.floor(math.max(TAB_MIN, math.min(widths[i], cap))) end
+	end
+	return widths
+end
 
 -- clip: frame that cuts off what is outside; strip: holds the tabs
 -- Dropdown with all tabs of a row: full names, active marked, unread dot.
@@ -726,7 +751,14 @@ local function TabRow(parent)
 		-- the ▾ sits at the right edge of the row, or just outside it (main chat)
 		self.drop:ClearAllPoints()
 		if self.dropOutside then
-			self.drop:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 6, 1)
+			-- outside the chat, in the same column as the buttons next to it (⚙ @ …)
+			local x = 6
+			local bar = ns.ChatBarFrame and ns.ChatBarFrame()
+			if bar and bar:IsShown() and (bar:GetWidth() or 99) < 40 and bar:GetCenter() and self:GetRight() then
+				local bx = bar:GetCenter() * (bar:GetEffectiveScale() or 1) / (self:GetEffectiveScale() or 1)
+				x = bx - self:GetRight() - DROP_W / 2
+			end
+			self.drop:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", x, 1)
 		else
 			self.drop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1)
 		end
@@ -817,12 +849,8 @@ function LayoutTabs(g)
 		widths[i] = math.min((t.text:GetStringWidth() or 60) + 22, TAB_MAX)
 		total = total + widths[i] + (i > 1 and TAB_GAP or 0)
 	end
-	-- tabs fill the whole row when they fit
-	local avail = row:GetWidth() or 0
-	if #widths > 0 and total < avail then
-		local extra = math.floor((avail - total) / #widths)
-		for i = 1, #widths do widths[i] = widths[i] + extra end
-	end
+	-- tabs fill the whole row; long names scroll inside their tab
+	FitWidths(widths, TAB_GAP, row:GetWidth() or 0)
 	for i, id in ipairs(g.data.order) do
 		local w = wins[id]
 		local t = w.tab
@@ -2211,13 +2239,7 @@ function UpdateLaunchers()
 			end
 		end
 	end
-	if launchRow and #list > 0 then
-		local avail = launchRow:GetWidth() or 0
-		if total < avail then
-			local extra = math.floor((avail - total) / #list)
-			for i = 1, #list do widths[i] = widths[i] + extra end
-		end
-	end
+	if launchRow and #list > 0 then FitWidths(widths, 3, launchRow:GetWidth() or 0) end
 	for i, e in ipairs(list) do
 		local g, id, w = e.g, e.id, e.w
 		do

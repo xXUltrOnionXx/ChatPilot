@@ -225,6 +225,9 @@ local function SetBadge(b, n)
 	end
 end
 
+-- the button bar of the first chat (the ▾ of the main chat lines up with it)
+function ns.ChatBarFrame() return bars[1] end
+
 -- for the tutorial spotlight: a button of the first chat's button bar
 function ns.ChatBarButton(name)
 	local bar = bars[1]
