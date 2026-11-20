@@ -1105,7 +1105,7 @@ local function CreateGroupFrame(g)
 	ph:SetPoint("LEFT", 9, 0)
 	ph:SetText(L.CW_WRITE)
 	local function upd() ph:SetShown(eb:GetText() == "" and not eb:HasFocus()) end
-	eb:SetScript("OnEditFocusGained", function() upd(); holder:SetBorderColor(unpack(C.accent)) end)
+	eb:SetScript("OnEditFocusGained", function() ns.cwLast = g; upd(); holder:SetBorderColor(unpack(C.accent)) end)
 	eb:SetScript("OnEditFocusLost", function() upd(); holder:SetBorderColor(unpack(C.border)) end)
 	eb:SetScript("OnTextChanged", function(self)
 		upd()
@@ -1857,9 +1857,6 @@ function ns:CW_Reveal(cid)
 	end
 end
 
--- the window you last sent from: Enter in the game goes back to it
-local lastSend
-
 function ns:CW_Submit(g)
 	local eb = g.input
 	local text = eb:GetText() or ""
@@ -1885,7 +1882,6 @@ function ns:CW_Submit(g)
 	end
 	local ok = pcall(Send, t, text)
 	if ok then
-		lastSend = g
 		if t.type == "WHISPER" and ChatEdit_SetLastTellTarget and ns.Usable(t.name) then
 			pcall(ChatEdit_SetLastTellTarget, t.name, "WHISPER")
 		end
@@ -1901,11 +1897,12 @@ function ns:CW_Submit(g)
 	end
 end
 
--- Enter in the game opens its own input box. After you sent from one of our
--- windows, that Enter brings you back to the same window and chat instead
--- (its target is remembered there). Sending in the game's own box ends this.
+-- Enter in the game opens its own input box. After you clicked into one of our
+-- windows (sent something or not), the next Enter brings you back to the same
+-- window and chat instead (its target is remembered there). Sending in the
+-- game's own box ends this.
 local function EnterToWindow(text)
-	local g = lastSend
+	local g = ns.cwLast
 	if not g or (type(text) == "string" and text ~= "") then return end
 	if Locked() or not g.input or not g.frame or not g.frame:IsVisible() then return end
 	if g.input:HasFocus() then return end
@@ -1920,7 +1917,7 @@ local function EnterToWindow(text)
 	end
 	g.input:SetFocus()
 end
-local function GameSent() lastSend = nil end
+local function GameSent() ns.cwLast = nil end
 
 local function HookFn(tbl, name, fn)
 	if tbl and type(tbl[name]) == "function" then hooksecurefunc(tbl, name, fn) return true end
