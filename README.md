@@ -92,6 +92,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
   - **Glocke:** pro Fenster an-/ausschaltbar – Ton und Hinweis bei neuen Nachrichten.
   - Namen, Items und Links sind anklickbar, die letzten Nachrichten bleiben gespeichert.
   - **Leeren:** Trichter-Symbol → „Dieses Fenster leeren“.
+  - **Umbenennen:** Rechtsklick auf den Tab. Lange Namen laufen im Tab langsam durch.
 
 ### Gut zu wissen
 - Eigene Einstellungsseite **„Gut zu wissen“**: zeigt, was ChatPilot speichert (Chatverlauf für nach /reload, eigene Fenster, verpasste Flüsternachrichten, Erwähnungen) und wie viel gerade gespeichert ist.
@@ -223,6 +224,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
   - **Bell:** turn it on per window – sound and notice for new messages.
   - Names, items and links are clickable, recent messages are saved.
   - **Empty it:** funnel icon → "Empty this window".
+  - **Rename:** right-click the tab. Long names scroll slowly inside the tab.
 
 #### Good to know
 - Its own settings page **"Good to know"**: shows what ChatPilot saves (chat history for after /reload, your own windows, missed whispers, mentions) and how much is saved right now.

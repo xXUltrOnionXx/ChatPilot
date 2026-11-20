@@ -158,6 +158,9 @@ local menu                    -- filter menu (shared)
 local dragging                -- group being dragged
 
 local function WindowName(w)
+	-- your own name for the tab wins
+	local title = w.data.title
+	if type(title) == "string" and title:match("%S") then return title end
 	local partner = w.data.partner
 	if partner then return "@" .. (partner.label or partner.name or "?") end
 	local names = {}
@@ -432,10 +435,88 @@ end
 -------------------------------------------------------------------------------
 local LayoutTabs, Select, StartDrag -- forward
 
+-- Long tab names run slowly from left to right and back (like a news ticker),
+-- so the whole name can be read. Short names stand still.
+local MQ_SPEED, MQ_PAUSE = 22, 1.4
+local function MarqueeText(btn, left, right, font)
+	local mq = CreateFrame("Frame", nil, btn)
+	mq:SetPoint("TOPLEFT", left, 0)
+	mq:SetPoint("BOTTOMRIGHT", -right, 0)
+	if mq.SetClipsChildren then mq:SetClipsChildren(true) end
+	local text = UI.Text(mq, font or "GameFontHighlightSmall", C.muted)
+	text:SetPoint("LEFT", mq, "LEFT", 0, 0)
+	text:SetWordWrap(false)
+	text:SetJustifyH("LEFT")
+	btn.mq = mq
+	local t, dir, wait = 0, 1, MQ_PAUSE
+	local function Tick(_, elapsed)
+		local over = (text:GetStringWidth() or 0) - (mq:GetWidth() or 0)
+		if over <= 1 then text:SetPoint("LEFT", mq, "LEFT", 0, 0); mq:SetScript("OnUpdate", nil) return end
+		if wait > 0 then wait = wait - elapsed return end
+		t = t + dir * elapsed * MQ_SPEED
+		if t >= over then t, dir, wait = over, -1, MQ_PAUSE
+		elseif t <= 0 then t, dir, wait = 0, 1, MQ_PAUSE end
+		text:SetPoint("LEFT", mq, "LEFT", -t, 0)
+	end
+	-- call after the text or the size changed
+	function btn:UpdateMarquee()
+		text:SetWidth((text:GetStringWidth() or 0) + 2)
+		local over = (text:GetStringWidth() or 0) - (mq:GetWidth() or 0)
+		if over > 1 then
+			if not mq:GetScript("OnUpdate") then t, dir, wait = 0, 1, MQ_PAUSE; mq:SetScript("OnUpdate", Tick) end
+		else
+			mq:SetScript("OnUpdate", nil)
+			text:SetPoint("LEFT", mq, "LEFT", 0, 0)
+		end
+	end
+	mq:SetScript("OnSizeChanged", function() btn:UpdateMarquee() end)
+	return text
+end
+
+-- Rename a tab: right-click it, type, Enter. Empty = the automatic name again.
+local renameBox
+local function StartRename(w, over)
+	if not renameBox then
+		renameBox = CreateFrame("EditBox", "ChatPilotTabRename", UIParent)
+		renameBox:SetFrameStrata("DIALOG")
+		renameBox:SetAutoFocus(false)
+		renameBox:SetMaxLetters(32)
+		renameBox:SetFontObject(GameFontHighlightSmall)
+		renameBox:SetTextInsets(6, 6, 0, 0)
+		UI.Fill(renameBox, C.bg)
+		UI.Border(renameBox, C.accent)
+		local function Done(self, save)
+			local target = self.target
+			self.target = nil
+			self:ClearFocus()
+			self:Hide()
+			if not save or not target then return end
+			local name = (self:GetText() or ""):gsub("^%s+", ""):gsub("%s+$", "")
+			target.data.title = name ~= "" and name or nil
+			if target.group then LayoutTabs(target.group); ns:CW_UpdateChip(target.group) end
+			UpdateLaunchers()
+		end
+		renameBox:SetScript("OnEnterPressed", function(self) Done(self, true) end)
+		renameBox:SetScript("OnEscapePressed", function(self) Done(self, false) end)
+		renameBox:SetScript("OnEditFocusLost", function(self) if self.target then Done(self, true) end end)
+	end
+	local b = renameBox
+	b.target = w
+	b:ClearAllPoints()
+	b:SetPoint("TOPLEFT", over, "TOPLEFT", 0, 0)
+	b:SetPoint("BOTTOMRIGHT", over, "BOTTOMRIGHT", 0, 0)
+	if (over:GetWidth() or 0) < 120 then b:SetWidth(120) end
+	b:SetText(WindowName(w))
+	b:Show()
+	b:SetFocus()
+	b:HighlightText()
+	return b
+end
+
 local function CreateTab(w)
 	local t = CreateFrame("Button", nil, UIParent)
 	t:SetHeight(HEADER_H)
-	t:RegisterForClicks("LeftButtonUp")
+	t:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	t:RegisterForDrag("LeftButton")
 	t.hl = t:CreateTexture(nil, "HIGHLIGHT")
 	t.hl:SetAllPoints()
@@ -444,19 +525,22 @@ local function CreateTab(w)
 	t.line:SetPoint("BOTTOMLEFT", 4, 1)
 	t.line:SetPoint("BOTTOMRIGHT", -4, 1)
 	t.line:SetHeight(2)
-	t.text = UI.Text(t, "GameFontHighlightSmall", C.muted)
-	t.text:SetPoint("LEFT", 10, 0)
+	t.text = MarqueeText(t, 10, 8)
 	t.dot = t:CreateTexture(nil, "OVERLAY")
 	t.dot:SetSize(5, 5)
 	t.dot:SetPoint("RIGHT", -4, 4)
 	UI.Paint(t.dot, C.orange)
 	t.dot:Hide()
-	t:SetScript("OnClick", function() Select(w.group, w) end)
+	t:SetScript("OnClick", function(self, button)
+		if button == "RightButton" then return StartRename(w, self) end
+		Select(w.group, w)
+	end)
 	t:SetScript("OnDragStart", function() StartDrag(w.group, w) end)
 	t:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_TOP")
 		GameTooltip:SetText(WindowName(w))
 		GameTooltip:AddLine(L.CW_TAB_TIP, 0.8, 0.8, 0.8, true)
+		GameTooltip:AddLine(L.CW_RENAME_TIP, 0.31, 0.79, 1, true)
 		GameTooltip:Show()
 	end)
 	t:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -639,17 +723,9 @@ local function TabRow(parent)
 				if sp[2] >= self.scroll - 0.5 then sp.vis = true; sp[1]:SetAlpha(1); if sp[1].EnableMouse then sp[1]:EnableMouse(true) end break end
 			end
 		end
-		-- the ▾ hangs right behind the last tab you can see
-		local lastEnd
-		for _, sp in ipairs(spans) do
-			if sp.vis then lastEnd = sp[3] end
-		end
+		-- the ▾ sits at the right edge of the row
 		self.drop:ClearAllPoints()
-		if lastEnd then
-			self.drop:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", math.max(0, lastEnd - self.scroll + 3), 1)
-		else
-			self.drop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1)
-		end
+		self.drop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1)
 	end
 	local apply = clip.Apply
 	function clip:Apply()
@@ -730,16 +806,27 @@ function LayoutTabs(g)
 	local row = g.tabRow
 	local x, ax1, ax2 = 0, nil, nil
 	local spans = {}
-	for _, id in ipairs(g.data.order) do
+	local widths, total = {}, 0
+	for i, id in ipairs(g.data.order) do
+		local t = wins[id].tab
+		t.text:SetText(WindowName(wins[id]))
+		widths[i] = math.min((t.text:GetStringWidth() or 60) + 22, TAB_MAX)
+		total = total + widths[i] + (i > 1 and TAB_GAP or 0)
+	end
+	-- tabs fill the whole row when they fit
+	local avail = row:GetWidth() or 0
+	if #widths > 0 and total < avail then
+		local extra = math.floor((avail - total) / #widths)
+		for i = 1, #widths do widths[i] = widths[i] + extra end
+	end
+	for i, id in ipairs(g.data.order) do
 		local w = wins[id]
 		local t = w.tab
 		t:SetParent(row.strip)
 		t:SetFrameLevel(row.strip:GetFrameLevel() + 2)
-		t.text:SetText(WindowName(w))
-		t.text:SetWordWrap(false)
-		local width = math.min((t.text:GetStringWidth() or 60) + 22, TAB_MAX)
+		local width = widths[i]
 		t:SetWidth(width)
-		t.text:SetWidth(width - 16)
+		if t.UpdateMarquee then t:UpdateMarquee() end
 		t:ClearAllPoints()
 		t:SetPoint("BOTTOMLEFT", row.strip, "BOTTOMLEFT", x, 0)
 		local active = g.data.active == id
@@ -2020,7 +2107,7 @@ local launchers = {}
 local function CreateLauncher(w)
 	local b = CreateFrame("Button", nil, UIParent)
 	b:SetHeight(22)
-	b:RegisterForClicks("LeftButtonUp")
+	b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	b:RegisterForDrag("LeftButton")
 	b.bg = UI.Fill(b, C.btn)
 	b.hl = b:CreateTexture(nil, "BORDER")
@@ -2031,14 +2118,13 @@ local function CreateLauncher(w)
 	b.line:SetPoint("BOTTOMLEFT", 3, 0)
 	b.line:SetPoint("BOTTOMRIGHT", -3, 0)
 	b.line:SetHeight(2)
-	b.text = UI.Text(b, "GameFontHighlightSmall", C.muted)
-	b.text:SetPoint("LEFT", 9, 0)
-	b.text:SetWordWrap(false)
+	b.text = MarqueeText(b, 9, 7)
 	b.dot = b:CreateTexture(nil, "OVERLAY")
 	b.dot:SetSize(5, 5)
 	b.dot:SetPoint("TOPRIGHT", -3, -3)
 	UI.Paint(b.dot, C.orange)
-	b:SetScript("OnClick", function()
+	b:SetScript("OnClick", function(self, button)
+		if button == "RightButton" then return StartRename(w, self) end
 		local g = w.group
 		if not g then return end
 		if g.mainOpen and g.data.active == w.data.id then return end
@@ -2050,6 +2136,7 @@ local function CreateLauncher(w)
 		GameTooltip:SetOwner(self, "ANCHOR_TOP")
 		GameTooltip:SetText(WindowName(w))
 		GameTooltip:AddLine(L.CW_MAIN_TAB_TIP, 0.8, 0.8, 0.8, true)
+		GameTooltip:AddLine(L.CW_RENAME_TIP, 0.31, 0.79, 1, true)
 		GameTooltip:Show()
 	end)
 	b:SetScript("OnLeave", function(self) self.hl:Hide(); GameTooltip:Hide() end)
@@ -2105,18 +2192,37 @@ function UpdateLaunchers()
 	end
 	local x, ax1, ax2 = 0, nil, nil
 	local spans = {}
+	-- natural widths first, then the tabs fill the room up to the ▾ at the right edge
+	local list, widths, total = {}, {}, 0
 	for _, g in ipairs(groups) do
 		for _, id in ipairs(g.data and g.data.main and g.data.order or {}) do
 			local w = wins[id]
 			if w and launchRow then
 				w.launch = w.launch or CreateLauncher(w)
+				w.launch.text:SetText(WindowName(w))
+				list[#list + 1] = { g = g, id = id, w = w }
+				widths[#list] = math.min((w.launch.text:GetStringWidth() or 60) + 20, TAB_MAX)
+				total = total + widths[#list] + (#list > 1 and 3 or 0)
+			end
+		end
+	end
+	if launchRow and #list > 0 then
+		local avail = (launchRow:GetWidth() or 0) - DROP_W - 6
+		if total < avail then
+			local extra = math.floor((avail - total) / #list)
+			for i = 1, #list do widths[i] = widths[i] + extra end
+		end
+	end
+	for i, e in ipairs(list) do
+		local g, id, w = e.g, e.id, e.w
+		do
+			do
 				local b = w.launch
 				b:SetParent(launchRow.strip)
 				b:SetFrameLevel(launchRow.strip:GetFrameLevel() + 2)
-				b.text:SetText(WindowName(w))
-				local width = math.min((b.text:GetStringWidth() or 60) + 20, TAB_MAX)
+				local width = widths[i]
 				b:SetWidth(width)
-				b.text:SetWidth(width - 14)
+				if b.UpdateMarquee then b:UpdateMarquee() end
 				b:ClearAllPoints()
 				b:SetPoint("BOTTOMLEFT", launchRow.strip, "BOTTOMLEFT", x, 0)
 				local active = g.mainOpen and g.data.active == id
@@ -2136,11 +2242,10 @@ function UpdateLaunchers()
 	if launchRow then
 		launchRow.width = math.max(0, x - 3)
 		launchRow.spans = spans
-		-- room for the "+" right after the last tab?
-		local avail = launchRow:GetWidth() or 0
-		local fits = #launchers == 0 or launchRow.width + 4 + 22 <= avail
+		-- with tabs of ours here, the ▾ sits at the right edge and holds "+ New window"
+		local fits = #launchers == 0
 		launchRow.plusInMenu = not fits
-		launchRow.forceDrop = not fits -- the ▾ is there, with "+ New window" in it
+		launchRow.forceDrop = not fits
 		launchRow:SetShown(#launchers > 0 and not hidden)
 		if ax1 then launchRow:Reveal(ax1, ax2) else launchRow:Apply() end
 		if ns.CW_PlacePlus then ns:CW_PlacePlus(main, gameTab, launchRow, #launchers > 0 and not hidden, fits) end
@@ -2317,4 +2422,4 @@ end
 ns._cwPlus = function() return plus end
 ns._cwLaunchers = function() return launchers end
 ns._cw = { wins = wins, groups = groups, Format = Format, Deliver = Deliver, FinishDrag = FinishDrag,
-	StartDrag = StartDrag, ChannelCat = ChannelCat } -- for tests
+	StartDrag = StartDrag, ChannelCat = ChannelCat, Rename = StartRename, WindowName = WindowName } -- for tests

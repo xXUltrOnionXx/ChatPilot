@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.8
+- **Tabs umbenennen:** Rechtsklick auf einen Tab (im eigenen Fenster oder im Hauptchat) – Namen eintippen, Enter. Leer lassen = wieder der automatische Name
+- **Tabs füllen die Leiste:** Deine Tabs werden so breit, dass sie die ganze Leiste ausfüllen – im Hauptchat bis zum ▾, das jetzt fest am rechten Rand sitzt (mit „+ Neues Fenster“ darin)
+- **Lange Namen laufen durch:** Passt ein Name nicht ganz in seinen Tab, läuft er langsam von links nach rechts und zurück, so dass man ihn ganz lesen kann
+
 ## 1.7.7
 - Neu: **Tippgeräusche** – leise Tastaturgeräusche beim Schreiben im Chat, dreizehn Klänge zur Wahl: **Aufnahme 1** (Standard) und **Aufnahme 2** – echte, aufgenommene Tastaturen –, **Metallisch**, **Klassisch**, **Mechanisch**, **Weich**, **Blue Switch** (mechanische Blue Switches) sowie die bekannten Tastatur-Klangrichtungen **Creamy**, **Thocky**, **Clacky**, **Poppy**, **Clicky** und **Lego**. Vier leicht unterschiedliche Tasten, eigene Töne für Leertaste, Löschen und Senden. Lautstärke einstellbar (Leise, Mittel, Normal, Laut). Alle Klänge sind sauber geschnitten: nur der Anschlag, kein Nachhall, kein Rauschen. Abschaltbar unter „Schreiben“ → „Tippgeräusche“; folgt der Effekt-Lautstärke des Spiels
 - Neu: **Pfeiltasten bewegen den Cursor** zwischen den Buchstaben in jedem Chat-Eingabefeld – immer aktiv, kein Alt mehr nötig
