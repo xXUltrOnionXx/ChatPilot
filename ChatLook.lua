@@ -58,11 +58,17 @@ local AddFilter = ChatFrame_AddMessageEventFilter
 -- ChatPilot only hooks into the game's chat windows once the modern chat look
 -- is wanted. With the game's normal design it stays completely out of them.
 function ns:InstallMainChatHooks()
-	if ns.mainHooks then return end
+	if ns.mainHooks or not ns.MainChatModern() then return end
 	ns.mainHooks = true
 	if AddFilter then
 		for _, ev in ipairs(EVENTS) do AddFilter(ev, Note) end
 	end
+	-- Register only when enabled. OnChatFrame immediately visits already-seen
+	-- frames as well as future ones; rescanning alone skips the login frames.
+	ns.OnChatFrame(function(frame)
+		ns.InstallMainChatFrame(frame)
+		ns.DecorateMessages(frame, ns.MainLookActive)
+	end)
 	if ns.ScanChatFrames then ns.ScanChatFrames() end
 end
 
@@ -288,11 +294,6 @@ function ns.DecorateMessages(frame, active)
 		end)
 	end
 end
-
-ns.OnChatFrame(function(frame)
-	if not ns.mainHooks then return end
-	ns.DecorateMessages(frame, ns.MainLookActive)
-end)
 
 -------------------------------------------------------------------------------
 -- Emptying chats (memory): the game's chat windows and what ChatPilot saved

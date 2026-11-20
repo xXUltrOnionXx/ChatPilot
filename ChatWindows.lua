@@ -183,7 +183,13 @@ local function Save(g)
 	d.w, d.h = math.floor(f:GetWidth() + 0.5), math.floor(f:GetHeight() + 0.5)
 end
 
-local function MainChat() return DEFAULT_CHAT_FRAME or ChatFrame1 end
+local function MainChat()
+	-- Blizzard hides the default frame when another dock tab is selected.
+	-- Use the visible dock window for both drop detection and placement.
+	local selected = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK)
+	if selected and selected:IsVisible() then return selected end
+	return DEFAULT_CHAT_FRAME or ChatFrame1
+end
 
 local UpdateLaunchers -- forward (tabs of windows docked into the main chat)
 
@@ -200,8 +206,6 @@ local function Place(g)
 	if g.grip then g.grip:SetShown(not docked) end
 	if docked then
 		local host = main
-		local sel = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK)
-		if sel and sel.IsShown and sel:IsShown() then host = sel end
 		f:SetToplevel(false)
 		if f:GetParent() ~= host then f:SetParent(host) end
 		f:SetFrameStrata(host.GetFrameStrata and host:GetFrameStrata() or "LOW")
@@ -1253,7 +1257,7 @@ dragFrame:Hide()
 
 local function DropTarget(g)
 	for _, o in ipairs(groups) do
-		if o ~= g and o.frame:IsShown() and MouseIsOver and MouseIsOver(o.header) then return o end
+		if o ~= g and o.frame:IsVisible() and MouseIsOver and MouseIsOver(o.header) then return o end
 	end
 end
 
@@ -1272,8 +1276,9 @@ local function FinishDrag(g)
 	g.frame:StopMovingOrSizing()
 	for _, o in ipairs(groups) do o.dropHl:Hide() end
 	if ns.ShowMainDrop then ns:ShowMainDrop(false) end
-	local overMain = ns.OverMainChat and ns:OverMainChat()
-	local target = not overMain and DropTarget(g)
+	-- An explicit title-bar target takes precedence over the chat behind it.
+	local target = #g.data.order == 1 and DropTarget(g)
+	local overMain = not target and ns.OverMainChat and ns:OverMainChat()
 	if target and #g.data.order == 1 then
 		-- dock as a tab
 		local w = wins[g.data.order[1]]
@@ -1307,8 +1312,8 @@ dragFrame:SetScript("OnUpdate", function()
 	local g = dragging
 	if not g then dragFrame:Hide() return end
 	if not IsMouseButtonDown("LeftButton") then return FinishDrag(g) end
-	local overMain = ns:OverMainChat()
-	local target = not overMain and #g.data.order == 1 and DropTarget(g)
+	local target = #g.data.order == 1 and DropTarget(g)
+	local overMain = not target and ns:OverMainChat()
 	for _, o in ipairs(groups) do o.dropHl:SetShown(o == target) end
 	if ns.ShowMainDrop then ns:ShowMainDrop(overMain) end
 end)

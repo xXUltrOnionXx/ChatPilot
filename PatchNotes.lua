@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.13",
+		de = { "Fix: Modernes Design und Chat-Aufbereitung funktionieren wieder an bereits erkannten Blizzard-Chatfenstern, auch beim Einschalten ohne Reload", "Andocken am sichtbaren Hauptchat-Tab und an überlappenden eigenen Fenstern korrigiert", "Benötigte Tippgeräusche werden mitgeliefert" },
+		en = { "Fix: modern chat styling now initializes on already-discovered Blizzard chat windows, including when enabled without a reload", "Fixed docking to the visible main chat tab and overlapping custom windows", "Required typing sounds are included in the package" },
+		fr = { "Correction : le style moderne s'active sur les fenêtres Blizzard déjà détectées, sans rechargement", "Ancrage corrigé sur l'onglet actif et les fenêtres personnalisées superposées", "Les sons de frappe nécessaires sont inclus" },
+		es = { "El estilo moderno se activa en ventanas de Blizzard ya detectadas, sin recargar", "Corregido el acoplamiento a la pestaña visible y a ventanas propias superpuestas", "Se incluyen los sonidos de escritura necesarios" },
+		it = { "Lo stile moderno si attiva nelle finestre Blizzard già rilevate, senza ricaricare", "Corretto l'aggancio alla scheda visibile e alle finestre personalizzate sovrapposte", "Inclusi i suoni di digitazione necessari" },
+		pt = { "O estilo moderno é ativado nas janelas Blizzard já detectadas, sem recarregar", "Corrigido o encaixe na aba visível e em janelas próprias sobrepostas", "Os sons de digitação necessários estão incluídos" },
+		ru = { "Современный стиль включается в уже обнаруженных окнах Blizzard без перезагрузки", "Исправлено закрепление на видимой вкладке чата и перекрывающихся окнах", "Необходимые звуки набора включены в пакет" },
+		ko = { "이미 감지된 Blizzard 채팅 창에도 재시작 없이 현대적인 스타일 적용", "현재 보이는 채팅 탭 및 겹친 사용자 창에 도킹하는 문제 수정", "필요한 타자 소리 포함" },
+		zh = { "现代样式可应用于已识别的暴雪聊天窗口，无需重载", "修复停靠到当前可见聊天标签及重叠自定义窗口的问题", "安装包包含所需打字音效" },
+		tw = { "現代樣式可套用至已識別的暴雪聊天視窗，無需重載", "修復停靠至目前可見聊天分頁及重疊自訂視窗的問題", "安裝包包含所需打字音效" },
+	},
 	{ v = "1.7.12",
 		de = { "Rundgang und Danke-Fenster gehen im Kampf sofort aus dem Weg – der Rundgang kommt danach an derselben Stelle zurück", "Mit normalem WoW-Design greift ChatPilot gar nicht mehr in die Chatfenster des Spiels ein", "Sicherer bei geschützten Nachrichten im Bosskampf (u. a. Battle.net-Flüstern, Spam-Zähler)", "Kein Sende-Ton mehr, wenn Enter nur einen @-Vorschlag übernimmt" },
 		en = { "Tour and thank-you window get out of the way at once in a fight – the tour comes back afterwards at the same step", "With the game's normal design ChatPilot no longer hooks into the game's chat windows at all", "Safer with protected messages in boss fights (e.g. Battle.net whispers, spam counter)", "No send sound when Enter only picks an @ suggestion" },
