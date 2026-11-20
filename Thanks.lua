@@ -298,3 +298,11 @@ function ns:OnLogin()
 	end
 	C_Timer.After(5, Try)
 end
+
+-- never in the way in a fight
+local fight = CreateFrame("Frame")
+fight:RegisterEvent("PLAYER_REGEN_DISABLED")
+fight:SetScript("OnEvent", function()
+	if frame and frame:IsShown() then frame:Hide() end
+	if confetti and confetti:IsShown() then confetti:SetScript("OnUpdate", nil); confetti:Hide() end
+end)

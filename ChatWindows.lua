@@ -1484,7 +1484,8 @@ local function Deliver(event, ...)
 			local ok = true
 			if p and cat == "whisper" then
 				if p.bn then
-					ok = event:find("^CHAT_MSG_BN_") and select(13, ...) == p.id
+					local bnID = select(13, ...)
+					ok = event:find("^CHAT_MSG_BN_") and ns.Usable(bnID) and bnID == p.id
 				else
 					local author = select(2, ...)
 					ok = not event:find("^CHAT_MSG_BN_") and ns.Usable(author) and ns.Normalize(author) == p.key

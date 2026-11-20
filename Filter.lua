@@ -182,6 +182,7 @@ end
 
 local countedLines = {}
 local function CountSpam(lineID)
+	if lineID ~= nil and not ns.Usable(lineID) then lineID = nil end -- protected: just count
 	if lineID and countedLines[lineID] then return end
 	if lineID then countedLines[lineID] = true end
 	ns.spamHidden = (ns.spamHidden or 0) + 1

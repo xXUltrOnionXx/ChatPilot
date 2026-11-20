@@ -54,8 +54,22 @@ end
 
 local AddFilter = ChatFrame_AddMessageEventFilter
 	or (ChatFrameUtil and ChatFrameUtil.AddMessageEventFilter)
-if AddFilter then
-	for _, ev in ipairs(EVENTS) do AddFilter(ev, Note) end
+
+-- ChatPilot only hooks into the game's chat windows once the modern chat look
+-- is wanted. With the game's normal design it stays completely out of them.
+function ns:InstallMainChatHooks()
+	if ns.mainHooks then return end
+	ns.mainHooks = true
+	if AddFilter then
+		for _, ev in ipairs(EVENTS) do AddFilter(ev, Note) end
+	end
+	if ns.ScanChatFrames then ns.ScanChatFrames() end
+end
+
+local prevLogin = ns.OnLogin
+function ns:OnLogin()
+	if prevLogin then prevLogin(self) end
+	if ns.MainChatModern() then self:InstallMainChatHooks() end
 end
 
 local SOFT = {
@@ -276,6 +290,7 @@ function ns.DecorateMessages(frame, active)
 end
 
 ns.OnChatFrame(function(frame)
+	if not ns.mainHooks then return end
 	ns.DecorateMessages(frame, ns.MainLookActive)
 end)
 

@@ -296,7 +296,8 @@ local function LogLine(self, text, ...)
 end
 
 ns.OnChatFrame(function(frame)
-	if frame.ChatPilotLevels or not frame.AddMessage then return end
+	if not ns.mainHooks then return end -- normal WoW design: hands off the game's chat
+	if rawget(frame, "ChatPilotLevels") or not frame.AddMessage then return end
 	frame.ChatPilotLevels = true
 	local orig = frame.AddMessage
 

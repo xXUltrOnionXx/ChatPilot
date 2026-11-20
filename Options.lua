@@ -679,7 +679,7 @@ local function BuildDesign(content)
 	ToggleRow(flow, "chatStyle", nil, function() ns:RefreshMainChat() end)
 	local skinRow = ToggleRow(flow, "chatSkin", nil, function(v)
 		-- switches right away, old lines included (no /reload needed)
-		if v then ns:SkinAllChats() else ns:UnskinAllChats() end
+		if v then ns:SkinAllChats(); ns:InstallMainChatHooks() else ns:UnskinAllChats() end
 		ns:RefreshMainChat()
 	end)
 	skinRow:HookScript("OnShow", function()

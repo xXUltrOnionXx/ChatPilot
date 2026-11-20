@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.12
+Ergebnis einer Tiefenprüfung aller Funktionen:
+- Rundgang und Danke-Fenster gehen bei Kampfbeginn sofort aus dem Weg (der Rundgang dunkelte sonst den Bildschirm ab). Der Rundgang kommt nach dem Kampf an derselben Stelle zurück
+- Mit normalem WoW-Design greift ChatPilot gar nicht mehr in die Chatfenster des Spiels ein (keine Hooks, keine Filter für den Look) – weniger mögliche Konflikte mit dem Spiel
+- Sicherer bei geschützten Nachrichten im Bosskampf: Battle.net-Flüstern in eigenen Fenstern und im Flüster-Verlauf sowie der Spam-Zähler fassen geschützte Werte nicht mehr an
+- Kein Sende-Ton mehr, wenn Enter nur einen @-Vorschlag übernimmt
+
 ## 1.7.11
 - Rundgang aktualisiert: neue Schritte zu Tippgeräuschen & Pfeiltasten, zu den Tabs (umbenennen, laufende Namen, ▾) und zu „Gut zu wissen“ (Chats leeren, beim Ausloggen leeren, normales Design, Patchnotes). Erscheint nach dem Update einmal neu
 - Alle Tabs haben eine **feste, gleiche Größe** für 10 Zeichen, egal wie lang der Name ist. Namen mit mehr als 10 Zeichen (Leerzeichen mitgezählt) laufen im Tab vom ersten bis zum letzten Zeichen durch. Passen nicht alle Tabs in die Leiste, stehen die übrigen im ▾-Menü

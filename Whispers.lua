@@ -108,6 +108,7 @@ ev:SetScript("OnEvent", function(_, event, ...)
 	local key, display
 	if bn then
 		local bnID = select(13, ...)
+		if bnID ~= nil and not ns.Usable(bnID) then bnID = nil end
 		key = "bn:" .. tostring(bnID or author)
 		display = author -- protected Battle.net name, shown as-is
 	else

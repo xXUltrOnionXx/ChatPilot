@@ -383,6 +383,7 @@ end
 local function Active(box)
 	return state and state.box == box and popup:IsShown()
 end
+ns.AutocompleteActive = function(box) return Active(box) and true or false end
 
 -------------------------------------------------------------------------------
 -- Character counter

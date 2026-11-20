@@ -51,7 +51,12 @@ function ns.HookTyping(box)
 		if key == "BACKSPACE" or key == "DELETE" then
 			if text ~= "" then Play("back") end
 		elseif key == "ENTER" or key == "NUMPADENTER" then
-			if text ~= "" then Play("send") end
+			-- Enter that only picks an @ suggestion sends nothing: no send sound
+			if ns.AutocompleteActive and ns.AutocompleteActive(self) then
+				Play("key" .. (keyN % 4 + 1))
+			elseif text ~= "" then
+				Play("send")
+			end
 		end
 	end)
 end

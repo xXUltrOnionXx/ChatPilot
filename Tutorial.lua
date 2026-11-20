@@ -411,6 +411,7 @@ local function Build()
 	tut:HookScript("OnHide", function()
 		overlay:Hide()
 		if spot then spot:Hide() end
+		if ns.tutorialPaused then return end -- closed by a fight: not done yet
 		if ns.db then ns.db.tutorial = TUTORIAL_VERSION end
 	end)
 end
@@ -482,3 +483,28 @@ function ns:OnLogin()
 end
 
 function ns:TutorialShown() return tut and tut:IsShown() and true or false end
+
+-- A fight starts: the tour (which darkens the screen) gets out of the way at
+-- once and comes back a few seconds after the fight, at the same step.
+local resumeAt
+local fight = CreateFrame("Frame")
+fight:RegisterEvent("PLAYER_REGEN_DISABLED")
+fight:RegisterEvent("PLAYER_REGEN_ENABLED")
+fight:SetScript("OnEvent", function(_, event)
+	if event == "PLAYER_REGEN_DISABLED" then
+		if tut and tut:IsShown() then
+			resumeAt = index
+			ns.tutorialPaused = true
+			tut:Hide()
+			ns.tutorialPaused = nil
+		end
+	elseif resumeAt then
+		C_Timer.After(4, function()
+			if resumeAt and not (InCombatLockdown and InCombatLockdown()) then
+				local i = resumeAt
+				resumeAt = nil
+				ns:ShowTutorial(i)
+			end
+		end)
+	end
+end)
