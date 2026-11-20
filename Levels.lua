@@ -303,6 +303,11 @@ function ns.InstallMainChatFrame(frame)
 	local function Write(self, text, ...)
 		-- never touch secret (restricted) messages
 		if ns.S and type(text) == "string" and not ns.IsSecret(text) and ns.MainChatModern and ns.MainChatModern() then
+			-- hidden messages stay exactly as the game writes them (its "Show" link redraws them)
+			if text:find("ensoredmessage", 1, true) or text:find("ensoredMessage", 1, true) then
+				self.cpHint = nil
+				return orig(self, text, ...)
+			end
 			-- with the game's normal design the chat stays exactly as Blizzard writes it
 			if (ns.S.showLevels or ns.S.shortSurnames)
 				and (text:find("|Hplayer:", 1, true) or text:find("|HBNplayer:", 1, true)) then

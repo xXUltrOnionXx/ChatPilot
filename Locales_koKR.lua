@@ -362,3 +362,6 @@ L.TUT_windows_B = "탭 옆의 +(또는 ▾ 목록)는 고른 것만 보여 주�
 L.TUT_design_B = "톱니바퀴는 설정을 엽니다 – 마우스를 올리면 오늘 숨긴 스팸 수가 보입니다. 디자인 및 창에서 모던 또는 밝고 상쾌한 Forever 디자인과 채팅의 모던 룩을 고르세요."
 L.TUT_done_B = "즐거운 시간 되세요! 아이디어나 문제는 /chatpilot feedback으로 익명으로 보내세요. 이 안내는 설정에서 언제든 다시 볼 수 있고, 패치 노트에서 새 기능을 확인할 수 있습니다."
 L.TUT_RIGHTCLICK = "우클릭"
+L.CW_CENSORED = "메시지가 숨겨짐"
+L.CW_SHOW = "표시"
+L.CW_CENSOR_GONE = "메시지를 더 이상 볼 수 없음"

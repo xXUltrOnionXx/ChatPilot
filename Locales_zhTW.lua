@@ -362,3 +362,6 @@ L.TUT_windows_B = "分頁旁的 +（或 ▾ 列表中）會開啟只顯示你所
 L.TUT_design_B = "齒輪開啟設定——停留可查看今天隱藏了多少垃圾訊息。在「外觀與視窗」中選擇現代或歡樂清新的 Forever 外觀，以及聊天的現代樣式。"
 L.TUT_done_B = "玩得開心！有想法或問題？/chatpilot feedback 可匿名送出。本教學隨時在設定中等你，「更新說明」中可查看新內容。"
 L.TUT_RIGHTCLICK = "右鍵"
+L.CW_CENSORED = "訊息已隱藏"
+L.CW_SHOW = "顯示"
+L.CW_CENSOR_GONE = "訊息已不可用"

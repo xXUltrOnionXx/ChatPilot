@@ -363,3 +363,6 @@ L.TUT_windows_B = "Le + à côté de tes onglets (ou dans la liste ▾) ouvre un
 L.TUT_design_B = "L'engrenage ouvre les réglages – survole-le pour voir combien de spam a été masqué aujourd'hui. Dans Design & fenêtres, choisis Moderne ou le design Forever, joyeux et frais, et le look moderne de ton chat."
 L.TUT_done_B = "Amuse-toi bien ! Des idées ou un souci ? /chatpilot feedback les envoie anonymement. Cette visite t'attend dans les réglages, et Notes de version montre les nouveautés."
 L.TUT_RIGHTCLICK = "Clic droit"
+L.CW_CENSORED = "Message masqué"
+L.CW_SHOW = "Afficher"
+L.CW_CENSOR_GONE = "Message plus disponible"

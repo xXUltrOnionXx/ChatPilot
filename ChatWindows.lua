@@ -1181,6 +1181,8 @@ local function CreateMessageFrame(w)
 	end)
 	m:SetScript("OnHyperlinkClick", function(self, link, text, button)
 		if ns.LinkClick(link) then return end
+		local cid = ns.CensorID(link)
+		if cid then ns:CW_Reveal(cid) return end
 		local name = type(link) == "string" and link:match("^player:([^:]+)")
 		if name and button == "LeftButton" and not IsModifierKeyDown() and w.group then
 			-- click a name: whisper that person right here
@@ -1378,12 +1380,37 @@ local function RunFilters(frame, event, ...)
 	return args, n
 end
 
-local function AddLine(w, text, r, g, b, save)
+local MAX_LIVE = 1000
+
+-- every line shown in a window (so a hidden message can be released later)
+local function Live(w, text, r, g, b, cid, ph)
+	local live = w.live
+	if not live then live = {}; w.live = live end
+	live[#live + 1] = { text, r, g, b, cid, ph }
+	if #live > MAX_LIVE then table.remove(live, 1) end
+end
+
+local function ReplacePlain(text, old, new)
+	local a, b = text:find(old, 1, true)
+	if not a then return text end
+	return text:sub(1, a - 1) .. new .. text:sub(b + 1)
+end
+
+local function CensoredLine(lineID)
+	if type(lineID) ~= "number" or not ns.Usable(lineID) then return false end
+	local api = C_ChatInfo
+	if not (api and api.IsChatLineCensored) then return false end
+	local ok, hidden = pcall(api.IsChatLineCensored, lineID)
+	return ok and hidden and true or false
+end
+
+local function AddLine(w, text, r, g, b, save, cid, ph)
 	w.msg:AddMessage(text, r, g, b)
+	Live(w, text, r, g, b, cid, ph)
 	w.count = (w.count or 0) + 1
 	if save then
 		local lines = w.data.lines
-		lines[#lines + 1] = { text, r, g, b, time() }
+		lines[#lines + 1] = { text, r, g, b, time(), cid, ph }
 		while #lines > MAX_SAVED_LINES do table.remove(lines, 1) end
 	end
 	if w.group and w.group.data and w.group.data.active ~= w.data.id then
@@ -1520,13 +1547,18 @@ local function Deliver(event, ...)
 		local okc, _, cf = pcall(GetPlayerInfoByGUID, guid)
 		if okc then class = cf end
 	end
-	local mentioned = not isOwn and not isSystem and ns.FindMention and ns:FindMention(msg)
+	-- a hidden ("offensive") message: show a notice with a "Show" link, never the text itself
+	local lineID = select(11, ...)
+	local cid = (not isSystem and CensoredLine(lineID)) and lineID or nil
+	local placeholder = cid and (UI.Hex(C.muted) .. L.CW_CENSORED .. " |Hcpcensor:" .. cid .. "|h[" .. L.CW_SHOW .. "]|h|r") or nil
+	local mentioned = not cid and not isOwn and not isSystem and ns.FindMention and ns:FindMention(msg)
 	local key = (isSystem and "~system" or tostring(ns.Normalize(author) or author)) .. "|" .. chatType .. "|" .. tostring(channelNumber or "")
 	local styled = ns.S.chatStyle ~= false
 
 	for _, w in ipairs(targets) do
 		local args, n = RunFilters(w.msg, event, ...)
 		if args then
+			if cid then args[1] = placeholder end
 			local ok, text, r, g, b
 			if styled then
 				ok = true
@@ -1584,8 +1616,8 @@ local function Deliver(event, ...)
 				ok, text, r, g, b = pcall(Format, event, unpack(args, 1, n))
 			end
 			if ok and text then
-				AddLine(w, text, r, g, b, true)
-				ns:CW_Notify(w, event, (...), select(2, ...))
+				AddLine(w, text, r, g, b, true, cid, placeholder)
+				ns:CW_Notify(w, event, cid and "" or (...), select(2, ...))
 				local a = { ... }
 				local t = TargetOf(event, a[2], a[8], a[9], a[13])
 				if t and not (t.type == "WHISPER" and Ambiguate and Ambiguate(t.name, "none") == UnitName("player")) then
@@ -1793,6 +1825,41 @@ function ns:CW_TargetMenu(g)
 	tmenu:Show()
 end
 
+-- "Show" on a hidden message: released by your click, then written again everywhere
+function ns:CW_Reveal(cid)
+	local api = C_ChatInfo
+	if api and api.UncensorChatLine then pcall(api.UncensorChatLine, cid) end
+	local text
+	if api and api.GetChatLineText then
+		local ok, t = pcall(api.GetChatLineText, cid)
+		if ok and type(t) == "string" and ns.Usable(t) and t ~= "" then text = t end
+	end
+	local rep = text or (UI.Hex(C.muted) .. L.CW_CENSOR_GONE .. "|r")
+	for _, w in pairs(wins) do
+		local hit = false
+		for _, e in ipairs(w.live or {}) do
+			if e[5] == cid and e[6] then
+				e[1] = ReplacePlain(e[1], e[6], rep)
+				e[5], e[6] = nil, nil
+				hit = true
+			end
+		end
+		for _, l in ipairs(w.data.lines) do
+			if l[6] == cid and l[7] then
+				l[1] = ReplacePlain(l[1], l[7], rep)
+				l[6], l[7] = nil, nil
+			end
+		end
+		if hit then
+			w.msg:Clear()
+			for _, e in ipairs(w.live) do w.msg:AddMessage(e[1], e[2], e[3], e[4]) end
+		end
+	end
+end
+
+-- the window you last sent from: Enter in the game goes back to it
+local lastSend
+
 function ns:CW_Submit(g)
 	local eb = g.input
 	local text = eb:GetText() or ""
@@ -1818,6 +1885,10 @@ function ns:CW_Submit(g)
 	end
 	local ok = pcall(Send, t, text)
 	if ok then
+		lastSend = g
+		if t.type == "WHISPER" and ChatEdit_SetLastTellTarget and ns.Usable(t.name) then
+			pcall(ChatEdit_SetLastTellTarget, t.name, "WHISPER")
+		end
 		if eb.AddHistoryLine then eb:AddHistoryLine(text) end
 		eb:SetText("")
 		-- like the normal chat: after sending, the keyboard goes back to the game
@@ -1829,6 +1900,35 @@ function ns:CW_Submit(g)
 		HandOver(t, text)
 	end
 end
+
+-- Enter in the game opens its own input box. After you sent from one of our
+-- windows, that Enter brings you back to the same window and chat instead
+-- (its target is remembered there). Sending in the game's own box ends this.
+local function EnterToWindow(text)
+	local g = lastSend
+	if not g or (type(text) == "string" and text ~= "") then return end
+	if Locked() or not g.input or not g.frame or not g.frame:IsVisible() then return end
+	if g.input:HasFocus() then return end
+	local box = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
+	if box and box.GetAttribute then
+		-- a game command that picked its own chat (e.g. reply) is left alone
+		local okA, ct, st = pcall(function() return box:GetAttribute("chatType"), box:GetAttribute("stickyType") end)
+		if okA and ct and st and ct ~= st then return end
+	end
+	if box and box.IsShown and box:IsShown() then
+		if ChatEdit_DeactivateChat then pcall(ChatEdit_DeactivateChat, box) else box:Hide() end
+	end
+	g.input:SetFocus()
+end
+local function GameSent() lastSend = nil end
+
+local function HookFn(tbl, name, fn)
+	if tbl and type(tbl[name]) == "function" then hooksecurefunc(tbl, name, fn) return true end
+end
+HookFn(_G, "ChatFrame_OpenChat", EnterToWindow)
+HookFn(ChatFrameUtil, "OpenChat", EnterToWindow)
+HookFn(_G, "ChatEdit_SendText", GameSent)
+HookFn(ChatFrameUtil, "SendText", GameSent)
 
 -------------------------------------------------------------------------------
 -- Bell: sound + small notice for new messages in a window
@@ -1892,11 +1992,19 @@ local function BuildWindow(wdata)
 	local restored = false
 	for _, l in ipairs(wdata.lines) do
 		if now - (l[5] or 0) < 3 * 86400 then
-			w.msg:AddMessage(l[1], l[2], l[3], l[4])
+			local text = l[1]
+			-- a hidden message from an earlier session can no longer be released
+			if l[6] and l[7] then text = ReplacePlain(text, l[7], UI.Hex(C.muted) .. L.CW_CENSOR_GONE .. "|r") end
+			w.msg:AddMessage(text, l[2], l[3], l[4])
+			Live(w, text, l[2], l[3], l[4])
 			restored = true
 		end
 	end
-	if restored then w.msg:AddMessage(UI.Hex(C.muted) .. "— " .. L.CW_HISTORY .. " —|r") end
+	if restored then
+		local sep = UI.Hex(C.muted) .. "— " .. L.CW_HISTORY .. " —|r"
+		w.msg:AddMessage(sep)
+		Live(w, sep)
+	end
 	return w
 end
 
@@ -2005,6 +2113,7 @@ function ns:CW_Count() return Data and #Data.windows or 0 end
 function ns:CW_ClearWindow(w)
 	if not w then return end
 	w.msg:Clear()
+	w.live = nil
 	if w.data.lines then wipe(w.data.lines) end
 	w.lastKey, w.lastT, w.count, w.unread = nil, nil, 0, nil
 	if w.group then LayoutTabs(w.group) end
@@ -2497,4 +2606,5 @@ end
 ns._cwPlus = function() return plus end
 ns._cwLaunchers = function() return launchers end
 ns._cw = { wins = wins, groups = groups, Format = Format, Deliver = Deliver, FinishDrag = FinishDrag,
-	StartDrag = StartDrag, ChannelCat = ChannelCat, Rename = StartRename, WindowName = WindowName } -- for tests
+	StartDrag = StartDrag, ChannelCat = ChannelCat, Rename = StartRename, WindowName = WindowName,
+	EnterToWindow = EnterToWindow, GameSent = GameSent } -- for tests

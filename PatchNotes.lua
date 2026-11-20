@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.15",
+		de = { "Enter bringt dich nach dem Senden in dasselbe Fenster und denselben Chat zurück", "Ausgeblendete Nachrichten lassen sich über „Anzeigen“ wieder einblenden, in normalen und eigenen Chatfenstern" },
+		en = { "After sending, Enter takes you back to the same window and chat", "Hidden messages can be shown again with 'Show', in normal and custom chat windows" },
+		fr = { "Après l'envoi, Entrée vous ramène à la même fenêtre et au même chat", "Les messages masqués peuvent de nouveau être affichés avec « Afficher », dans les chats normaux et personnalisés" },
+		es = { "Tras enviar, Intro te lleva de vuelta a la misma ventana y chat", "Los mensajes ocultos se pueden volver a mostrar con «Mostrar», en chats normales y propios" },
+		it = { "Dopo l'invio, Invio ti riporta nella stessa finestra e chat", "I messaggi nascosti si possono mostrare di nuovo con «Mostra», nelle chat normali e personalizzate" },
+		pt = { "Depois de enviar, Enter leva você de volta à mesma janela e chat", "Mensagens ocultas podem ser exibidas novamente com «Mostrar», nos chats normais e próprios" },
+		ru = { "После отправки Enter возвращает в то же окно и чат", "Скрытые сообщения снова можно показать кнопкой «Показать» в обычных и собственных окнах чата" },
+		ko = { "전송 후 Enter를 누르면 같은 창과 같은 채팅으로 돌아갑니다", "숨겨진 메시지를 '표시'로 다시 볼 수 있습니다 (기본 및 사용자 채팅 창)" },
+		zh = { "发送后按回车会回到同一个窗口和同一个频道", "被隐藏的消息可通过“显示”重新查看，普通和自定义聊天窗口均可" },
+		tw = { "送出後按 Enter 會回到同一個視窗與同一個頻道", "被隱藏的訊息可透過「顯示」重新查看，一般與自訂聊天視窗皆可" },
+	},
 	{ v = "1.7.14",
 		de = { "Doppelt so viel Verlauf in eigenen und Blizzard-Chats, einschließlich Scrollback und gespeicherter Nachrichten", "Flüsterverlauf und Erwähnungen ebenfalls verdoppelt" },
 		en = { "Doubled history capacity in custom and Blizzard chats, including scrollback and saved messages", "Whisper history and mentions also doubled" },

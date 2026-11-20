@@ -371,3 +371,6 @@ L.TUT_windows_B = "The + next to your tabs (or in the ▾ list) opens a window t
 L.TUT_design_B = "The gear opens the settings - hover it to see how much spam was hidden today. Under Design & windows you pick Modern or the cheerful, fresh Forever design and the modern look for your chat."
 L.TUT_done_B = "Have fun! Ideas or problems? /chatpilot feedback sends them anonymously. This tour waits in the settings any time, and Patch notes shows what is new."
 L.TUT_RIGHTCLICK = "Right-click"
+L.CW_CENSORED = "Message hidden"
+L.CW_SHOW = "Show"
+L.CW_CENSOR_GONE = "Message no longer available"

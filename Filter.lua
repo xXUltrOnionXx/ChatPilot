@@ -339,8 +339,38 @@ function ns.LinkLeave(frame)
 	end
 end
 
+-- Hidden ("offensive") messages: the game shows a "Show" link. The click is
+-- the game's own; afterwards ChatPilot makes sure the line really is released
+-- and every chat window writes it again, whatever look the chat has.
+function ns.CensorID(link)
+	if type(link) ~= "string" then return nil end
+	local id = link:match("^[Cc]ensored[Mm]essage:(%d+)") or link:match("^cpcensor:(%d+)")
+	return id and tonumber(id) or nil
+end
+
+function ns.RevealBlizzard(id)
+	if not id then return end
+	local api = C_ChatInfo
+	if api and api.IsChatLineCensored and api.UncensorChatLine then
+		local ok, hidden = pcall(api.IsChatLineCensored, id)
+		if ok and hidden then pcall(api.UncensorChatLine, id) end
+	end
+	local function Redraw()
+		for i = 1, (NUM_CHAT_WINDOWS or 10) do
+			local f = _G["ChatFrame" .. i]
+			if f and f.RefreshDisplay then pcall(f.RefreshDisplay, f) end
+		end
+	end
+	Redraw()
+	if C_Timer and C_Timer.After then C_Timer.After(0.2, Redraw) end
+end
+
 ns.OnChatFrame(function(frame)
-	frame:HookScript("OnHyperlinkClick", function(_, link) ns.LinkClick(link) end)
+	frame:HookScript("OnHyperlinkClick", function(_, link)
+		ns.LinkClick(link)
+		local cid = ns.CensorID(link)
+		if cid then ns.RevealBlizzard(cid) end
+	end)
 	frame:HookScript("OnHyperlinkEnter", function(self, link) ns.LinkEnter(self, link) end)
 	frame:HookScript("OnHyperlinkLeave", function(self) ns.LinkLeave(self) end)
 end)

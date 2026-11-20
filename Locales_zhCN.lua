@@ -362,3 +362,6 @@ L.TUT_windows_B = "标签旁的 +（或 ▾ 列表中）会打开一个只显示
 L.TUT_design_B = "齿轮打开设置——悬停可查看今天隐藏了多少垃圾信息。在“外观与窗口”中选择现代或欢快清新的 Forever 外观，以及聊天的现代样式。"
 L.TUT_done_B = "玩得开心！有想法或问题？/chatpilot feedback 可匿名发送。本教程随时在设置中等你，“更新说明”中可查看新内容。"
 L.TUT_RIGHTCLICK = "右键"
+L.CW_CENSORED = "消息已隐藏"
+L.CW_SHOW = "显示"
+L.CW_CENSOR_GONE = "消息已不可用"

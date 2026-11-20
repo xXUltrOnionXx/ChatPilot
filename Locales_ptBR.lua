@@ -363,3 +363,6 @@ L.TUT_windows_B = "O + ao lado das abas (ou na lista ▾) abre uma janela que mo
 L.TUT_design_B = "A engrenagem abre os ajustes – passe o mouse para ver quanto spam foi escondido hoje. Em Design e janelas você escolhe Moderno ou o alegre e fresco design Forever e o visual moderno do chat."
 L.TUT_done_B = "Divirta-se! Ideias ou problemas? /chatpilot feedback envia anonimamente. Este tour espera nos ajustes, e em Notas de atualização você vê as novidades."
 L.TUT_RIGHTCLICK = "Clique direito"
+L.CW_CENSORED = "Mensagem oculta"
+L.CW_SHOW = "Mostrar"
+L.CW_CENSOR_GONE = "Mensagem não está mais disponível"

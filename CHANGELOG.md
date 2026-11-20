@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.15
+- Enter merkt sich den Chat: Hast du in einem eigenen Fenster etwas gesendet, bringt dich die nächste Enter-Taste wieder in dasselbe Fenster mit demselben Ziel (Flüstern, Kanal, Gilde ...). Sendest du danach im normalen Eingabefeld des Spiels, gilt wieder dessen Verhalten. Bei einer Flüstern-Antwort merkt sich auch das Spiel das Ziel.
+- Ausgeblendete (anstößige) Nachrichten lassen sich wieder anzeigen: Der Link „Anzeigen“ gibt die Nachricht frei und schreibt sie in allen Chatfenstern neu. In deinen eigenen Fenstern steht bis zum Klick nur ein Hinweis statt des Textes, ohne Erwähnungs-Alarm oder Hinweisfenster. Bei Nachrichten aus einer früheren Sitzung steht „nicht mehr verfügbar“.
+- Ausgeblendete Nachrichten im normalen Chat bleiben unverändert, so wie das Spiel sie schreibt, damit „Anzeigen“ sie sauber ersetzen kann.
+
 ## 1.7.14
 - Verlauf verdoppelt: eigene Chatfenster zeigen bis zu 1.000 statt 500 Zeilen und speichern 200 statt 100 Zeilen über Reload/Logout.
 - Blizzard-Chats: jeweilige Scrollback-Kapazität pro Fenster verdoppelt (auch Kampflog und temporäre Flüsterfenster); gespeicherter Verlauf 240 statt 120 Zeilen pro normalem Chatfenster. Der Kampflog wird weiterhin nicht über Logout gespeichert.

@@ -369,3 +369,6 @@ L.TUT_windows_B = "Das + neben deinen Tabs (oder im ▾-Menü) öffnet ein Fenst
 L.TUT_design_B = "Das Zahnrad öffnet die Einstellungen – Maus darüber zeigt, wie viel Spam heute ausgeblendet wurde. Unter „Design & Fenster“ wählst du Modern oder das fröhliche, frische Forever-Design und den modernen Look für deinen Chat."
 L.TUT_done_B = "Viel Spaß! Ideen oder Probleme? /chatpilot feedback schickt sie anonym. Dieser Rundgang wartet jederzeit in den Einstellungen, und unter „Patchnotes“ steht, was neu ist."
 L.TUT_RIGHTCLICK = "Rechtsklick"
+L.CW_CENSORED = "Nachricht ausgeblendet"
+L.CW_SHOW = "Anzeigen"
+L.CW_CENSOR_GONE = "Nachricht nicht mehr verfügbar"
