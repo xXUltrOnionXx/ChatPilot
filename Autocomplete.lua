@@ -9,6 +9,7 @@ local SRC_LABEL = {
 	group = L.SRC_GROUP, target = L.SRC_TARGET, chat = L.SRC_CHAT,
 	friend = L.SRC_FRIEND, guild = L.SRC_GUILD, community = L.SRC_COMMUNITY,
 	icon = L.SRC_ICON, snippet = L.SRC_SNIPPET,
+	nearby = L.SRC_NEARBY, who = L.SRC_WHO,
 }
 local WHISPER_CMDS = {
 	["/w"] = true, ["/whisper"] = true, ["/t"] = true, ["/tell"] = true, ["/send"] = true,
@@ -122,7 +123,12 @@ function ns.RenderPopup()
 	for i, item in ipairs(items) do
 		local r = GetRow(i)
 		r.index = i
-		if item.snippet then
+		if item.who or item.whoBusy or item.whoNone then
+			r.icon:SetTexture("Interface\\Common\\UI-Searchbox-Icon")
+			r.icon:SetTexCoord(0, 1, 0, 1)
+			r.name:SetText(item.short)
+			if item.who then r.name:SetTextColor(unpack(ns.UI.C.accent)) else r.name:SetTextColor(unpack(ns.UI.C.muted)) end
+		elseif item.snippet then
 			r.icon:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
 			r.icon:SetTexCoord(0, 1, 0, 1)
 			r.name:SetText(item.short .. "  |cff8a94a6" .. item.snippet .. "|r")
@@ -220,7 +226,74 @@ local function GetContext(box)
 	end
 end
 
-local function Update(box)
+-------------------------------------------------------------------------------
+-- Server search (who list) for players nobody around you knows yet. It only
+-- runs when you pick "Search on the server" yourself (click or Enter).
+-------------------------------------------------------------------------------
+local who = { last = -10, done = {} }
+ns.whoFound = ns.whoFound or {}
+local Update -- forward
+
+local function WhoItem(partial)
+	if not (C_FriendList and C_FriendList.SendWho) then return nil end
+	local p = partial:gsub('"', ""):lower()
+	if #p < 2 then return nil end
+	if who.busy == p then return { whoBusy = true, short = L.WHO_BUSY, tag = "who" } end
+	if who.done[p] == 0 then return { whoNone = true, short = L.WHO_NONE:format(partial), tag = "who" } end
+	if who.done[p] then return nil end -- already searched: the players are in the list
+	return { who = p, short = L.WHO_SEARCH:format(partial), tag = "who" }
+end
+
+local function WhoRefresh()
+	local box = who.box
+	if box and box:IsShown() and box:HasFocus() then Update(box) end
+end
+
+local function StartWho(p, box)
+	who.box = box
+	if who.busy or GetTime() - who.last < 5 then return WhoRefresh() end -- the server allows one search every few seconds
+	who.busy, who.last = p, GetTime()
+	who.friendsShown = FriendsFrame and FriendsFrame:IsShown() or false
+	if C_FriendList.SetWhoToUi then pcall(C_FriendList.SetWhoToUi, true) end -- results into the list, not into the chat
+	local origin = Enum and Enum.SocialWhoOrigin and Enum.SocialWhoOrigin.Social
+	local ok = pcall(C_FriendList.SendWho, ('n-"%s"'):format(p), origin)
+	if not ok then who.busy = nil end
+	C_Timer.After(8, function()
+		if who.busy == p then who.busy = nil; who.done[p] = who.done[p] or 0; WhoRefresh() end
+	end)
+	WhoRefresh()
+end
+ns.StartWho = StartWho -- for tests
+
+-- every who result (also from your own /who) adds the players to the list
+local whoEvents = CreateFrame("Frame")
+whoEvents:RegisterEvent("WHO_LIST_UPDATE")
+whoEvents:SetScript("OnEvent", function()
+	local n = 0
+	if C_FriendList and C_FriendList.GetNumWhoResults then
+		for i = 1, (C_FriendList.GetNumWhoResults() or 0) do
+			local info = C_FriendList.GetWhoInfo(i)
+			local key = info and info.fullName and ns.Normalize(info.fullName)
+			if key and key ~= ns.playerKey then
+				ns.whoFound[key] = { c = info.filename, t = time() }
+				n = n + 1
+			end
+		end
+	end
+	if who.busy then
+		who.done[who.busy] = n
+		who.busy = nil
+		if C_FriendList.SetWhoToUi then pcall(C_FriendList.SetWhoToUi, false) end -- the game's default again
+		-- our search shouldn't leave the friends window open
+		if not who.friendsShown and FriendsFrame and FriendsFrame:IsShown() and not InCombatLockdown() and HideUIPanel then
+			pcall(HideUIPanel, FriendsFrame)
+		end
+	end
+	if ns.MarkLiveDirty then ns:MarkLiveDirty() end
+	WhoRefresh()
+end)
+
+function Update(box)
 	if not ns.S then return end
 	if Restricted() then return HidePopup() end
 	local mode, startPos, partial, whisper = GetContext(box)
@@ -229,7 +302,14 @@ local function Update(box)
 	local items
 	if mode == "icon" then items = IconItems(partial)
 	elseif mode == "snippet" then items = ns.SnippetItems(partial)
-	else items = ns:GetCandidates(partial, ns.S.maxRows) end
+	else
+		items = ns:GetCandidates(partial, ns.S.maxRows)
+		-- last row: look the name up on the server
+		local wi = WhoItem(partial)
+		if wi then
+			if #items >= (ns.S.maxRows or 8) then items[#items] = wi else items[#items + 1] = wi end
+		end
+	end
 	if #items == 0 then return HidePopup() end
 
 	local prevAlt
@@ -253,7 +333,7 @@ end
 -- Builds the new input text for the chosen entry (does not touch the box).
 local function BuildText(st, index)
 	local item = st.items[index or st.index]
-	if not item then return end
+	if not item or item.who or item.whoBusy or item.whoNone then return end
 	local text, cursor = st.text, st.cursor
 
 	local insert
@@ -283,6 +363,11 @@ ns.BuildText = BuildText -- for tests
 function Accept(index)
 	local st = state
 	if not st or Restricted() then return HidePopup() end
+	local item = st.items[index or st.index]
+	if item and (item.who or item.whoBusy or item.whoNone) then
+		if item.who then StartWho(item.who, st.box) end
+		return
+	end
 	local newText, newCursor = BuildText(st, index)
 	if not newText then return end
 	local box = st.box
@@ -394,6 +479,19 @@ function ns.HookEditBox(box)
 		local p = pendingEnter
 		pendingEnter = nil
 		if p and p.box == self then
+			local item = p.st.items[p.st.index]
+			if item and (item.who or item.whoBusy or item.whoNone) then
+				-- Enter on "Search on the server": the text stays, the search starts
+				if not self:IsShown() then
+					local open = ChatEdit_ActivateChat or (ChatFrameUtil and ChatFrameUtil.ActivateChat)
+					if open then open(self) else self:Show() end
+				end
+				if not self:HasFocus() then self:SetFocus() end
+				self:SetText(p.st.text)
+				self:SetCursorPosition(p.st.cursor)
+				if item.who then StartWho(item.who, self) else Update(self) end
+				return
+			end
 			local newText, newCursor = BuildText(p.st)
 			if state and state.box == self then HidePopup() end
 			if not newText then return end

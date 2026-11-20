@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.5
+- **Zurück zum normalen WoW-Design sofort und vollständig:** „Modernes Chatfenster“ aus stellt den normalen Chat ohne /reload wieder komplett original her – Rahmen, Tabs und Eingabefeld, und auch alle Zeilen, die schon dastehen: keine Blöcke, Level, kurzen Namen, kurzen Kanalnamen, Links oder Hervorhebungen mehr. Wieder einschalten macht alles wieder modern. Hintergrundfunktionen (Spamfilter, Erwähnungs-Hinweise, verpasste Flüsternachrichten) laufen weiter
+- **@-Suche findet auch völlig Unbekannte:** neue Quellen „In der Nähe“ (Spieler um dich herum, Mouseover, Fokus) und die **Wer-Liste** – letzte Zeile „Auf dem Server suchen: …“ (Enter oder Klick) sucht online nach dem Namen, die Treffer erscheinen direkt in der Liste. Auch Ergebnisse deines eigenen /who landen dort
+- **Beim Ausloggen automatisch leeren:** Unter „Gut zu wissen“ wählst du einzeln, welche Chats beim Ausloggen oder Beenden des Spiels geleert werden – jeder normale Chat-Tab, jedes eigene Fenster, der Flüster-Verlauf und die Erwähnungen. Ein /reload leert nichts. Anfangs ist nichts ausgewählt
+- **Neue Notizen kommen nach vorne**, über alle anderen Notizen
+- Fix: Umbrochene Zeilen sind nicht mehr eingerückt – sie stehen bündig unter der ersten Zeile (das Spiel-Original wird beim Wechsel aufs normale Design wiederhergestellt)
+- Fix: Tabs werden nie mehr halb abgeschnitten (z. B. „;licht“) – die Leiste beginnt immer an einem Tab, scrollt tabweise, und was nicht ganz passt, steckt im ▾-Menü
+
 ## 1.7.4
 - Fix: Über dem Chat erschienen leere Streifen und Kästen – das waren Blöcke von Zeilen, die schon aus dem sichtbaren Bereich gescrollt waren. Blöcke werden jetzt nur noch innerhalb der Chatfläche gezeichnet (angeschnittene Blöcke am Rand werden sauber abgeschnitten) und laufend an die Zeilen angepasst
 - Etwas mehr Luft zwischen den Nachrichten-Blöcken

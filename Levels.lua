@@ -276,34 +276,87 @@ local function AddLevels(text)
 end
 ns.AddLevels = AddLevels
 
+-- Every line the game writes is also noted as it came in (a short list per chat
+-- tab). When you switch between the modern look and the game's normal design,
+-- the tab is simply written again from that list - so old lines change too.
+local LOG_MAX = 200
+
+local function LogLine(self, text, ...)
+	local log = rawget(self, "cpLog")
+	if not log then log = {}; self.cpLog = log end
+	local h = rawget(self, "cpHint")
+	local plain = text
+	-- undo ChatPilot's own text extras (links, highlights) for the normal design
+	if h and type(text) == "string" and not ns.IsSecret(text) and type(h.msg) == "string" and type(h.raw) == "string" and h.raw ~= h.msg then
+		local a, b = text:find(h.msg, 1, true)
+		if a then plain = text:sub(1, a - 1) .. h.raw .. text:sub(b + 1) end
+	end
+	log[#log + 1] = { text = text, plain = plain, hint = h, n = select("#", ...), ... }
+	if #log > LOG_MAX then table.remove(log, 1) end
+end
+
 ns.OnChatFrame(function(frame)
 	if frame.ChatPilotLevels or not frame.AddMessage then return end
 	frame.ChatPilotLevels = true
 	local orig = frame.AddMessage
-	frame.AddMessage = function(self, text, ...)
+
+	local function Write(self, text, ...)
 		-- never touch secret (restricted) messages
-		if ns.S and type(text) == "string" and not ns.IsSecret(text) then
+		if ns.S and type(text) == "string" and not ns.IsSecret(text) and ns.MainChatModern and ns.MainChatModern() then
+			-- with the game's normal design the chat stays exactly as Blizzard writes it
 			if (ns.S.showLevels or ns.S.shortSurnames)
 				and (text:find("|Hplayer:", 1, true) or text:find("|HBNplayer:", 1, true)) then
 				local ok, out = pcall(AddLevels, text)
 				if ok and out then text = out end
 			end
-			-- the modern look only while "Modern chat window" is on: with the game's
-			-- normal design the chat stays exactly as Blizzard writes it
-			if ns.MainLookActive and ns.MainLookActive() then
-				-- "[2. Handel - Deutsch 41]" -> "[Handel]" (the channel link stays clickable)
-				text = text:gsub("(|Hchannel:[^|]+|h)%[(.-)%](|h)", function(open, inner, close)
-					local short = inner:gsub("^%d+%.%s*", ""):gsub("%s+%-%s+.*$", "")
-					if short == "" then return nil end
-					return open .. "[" .. short .. "]" .. close
-				end)
-				if ns.StyleMainLine then
-					local ok, done = pcall(ns.StyleMainLine, self, text, orig, ...)
-					if ok and done then return end
-				end
+			-- "[2. Handel - Deutsch 41]" -> "[Handel]" (the channel link stays clickable)
+			text = text:gsub("(|Hchannel:[^|]+|h)%[(.-)%](|h)", function(open, inner, close)
+				local short = inner:gsub("^%d+%.%s*", ""):gsub("%s+%-%s+.*$", "")
+				if short == "" then return nil end
+				return open .. "[" .. short .. "]" .. close
+			end)
+			if ns.StyleMainLine and ns.MainLookActive() then
+				local ok, done = pcall(ns.StyleMainLine, self, text, orig, ...)
+				if ok and done then return end
 			end
 		end
 		self.cpHint = nil
 		return orig(self, text, ...)
 	end
+
+	frame.AddMessage = function(self, text, ...)
+		if not rawget(self, "cpReplaying") then pcall(LogLine, self, text, ...) end
+		return Write(self, text, ...)
+	end
+
+	-- write the tab again from the list, in the current look
+	frame.cpRewrite = function(self)
+		local log = rawget(self, "cpLog")
+		if not log or #log == 0 or not self.Clear then return end
+		local look = ns.MainChatModern and ns.MainChatModern()
+		self.cpReplaying = true
+		self:Clear()
+		self.cpLastKey, self.cpLastT = nil, nil
+		for _, e in ipairs(log) do
+			local h = e.hint
+			if look then
+				if h then h.t = GetTime() end
+				self.cpHint = h
+				pcall(Write, self, e.text, unpack(e, 1, e.n))
+			else
+				self.cpHint = nil
+				pcall(orig, self, e.plain, unpack(e, 1, e.n))
+			end
+		end
+		self.cpHint = nil
+		self.cpReplaying = nil
+	end
 end)
+
+-- after switching the look (or levels / short surnames): every chat tab anew
+function ns:RefreshMainChat()
+	for i = 1, (NUM_CHAT_WINDOWS or 10) do
+		local f = _G["ChatFrame" .. i]
+		if f and rawget(f, "cpRewrite") then pcall(f.cpRewrite, f) end
+	end
+end

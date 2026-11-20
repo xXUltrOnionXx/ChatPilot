@@ -48,6 +48,8 @@ ev:RegisterEvent("PLAYER_LOGOUT")
 ev:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_LOGOUT" then
 		pcall(Save)
+		-- after saving: empty what you chose under "Good to know"
+		if ns.AutoClearOnLogout then pcall(ns.AutoClearOnLogout, ns) end
 	else
 		C_Timer.After(0.5, function() pcall(Restore) end)
 	end

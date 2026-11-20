@@ -504,8 +504,8 @@ local function BuildChat(content)
 	local sf, c = NewPage(content)
 	local flow = NewFlow(c, PageHeader(c, L.PAGE_CHAT, L.PAGE_CHAT_SUB))
 	ToggleRow(flow, "abbrevTips")
-	ToggleRow(flow, "showLevels")
-	ToggleRow(flow, "shortSurnames")
+	ToggleRow(flow, "showLevels", nil, function() ns:RefreshMainChat() end)
+	ToggleRow(flow, "shortSurnames", nil, function() ns:RefreshMainChat() end)
 	ToggleRow(flow, "playerInfo")
 	local spamRow = ToggleRow(flow, "spamFilter")
 	ToggleRow(flow, "keepHistory")
@@ -622,9 +622,11 @@ local function BuildDesign(content)
 	FlowAdd(flow, box)
 
 	ToggleRow(flow, "notifyGlow", nil, function() ns:UpdateChatButtons() end)
-	ToggleRow(flow, "chatStyle")
+	ToggleRow(flow, "chatStyle", nil, function() ns:RefreshMainChat() end)
 	local skinRow = ToggleRow(flow, "chatSkin", nil, function(v)
-		if v then ns:SkinAllChats() else ns.Print(L.CHATSKIN_RELOAD) end
+		-- switches right away, old lines included (no /reload needed)
+		if v then ns:SkinAllChats() else ns:UnskinAllChats() end
+		ns:RefreshMainChat()
 	end)
 	skinRow:HookScript("OnShow", function()
 		local other = ns.ChatSkinConflict and ns:ChatSkinConflict()
@@ -673,7 +675,10 @@ local function InfoBox(flow, c, title, text, extra)
 	body:SetSpacing(3)
 	body:SetText(text)
 	box.body = body
-	FlowAdd(flow, box, nil, { gap = 10, height = function() return 12 + 14 + 8 + (body:GetStringHeight() or 40) + 14 + (extra or 0) end })
+	FlowAdd(flow, box, nil, { gap = 10, height = function()
+		local e = type(extra) == "function" and extra() or extra or 0
+		return 12 + 14 + 8 + (body:GetStringHeight() or 40) + 14 + e
+	end })
 	return box
 end
 
@@ -706,11 +711,49 @@ local function BuildInfo(content)
 	b5:SetPoint("TOPLEFT", b3, "BOTTOMLEFT", 0, -10)
 	store:SetScript("OnShow", Count)
 
+	-- empty chosen chats when logging out
+	local autoRows, autoCount = {}, 0
+	local auto = InfoBox(flow, c, L.INFO_AUTO, L.INFO_AUTO_TEXT, function() return 8 + autoCount * 28 end)
+	local function AutoRow(i)
+		local r = autoRows[i]
+		if r then return r end
+		r = CreateFrame("Frame", nil, auto)
+		r:SetSize(470, 26)
+		r:SetPoint("TOPLEFT", auto.body, "BOTTOMLEFT", 0, -10 - (i - 1) * 28)
+		r.label = UI.Text(r, "GameFontHighlight")
+		r.label:SetPoint("LEFT", 52, 0)
+		r.toggle = UI.Toggle(r, function(v) if r.set then r.set(v) end end)
+		r.toggle:SetPoint("LEFT", 0, 0)
+		autoRows[i] = r
+		return r
+	end
+	local function FillAuto()
+		local a = ns:AutoClear()
+		local items = {}
+		for _, t in ipairs(ns:MainTabs()) do
+			items[#items + 1] = { label = L.AUTO_MAIN:format(t.name), get = function() return a.main[t.id] end, set = function(v) a.main[t.id] = v or nil end }
+		end
+		for _, w in ipairs(ns.CW_List and ns:CW_List() or {}) do
+			items[#items + 1] = { label = L.AUTO_WIN:format(w.name), get = function() return a.win[w.id] end, set = function(v) a.win[w.id] = v or nil end }
+		end
+		items[#items + 1] = { label = L.CLEAR_WHISPERS:gsub("^%s+", ""), get = function() return a.whispers end, set = function(v) a.whispers = v or nil end, plain = L.AUTO_WHISPERS }
+		items[#items + 1] = { label = L.AUTO_MENTIONS, get = function() return a.mentions end, set = function(v) a.mentions = v or nil end }
+		for i, it in ipairs(items) do
+			local r = AutoRow(i)
+			r.label:SetText(it.plain or it.label)
+			r.toggle:SetValue(it.get() and true or false)
+			r.set = it.set
+			r:Show()
+		end
+		for i = #items + 1, #autoRows do autoRows[i]:Hide() end
+		autoCount = #items
+	end
+
 	InfoBox(flow, c, L.INFO_DESIGN, L.INFO_DESIGN_TEXT)
 	InfoBox(flow, c, L.INFO_SAFE, L.INFO_SAFE_TEXT)
 	InfoBox(flow, c, L.INFO_CMDS, L.INFO_CMDS_TEXT)
 
-	sf:SetScript("OnShow", function() Count(); Relayout(flow) end)
+	sf:SetScript("OnShow", function() Count(); FillAuto(); Relayout(flow) end)
 	return sf
 end
 

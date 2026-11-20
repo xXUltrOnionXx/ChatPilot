@@ -130,7 +130,7 @@ end
 
 function ns:RefreshLive(force)
 	local now = GetTime()
-	if not force and not liveDirty and now - liveStamp < 20 then return end
+	if not force and not liveDirty and now - liveStamp < 5 then return end
 	liveStamp, liveDirty = now, false
 	local t = {}
 
@@ -156,6 +156,27 @@ function ns:RefreshLive(force)
 			AddLive(t, ns.Normalize(name, realm), classFile, "target")
 		end
 	end)
+
+	-- players around you (name plates), mouse-over and focus
+	pcall(function()
+		local units = { "mouseover", "focus" }
+		for i = 1, 40 do units[#units + 1] = "nameplate" .. i end
+		for _, unit in ipairs(units) do
+			if UnitExists(unit) and UnitIsPlayer(unit) and not UnitIsUnit(unit, "player") then
+				local name, realm = UnitName(unit)
+				if ns.Usable(name, realm) and name then
+					local _, classFile = UnitClass(unit)
+					AddLive(t, ns.Normalize(name, realm), classFile, "nearby")
+				end
+			end
+		end
+	end)
+
+	-- players found with the server search (who list), for 15 minutes
+	local now2 = time()
+	for key, e in pairs(ns.whoFound or {}) do
+		if now2 - e.t < 900 then AddLive(t, key, e.c, "who") else ns.whoFound[key] = nil end
+	end
 
 	-- guild (online only)
 	pcall(function()
@@ -194,8 +215,8 @@ function ns:RefreshLive(force)
 	self.live = t
 end
 
-local SRC_SCORE = { group = 400, target = 350, friend = 150, guild = 120, community = 80 }
-local SRC_ORDER = { "group", "target", "chat", "friend", "guild", "community" }
+local SRC_SCORE = { group = 400, target = 350, nearby = 200, who = 180, friend = 150, guild = 120, community = 80 }
+local SRC_ORDER = { "group", "target", "nearby", "chat", "friend", "guild", "who", "community" }
 
 -- Returns sorted suggestion entries matching `partial`.
 function ns:GetCandidates(partial, maxCount)
@@ -358,3 +379,6 @@ f:SetScript("OnEvent", function(_, event, ...)
 		liveDirty = true
 	end
 end)
+
+-- someone new is known (e.g. from the server search): rebuild the list next time
+function ns:MarkLiveDirty() liveDirty = true end

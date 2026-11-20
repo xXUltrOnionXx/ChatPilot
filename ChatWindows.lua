@@ -613,16 +613,82 @@ local function TabRow(parent)
 		self.drop.dot:SetShown(unreadHidden)
 		DotGlow(self.drop, unreadHidden)
 	end
+	-- tabs are never shown half: the row always starts at a tab, and a tab that
+	-- doesn't fit completely is left out (it is in the ▾ list)
+	local function Snap(self)
+		local spans = self.spans
+		if not spans or #spans == 0 then return end
+		local best = 0
+		for _, sp in ipairs(spans) do if sp[2] <= self.scroll + 0.5 then best = sp[2] end end
+		self.scroll = best
+	end
+	local function Mask(self)
+		local spans = self.spans
+		if not spans then return end
+		local view, any = self:View(), false
+		for _, sp in ipairs(spans) do
+			local full = sp[2] >= self.scroll - 0.5 and sp[3] <= self.scroll + view + 0.5
+			any = any or full
+			sp[1]:SetAlpha(full and 1 or 0)
+			if sp[1].EnableMouse then sp[1]:EnableMouse(full) end
+		end
+		if not any and spans[1] then
+			-- very narrow: show the first tab anyway
+			for _, sp in ipairs(spans) do
+				if sp[2] >= self.scroll - 0.5 then sp[1]:SetAlpha(1); if sp[1].EnableMouse then sp[1]:EnableMouse(true) end break end
+			end
+		end
+	end
+	local apply = clip.Apply
+	function clip:Apply()
+		local maxScroll = math.max(0, self.width - self:View())
+		self.scroll = math.max(0, math.min(self.scroll, maxScroll))
+		Snap(self)
+		apply(self)
+		Mask(self)
+	end
 	function clip:ScrollBy(dx)
+		local spans = self.spans
+		if spans and #spans > 0 then
+			-- one tab further, left or right
+			local target = self.scroll
+			if dx > 0 then
+				for _, sp in ipairs(spans) do if sp[2] > self.scroll + 0.5 then target = sp[2] break end end
+			else
+				for _, sp in ipairs(spans) do if sp[2] < self.scroll - 0.5 then target = sp[2] end end
+			end
+			if dx > 0 and target > math.max(0, self.width - self:View()) + 0.5 then
+				-- the end is reached once the last tab fits
+				local last = spans[#spans]
+				if last[3] <= self.scroll + self:View() + 0.5 then target = self.scroll end
+			end
+			self.scroll = target
+			apply(self)
+			Mask(self)
+			return
+		end
 		self.scroll = self.scroll + dx
 		self:Apply()
 	end
 	-- make sure the tab from x1 to x2 is visible
 	function clip:Reveal(x1, x2)
 		local view = self:View()
-		if x1 < self.scroll then self.scroll = x1
-		elseif x2 > self.scroll + view then self.scroll = x2 - view end
-		self:Apply()
+		if x1 < self.scroll then
+			self.scroll = x1
+		elseif x2 > self.scroll + view then
+			local want, best = x2 - view, x1
+			for _, sp in ipairs(self.spans or {}) do
+				if sp[2] >= want - 0.5 then best = sp[2] break end
+			end
+			self.scroll = best
+		end
+		local spans = self.spans
+		self.spans = nil -- keep exactly this start
+		local maxScroll = math.max(0, self.width - view)
+		if self.scroll > maxScroll and x1 <= maxScroll then self.scroll = maxScroll end
+		apply(self)
+		self.spans = spans
+		Mask(self)
 	end
 	clip:EnableMouseWheel(true)
 	clip:SetScript("OnMouseWheel", function(self, delta) self:ScrollBy(-delta * 60) end)
@@ -651,6 +717,7 @@ function LayoutTabs(g)
 	end
 	local row = g.tabRow
 	local x, ax1, ax2 = 0, nil, nil
+	local spans = {}
 	for _, id in ipairs(g.data.order) do
 		local w = wins[id]
 		local t = w.tab
@@ -665,6 +732,7 @@ function LayoutTabs(g)
 		t:SetPoint("BOTTOMLEFT", row.strip, "BOTTOMLEFT", x, 0)
 		local active = g.data.active == id
 		if active then ax1, ax2 = x, x + width end
+		spans[#spans + 1] = { t, x, x + width }
 		x = x + width + TAB_GAP
 		t.line:SetShown(active)
 		UI.Ink(t.text, active and C.text or C.muted)
@@ -673,6 +741,7 @@ function LayoutTabs(g)
 		t:Show()
 	end
 	row.width = math.max(0, x - TAB_GAP)
+	row.spans = spans
 	if ax1 then row:Reveal(ax1, ax2) else row:Apply() end
 end
 
@@ -926,7 +995,7 @@ local function CreateMessageFrame(w)
 	m:SetMaxLines(500)
 	m:SetFading(false)
 	if m.SetSpacing then m:SetSpacing(2) end
-	if m.SetIndentedWordWrap then m:SetIndentedWordWrap(true) end
+	if m.SetIndentedWordWrap then m:SetIndentedWordWrap(false) end
 	if m.SetHyperlinksEnabled then m:SetHyperlinksEnabled(true) end
 	if ns.DecorateMessages then ns.DecorateMessages(m, function() return ns.S.chatStyle ~= false end) end
 	m:EnableMouseWheel(true)
@@ -1773,6 +1842,24 @@ function ns:CW_ClearAll()
 	if Data then for _, d in ipairs(Data.windows) do if d.lines then wipe(d.lines) end end end
 end
 
+-- all own windows by name (for "empty when logging out")
+function ns:CW_List()
+	local list = {}
+	if Data then
+		for _, d in ipairs(Data.windows) do
+			local w = wins[d.id]
+			list[#list + 1] = { id = d.id, name = w and WindowName(w) or ("#" .. tostring(d.id)) }
+		end
+	end
+	return list
+end
+
+function ns:CW_ClearById(id)
+	local w = wins[id]
+	if w then return self:CW_ClearWindow(w) end
+	if Data then for _, d in ipairs(Data.windows) do if d.id == id and d.lines then wipe(d.lines) end end end
+end
+
 function ns:CW_SavedLines()
 	local n = 0
 	if Data then for _, d in ipairs(Data.windows) do n = n + (d.lines and #d.lines or 0) end end
@@ -1999,6 +2086,7 @@ function UpdateLaunchers()
 		end
 	end
 	local x, ax1, ax2 = 0, nil, nil
+	local spans = {}
 	for _, g in ipairs(groups) do
 		for _, id in ipairs(g.data and g.data.main and g.data.order or {}) do
 			local w = wins[id]
@@ -2015,6 +2103,7 @@ function UpdateLaunchers()
 				b:SetPoint("BOTTOMLEFT", launchRow.strip, "BOTTOMLEFT", x, 0)
 				local active = g.mainOpen and g.data.active == id
 				if active then ax1, ax2 = x, x + width end
+				spans[#spans + 1] = { b, x, x + width }
 				x = x + width + 3
 				b.line:SetShown(active)
 				UI.Ink(b.text, active and C.text or C.muted)
@@ -2028,6 +2117,7 @@ function UpdateLaunchers()
 	end
 	if launchRow then
 		launchRow.width = math.max(0, x - 3)
+		launchRow.spans = spans
 		launchRow:SetShown(#launchers > 0 and not hidden)
 		if ax1 then launchRow:Reveal(ax1, ax2) else launchRow:Apply() end
 	end

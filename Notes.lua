@@ -279,6 +279,13 @@ function ns:NewNote(from)
 	self.db.notesShown = true
 	for _, other in ipairs(list) do if other ~= n then ShowNote(other) end end
 	local f = ShowNote(n)
+	-- the new note always comes to the front, above all other notes
+	local top = 0
+	for _, other in pairs(frames) do
+		if other ~= f and other:IsShown() and other.GetFrameLevel then top = math.max(top, other:GetFrameLevel() or 0) end
+	end
+	if f.SetFrameLevel and top > 0 then f:SetFrameLevel(top + 10) end
+	if f.Raise then f:Raise() end
 	f.eb:SetFocus()
 	return n
 end

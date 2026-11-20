@@ -31,7 +31,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 ## Funktionen
 
 ### Schreiben
-- **@-Erwähnungen:** Tippe `@` und ChatPilot schlägt Namen vor – Leute aus deiner Gruppe, deinem Ziel, wer gerade im Chat geschrieben hat, Freunde, Gildenmitglieder und Mitglieder deiner Communities. Die Namen sind in Klassenfarben.
+- **@-Erwähnungen:** Tippe `@` und ChatPilot schlägt Namen vor – Leute aus deiner Gruppe, deinem Ziel, Spieler in deiner Nähe, wer gerade im Chat geschrieben hat, Freunde, Gildenmitglieder und Mitglieder deiner Communities. Ist jemand völlig unbekannt, sucht die letzte Zeile „Auf dem Server suchen“ ihn über die Wer-Liste. Die Namen sind in Klassenfarben.
   - Wer gerade schreibt, steht weiter oben. `@` allein zeigt die aktivsten Leute.
   - **Enter**, **Tab** oder **Klick** fügt den markierten Namen ein (es wird noch nichts gesendet), **Pfeil hoch/runter** wählt aus.
 - **/w, /inv, /who:** Auch hier gibt es Namensvorschläge (bei anderen Realms mit Realm-Namen).
@@ -76,7 +76,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 - **Zwei Designs:** „Modern“ (kühles Dunkelblau) oder **„Forever“** – fröhlich, frisch und hoffnungsvoll mit Meergrün, Minze und Sonnenaufgang-Gold. Gilt für alle ChatPilot-Fenster und wirkt sofort.
 - **Gesprächs-Look:** aufgeräumte zweizeilige Nachrichten – oben Kanal-Punkt, Name (Klassenfarbe / „Du“), kleine Uhrzeit und Kanal, darunter die Nachricht; mehrere Nachrichten einer Person hintereinander werden gruppiert, Erwähnungen sind orange. In eigenen Fenstern immer, **im normalen Chat, solange „Modernes Chatfenster“ an ist**.
 - **Leuchtende Benachrichtigungen:** Neues zieht als Lichtkugel in den Zähler und leuchtet sanft, solange es ungelesen ist.
-- **Modernes Chatfenster:** Der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design. Abschaltbar – **aus = normales WoW-Design, ChatPilot lässt den normalen Chat dann genau so, wie er ist.** Nutzt du schon ein Addon, das den Chat gestaltet (z. B. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), lässt ChatPilot den Look automatisch in Ruhe.
+- **Modernes Chatfenster:** Der normale Chat bekommt einen flachen Look mit klaren Tabs und Eingabefeld im gewählten Design. Abschaltbar – **aus = normales WoW-Design, sofort und ohne /reload: ChatPilot stellt den normalen Chat komplett original wieder her, auch die Zeilen, die schon dastehen.** Nutzt du schon ein Addon, das den Chat gestaltet (z. B. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), lässt ChatPilot den Look automatisch in Ruhe.
 - **Eigene Chat-Fenster:** Fenster, die nur zeigen, was du auswählst – Flüstern, Gilde, Gruppe, Schlachtzug, Sagen, Schreien, Emotes, Allgemein, Handel, andere Kanäle, Communities oder Systemnachrichten.
   - Filter über das Trichter-Symbol im Fenster.
   - **Frei verschieben** an der Titelleiste, Größe unten rechts ändern.
@@ -94,6 +94,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 ### Gut zu wissen
 - Eigene Einstellungsseite **„Gut zu wissen“**: zeigt, was ChatPilot speichert (Chatverlauf für nach /reload, eigene Fenster, verpasste Flüsternachrichten, Erwähnungen) und wie viel gerade gespeichert ist.
 - **Jeden Chat leeren** – normaler Chat, eigene Fenster, Flüster-Verlauf, Erwähnungen oder alles auf einmal (zweimal klicken zur Sicherheit). Spart Speicher; Einstellungen, Notizen und Fenster bleiben.
+- **Beim Ausloggen automatisch leeren:** wähle einzeln, welche Chats beim Ausloggen geleert werden (nicht bei /reload).
 - Dazu kurz erklärt: normales WoW-Design, Verhalten in Bosskämpfen und die Blizzard-Regeln.
 
 ### Rundgang
@@ -159,7 +160,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 ### Features
 
 #### Typing
-- **@-mentions:** type `@` and ChatPilot suggests names – people in your group, your target, whoever just wrote in chat, friends, guild members and members of your communities. Names are class-coloured.
+- **@-mentions:** type `@` and ChatPilot suggests names – people in your group, your target, players near you, whoever just wrote in chat, friends, guild members and members of your communities. For someone completely unknown, the last row "Search the server" looks them up via the who list. Names are class-coloured.
   - Recent chatters are ranked higher. A bare `@` shows the most active people.
   - **Enter**, **Tab** or **click** inserts the marked name (nothing is sent yet), **arrow up/down** selects.
 - **/w, /inv, /who:** name suggestions here too (with realm name for other realms).
@@ -204,7 +205,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 - **Two designs:** "Modern" (cool dark blue) or **"Forever"** – cheerful, fresh and hopeful with sea green, mint and sunrise gold. Applies to all ChatPilot windows, instantly.
 - **Conversation look:** tidy two-line messages – channel dot, name (class colour / "You"), small time and channel on top, the message below; several messages in a row from one person are grouped, mentions are orange. Always in your own windows, **in the normal chat while "Modern chat window" is on**.
 - **Glowing notifications:** new things pull into the counter as a ball of light and glow softly while unread.
-- **Modern chat window:** the game's own chat gets a flat look with clean tabs and input box in your design. Can be turned off – **off = the game's normal design, ChatPilot then leaves the normal chat exactly as it is.** If another addon already styles your chat (e.g. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), ChatPilot leaves the look alone automatically.
+- **Modern chat window:** the game's own chat gets a flat look with clean tabs and input box in your design. Can be turned off – **off = the game's normal design, right away and without /reload: ChatPilot puts the normal chat back to the original completely, lines already there included.** If another addon already styles your chat (e.g. Prat, ElvUI, Chat Forever, PrimeChat, GudaChat), ChatPilot leaves the look alone automatically.
 - **Your own chat windows:** windows that only show what you pick – whispers, guild, party, raid, say, yell, emotes, General, Trade, other channels, communities or system messages.
   - Filter via the funnel icon in the window.
   - **Move freely** by the title bar, resize at the bottom right corner.
@@ -222,6 +223,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 #### Good to know
 - Its own settings page **"Good to know"**: shows what ChatPilot saves (chat history for after /reload, your own windows, missed whispers, mentions) and how much is saved right now.
 - **Empty any chat** – normal chat, your own windows, whisper log, mentions or everything at once (two clicks, to be safe). Saves memory; settings, notes and windows stay.
+- **Empty when logging out:** choose which chats are emptied automatically when you log out (not on /reload).
 - Plus short notes on the normal WoW design, boss fights and Blizzard's rules.
 
 #### Guided tour

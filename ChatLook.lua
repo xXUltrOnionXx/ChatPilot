@@ -9,9 +9,16 @@ local C = UI.C
 -- Only while "Modern chat window" is on. With the game's normal design, ChatPilot
 -- leaves the chat exactly as Blizzard writes it.
 
-function ns.MainLookActive()
+-- "Modern chat window" on: ChatPilot may change how the normal chat looks
+-- (levels, short names, short channel names, links). Off = the game's design.
+function ns.MainChatModern()
 	local S = ns.S
-	return (S and S.chatStyle ~= false and S.chatSkin and not ns.skinConflict) and true or false
+	return (S and S.chatSkin and not ns.skinConflict) and true or false
+end
+
+-- ... and the two-line message blocks on top of that
+function ns.MainLookActive()
+	return ns.MainChatModern() and ns.S.chatStyle ~= false
 end
 
 -- Chat filters run right before the game writes a line into a chat window. We only
@@ -31,14 +38,17 @@ local EVENTS = {
 local function Note(frame, event, ...)
 	if type(frame) ~= "table" then return false end
 	frame.cpHint = nil
-	if not ns.MainLookActive() then return false end
 	local msg, author = ...
 	local chanString, chanNum, chanBase, guid = select(4, ...), select(8, ...), select(9, ...), select(12, ...)
 	if not ns.Usable(msg, author, chanString, chanNum, chanBase, guid) then return false end
 	frame.cpHint = {
 		event = event, msg = msg, author = author, chan = chanString,
-		chanNum = chanNum, chanBase = chanBase, guid = guid, t = GetTime(),
+		chanNum = chanNum, chanBase = chanBase, guid = guid, t = GetTime(), time = time(),
 	}
+	-- the message as the player wrote it (before ChatPilot's links/highlights)
+	local raw = rawget(frame, "cpRaw")
+	if raw and raw.new == msg then frame.cpHint.raw = raw.orig end
+	frame.cpRaw = nil
 	return false
 end
 
@@ -109,7 +119,7 @@ function ns.StyleMainLine(frame, text, orig, r, g, b, ...)
 		end
 	end
 
-	local now = time()
+	local now = h.time or time()
 	local lastT, lastKey = rawget(frame, "cpLastT"), rawget(frame, "cpLastKey")
 	local key = tostring(h.author) .. "|" .. chatType .. "|" .. tostring(h.chanNum or "")
 	if lastT and now - lastT > 900 then
@@ -225,14 +235,25 @@ local function Redraw(frame)
 	for k = n + 1, #deco.pool do deco.pool[k].bg:Hide(); deco.pool[k].bar:Hide(); deco.pool[k].top = nil end
 	deco.used = n
 	Fade(deco)
-	-- a little room between blocks while the look is on
+	-- a little room between blocks, and wrapped lines flush with the first one
+	-- (no indent), while the look is on; put back exactly as it was otherwise
+	local on = deco.active()
 	if frame.SetSpacing and frame.GetSpacing then
-		if deco.active() then
+		if on then
 			if not deco.spacing then deco.spacing = frame:GetSpacing() or 0 end
 			if (frame:GetSpacing() or 0) < GAP then frame:SetSpacing(GAP) end
 		elseif deco.spacing then
 			frame:SetSpacing(deco.spacing)
 			deco.spacing = nil
+		end
+	end
+	if frame.SetIndentedWordWrap and frame.GetIndentedWordWrap then
+		if on then
+			if deco.indent == nil then deco.indent = frame:GetIndentedWordWrap() and true or false end
+			if frame:GetIndentedWordWrap() then frame:SetIndentedWordWrap(false) end
+		elseif deco.indent ~= nil then
+			frame:SetIndentedWordWrap(deco.indent)
+			deco.indent = nil
 		end
 	end
 end
@@ -249,7 +270,7 @@ function ns.DecorateMessages(frame, active)
 			if acc < 0.15 then return end
 			acc = 0
 			-- re-align now and then: the game may move lines after drawing them
-			if deco.used > 0 or deco.active() then pcall(Redraw, self) end
+			if deco.used > 0 or deco.active() or deco.spacing or deco.indent ~= nil then pcall(Redraw, self) end
 		end)
 	end
 end
@@ -274,7 +295,7 @@ function ns:ClearMainChat(frame)
 	local frames = frame and { frame } or ChatFrames()
 	for _, f in ipairs(frames) do
 		pcall(f.Clear, f)
-		f.cpLastKey, f.cpLastT = nil, nil
+		f.cpLastKey, f.cpLastT, f.cpLog = nil, nil, nil
 	end
 	-- the copy kept for after a reload (for all your characters when everything is emptied)
 	local db = self.db and self.db.history
@@ -311,4 +332,53 @@ function ns:ClearEverything()
 	if self.CW_ClearAll then self:CW_ClearAll() end
 	self:ClearWhisperLog()
 	self:ClearMentionLog()
+end
+
+-------------------------------------------------------------------------------
+-- Empty chosen chats automatically when you log out (not on /reload)
+-------------------------------------------------------------------------------
+if type(ReloadUI) == "function" then hooksecurefunc("ReloadUI", function() ns.reloading = true end) end
+if C_UI and type(C_UI.Reload) == "function" then hooksecurefunc(C_UI, "Reload", function() ns.reloading = true end) end
+
+function ns:AutoClear()
+	local S = self.S
+	if not S then return {} end
+	S.autoClear = S.autoClear or {}
+	local a = S.autoClear
+	a.main = a.main or {}
+	a.win = a.win or {}
+	return a
+end
+
+-- the game's chat tabs that are in use (combat log left out)
+function ns:MainTabs()
+	local list = {}
+	for i = 1, (NUM_CHAT_WINDOWS or 10) do
+		if i ~= 2 and _G["ChatFrame" .. i] then
+			local name, shown, docked
+			if GetChatWindowInfo then
+				local n, _, _, _, _, _, sh, _, dk = GetChatWindowInfo(i)
+				name, shown, docked = n, sh, dk
+			end
+			if (name and name ~= "" and (shown or docked)) or i == 1 then
+				list[#list + 1] = { id = i, name = (name and name ~= "") and name or ("Chat " .. i) }
+			end
+		end
+	end
+	return list
+end
+
+function ns:AutoClearOnLogout()
+	if self.reloading then return end
+	local a = self.S and self.S.autoClear
+	if not a then return end
+	local h = self.db and self.db.history and self.playerKey and self.db.history[self.playerKey]
+	for id, on in pairs(a.main or {}) do
+		if on and h and h.frames then h.frames[id] = nil end
+	end
+	for id, on in pairs(a.win or {}) do
+		if on and self.CW_ClearById then pcall(self.CW_ClearById, self, id) end
+	end
+	if a.whispers and self.ClearWhisperLog then pcall(self.ClearWhisperLog, self) end
+	if a.mentions and self.db and self.db.mentions then wipe(self.db.mentions) end
 end

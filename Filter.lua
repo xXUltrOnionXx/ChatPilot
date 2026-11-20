@@ -209,7 +209,12 @@ local function Filter(frame, event, msg, author, language, ...)
 
 	if S.markForeign and IsForeign(language) then
 		if S.hideForeign then return true end
-		return false, "|cff8a8a8a" .. msg .. "|r |cff666666" .. L.UNREADABLE .. "|r", author, language, ...
+		if not ns.MainChatModern or ns.MainChatModern() then
+			local new = "|cff8a8a8a" .. msg .. "|r |cff666666" .. L.UNREADABLE .. "|r"
+			if type(frame) == "table" then frame.cpRaw = { orig = msg, new = new } end
+			return false, new, author, language, ...
+		end
+		return false
 	end
 
 	if S.spamFilter and SPAM_EVENTS[event] and not Trusted(author) and SpamScore(msg) >= 3 then
@@ -221,6 +226,8 @@ local function Filter(frame, event, msg, author, language, ...)
 		return true
 	end
 
+	-- with the game's normal design ChatPilot doesn't change the chat text
+	if ns.MainChatModern and not ns.MainChatModern() then return false end
 	local doUrl = S.urls
 	local doHl = S.mentions and S.highlight
 	local doAbbr = S.abbrevTips
@@ -240,7 +247,9 @@ local function Filter(frame, event, msg, author, language, ...)
 	if not changed then return false end
 	local out = {}
 	for i, part in ipairs(parts) do out[i] = part[2] end
-	return false, table.concat(out), author, language, ...
+	local new = table.concat(out)
+	if type(frame) == "table" then frame.cpRaw = { orig = msg, new = new } end
+	return false, new, author, language, ...
 end
 ns.Filter = Filter
 

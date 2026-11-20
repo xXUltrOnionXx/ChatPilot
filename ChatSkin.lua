@@ -30,17 +30,46 @@ local EDIT_KEYS = { "Left", "Mid", "Right", "focusLeft", "focusMid", "focusRight
 	"FocusLeft", "FocusMid", "FocusRight" }
 local EDIT_SUFFIX = { "Left", "Mid", "Right", "FocusLeft", "FocusMid", "FocusRight" }
 
+-- Everything is reversible: the game's textures are remembered before they are
+-- emptied, and put back when you switch to the normal WoW design.
+local saved = setmetatable({}, { __mode = "k" })
+local own = {}
+local active = false
+
 local function Clear(tex)
 	if tex and tex.SetTexture and not rawget(tex, "ChatPilot") then
+		if not saved[tex] then
+			local atlas = tex.GetAtlas and tex:GetAtlas()
+			saved[tex] = { file = tex.GetTexture and tex:GetTexture(), atlas = atlas, alpha = tex.GetAlpha and tex:GetAlpha() or 1 }
+		end
 		tex:SetTexture(nil)
 		if tex.SetAtlas then pcall(tex.SetAtlas, tex, nil) end
 		tex:SetAlpha(0)
 	end
 end
 
+local function Restore(tex, o)
+	if o.atlas and tex.SetAtlas then
+		pcall(tex.SetAtlas, tex, o.atlas)
+	elseif o.file then
+		tex:SetTexture(o.file)
+	end
+	tex:SetAlpha(o.alpha or 1)
+end
+
 local function Mine(tex)
 	tex.ChatPilot = true
+	own[#own + 1] = tex
 	return tex
+end
+
+local shadows = setmetatable({}, { __mode = "k" })
+local function KeepShadow(text)
+	if text and text.GetShadowOffset and not shadows[text] then
+		local x, y = text:GetShadowOffset()
+		local r, g, b, a = text:GetShadowColor()
+		shadows[text] = { x, y, r, g, b, a }
+	end
 end
 
 local function SkinTab(tab, frame)
@@ -60,11 +89,13 @@ local function SkinTab(tab, frame)
 	skin.line:SetHeight(2)
 	skin.line:Hide()
 	local text = rawget(tab, "Text") or _G[name .. "Text"]
-	if text and text.SetShadowOffset then UI.NoShadow(text) end
+	if text and text.SetShadowOffset then KeepShadow(text); UI.NoShadow(text) end
+	skin.text = text
 	tab.ChatPilotSkin = skin
 
 	-- selected tab: accent line underneath
 	local function Update()
+		if not active then skin.line:Hide() return end
 		local sel
 		local dock = GENERAL_CHAT_DOCK
 		if frame.isDocked and dock and FCFDock_GetSelectedWindow then
@@ -113,6 +144,7 @@ end
 
 local function SkinFrame(frame)
 	if skinned[frame] then return end
+	active = true
 	local name = frame:GetName()
 	if not name then return end
 	skinned[frame] = true
@@ -198,7 +230,35 @@ function ns:SkinAllChats()
 		ns.Print(L.CHATSKIN_CONFLICT, other)
 		return
 	end
+	if not active and next(saved) then
+		-- switched back on: empty the game's textures again, show ours
+		active = true
+		for tex in pairs(saved) do
+			tex:SetTexture(nil)
+			if tex.SetAtlas then pcall(tex.SetAtlas, tex, nil) end
+			tex:SetAlpha(0)
+		end
+		for _, t in ipairs(own) do if rawget(t, "cpWasShown") ~= false then t:Show() end end
+		for text in pairs(shadows) do UI.NoShadow(text) end
+	end
+	active = true
 	for _, frame in ipairs(pending) do local ok, err = pcall(SkinFrame, frame); if not ok and ns.DEBUG then print(err) end end
+	UpdateTabs()
+end
+
+-- back to the game's normal design, right away (no /reload needed)
+function ns:UnskinAllChats()
+	if not active then return end
+	active = false
+	for _, t in ipairs(own) do
+		t.cpWasShown = t:IsShown() and true or false
+		t:Hide()
+	end
+	for tex, o in pairs(saved) do pcall(Restore, tex, o) end
+	for text, sh in pairs(shadows) do
+		pcall(text.SetShadowOffset, text, sh[1], sh[2])
+		if sh[3] then pcall(text.SetShadowColor, text, sh[3], sh[4], sh[5], sh[6]) end
+	end
 	UpdateTabs()
 end
 

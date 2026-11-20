@@ -310,3 +310,17 @@ L.INFO_SAFE_TEXT = "首领战和 PvP 中游戏会保护聊天消息，ChatPilot 
 L.INFO_CMDS = "实用命令"
 L.INFO_CMDS_TEXT = "/chatpilot clear  -  清空当前聊天标签\n/chatpilot clear all  -  清空所有聊天标签\n/chatpilot info  -  打开此页面\n自定义窗口中：筛选按钮（漏斗）>“清空此窗口”"
 L.HELP = "命令：/chatpilot [options | mentions | whispers | notes | window | tutorial | design | info | clear [all] | copy | feedback | add <词> | del <词> | list]"
+
+-- 1.7.5
+L.INFO_DESIGN_TEXT = "更喜欢游戏原本的聊天？在“外观与窗口”中关闭“现代聊天框”。普通聊天会立即恢复原样，已显示的内容也一样：没有区块、等级、简短名字、简短频道名、链接或高亮。后台功能（垃圾过滤、提及提醒、错过的密语）照常工作。ChatPilot 窗口保持原样。"
+L.SRC_NEARBY = "附近"
+L.SRC_WHO = "查找列表"
+L.WHO_SEARCH = "在服务器上搜索：“%s”"
+L.WHO_BUSY = "搜索中 …"
+L.WHO_NONE = "没有名为“%s”的在线玩家"
+L.INFO_AUTO = "登出时清空"
+L.INFO_AUTO_TEXT = "选择在登出或退出游戏时自动清空哪些聊天。/reload 不会清空。默认不选任何项。"
+L.AUTO_MAIN = "聊天标签“%s”"
+L.AUTO_WIN = "自定义窗口“%s”"
+L.AUTO_WHISPERS = "密语记录"
+L.AUTO_MENTIONS = "提及"

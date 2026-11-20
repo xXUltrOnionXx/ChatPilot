@@ -310,3 +310,17 @@ L.INFO_SAFE_TEXT = "보스전과 PvP 중에는 게임이 메시지를 보호합�
 L.INFO_CMDS = "유용한 명령어"
 L.INFO_CMDS_TEXT = "/chatpilot clear  -  현재 채팅 탭 비우기\n/chatpilot clear all  -  모든 채팅 탭 비우기\n/chatpilot info  -  이 페이지 열기\n내 창에서: 필터 버튼(깔때기) > '이 창 비우기'"
 L.HELP = "명령어: /chatpilot [options | mentions | whispers | notes | window | tutorial | design | info | clear [all] | copy | feedback | add <단어> | del <단어> | list]"
+
+-- 1.7.5
+L.INFO_DESIGN_TEXT = "게임 원래 채팅이 좋다면 '디자인 및 창'에서 '모던 채팅 창'을 끄세요. 기본 채팅이 이미 있는 줄까지 포함해 즉시 원래대로 돌아갑니다: 블록, 레벨, 짧은 이름, 짧은 채널명, 링크, 강조 없음. 백그라운드 기능(스팸 필터, 언급 알림, 놓친 귓속말)은 계속 작동합니다. ChatPilot 창은 그대로입니다."
+L.SRC_NEARBY = "주변"
+L.SRC_WHO = "누구 목록"
+L.WHO_SEARCH = "서버에서 찾기: \"%s\""
+L.WHO_BUSY = "검색 중 …"
+L.WHO_NONE = "\"%s\" 이름으로 접속 중인 사람 없음"
+L.INFO_AUTO = "로그아웃 시 비우기"
+L.INFO_AUTO_TEXT = "로그아웃하거나 게임을 종료할 때 자동으로 비울 채팅을 고르세요. /reload는 아무것도 비우지 않습니다. 처음에는 아무것도 선택되지 않습니다."
+L.AUTO_MAIN = "채팅 탭 '%s'"
+L.AUTO_WIN = "내 창 '%s'"
+L.AUTO_WHISPERS = "귓속말 기록"
+L.AUTO_MENTIONS = "언급"
