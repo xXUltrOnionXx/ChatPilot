@@ -1,8 +1,7 @@
 # Changelog
 
 ## 1.7.9
-- Neu: **Danke-Fenster** – nach jedem Update poppt einmal ein festliches Fenster mit Konfetti auf: ein riesiges Dankeschön von xXUltrOnionXx an alle, die ChatPilot nutzen, und kurz das Wichtigste der neuen Version. In der Sprache deines Spiels (10 Sprachen). Nicht nach einer Neuinstallation (da kommt der Rundgang), nicht im Kampf
-- Neu: Einstellungsseite **„Patchnotes“** mit allen bisherigen Updates in Kurzform, ebenfalls in allen 10 Sprachen. Dort lässt sich das Danke-Fenster jederzeit wieder ansehen (auch `/chatpilot danke`)
+- Neu: Einstellungsseite **„Patchnotes“** mit allen bisherigen Updates in Kurzform, in allen 10 Sprachen (passend zur Sprache des Spiels)
 
 ## 1.7.8
 - **Tabs umbenennen:** Rechtsklick auf einen Tab (im eigenen Fenster oder im Hauptchat) – Namen eintippen, Enter. Leer lassen = wieder der automatische Name

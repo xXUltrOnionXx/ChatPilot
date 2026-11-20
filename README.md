@@ -97,7 +97,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 ### Gut zu wissen
 - Eigene Einstellungsseite **„Gut zu wissen“**: zeigt, was ChatPilot speichert (Chatverlauf für nach /reload, eigene Fenster, verpasste Flüsternachrichten, Erwähnungen) und wie viel gerade gespeichert ist.
 - **Jeden Chat leeren** – normaler Chat, eigene Fenster, Flüster-Verlauf, Erwähnungen oder alles auf einmal (zweimal klicken zur Sicherheit). Spart Speicher; Einstellungen, Notizen und Fenster bleiben.
-- **Patchnotes & Danke-Fenster:** Nach jedem Update ein kurzes Danke mit Konfetti und den Neuerungen; alle Updates unter Einstellungen → Patchnotes.
+- **Patchnotes:** alle Updates in Kurzform unter Einstellungen → Patchnotes.
 - **Beim Ausloggen automatisch leeren:** wähle einzeln, welche Chats beim Ausloggen geleert werden (nicht bei /reload).
 - Dazu kurz erklärt: normales WoW-Design, Verhalten in Bosskämpfen und die Blizzard-Regeln.
 
@@ -230,7 +230,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 #### Good to know
 - Its own settings page **"Good to know"**: shows what ChatPilot saves (chat history for after /reload, your own windows, missed whispers, mentions) and how much is saved right now.
 - **Empty any chat** – normal chat, your own windows, whisper log, mentions or everything at once (two clicks, to be safe). Saves memory; settings, notes and windows stay.
-- **Patch notes & thank-you window:** after every update a short thank-you with confetti and what's new; all updates under Settings → Patch notes.
+- **Patch notes:** every update in short under Settings → Patch notes.
 - **Empty when logging out:** choose which chats are emptied automatically when you log out (not on /reload).
 - Plus short notes on the normal WoW design, boss fights and Blizzard's rules.
 

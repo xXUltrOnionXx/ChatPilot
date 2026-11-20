@@ -8,6 +8,18 @@ local C = UI.C
 -- Can be opened again any time from the "Patch notes" page or /chatpilot thanks.
 
 local WIDTH, HEIGHT = 500, 440
+
+-- "1.7.10" is newer than "1.7.9"
+function ns.VersionNewer(a, b)
+	local pa, pb = {}, {}
+	for n in tostring(a):gmatch("%d+") do pa[#pa + 1] = tonumber(n) end
+	for n in tostring(b):gmatch("%d+") do pb[#pb + 1] = tonumber(n) end
+	for i = 1, math.max(#pa, #pb) do
+		local x, y = pa[i] or 0, pb[i] or 0
+		if x ~= y then return x > y end
+	end
+	return false
+end
 local frame, confetti
 
 -------------------------------------------------------------------------------
@@ -239,10 +251,19 @@ end
 function ns:ShowThanks()
 	frame = frame or Build()
 	Paint(frame)
-	local entry = ns.PATCHNOTES and ns.PATCHNOTES[1]
-	frame.badge.text:SetText(L.THX_NEW:format(entry and entry.v or ns.version or ""))
+	frame.badge.text:SetText(L.THX_NEW:format(ns.version or ""))
 	frame.badge:SetWidth(math.max(150, (frame.badge.text:GetStringWidth() or 120) + 24))
-	local lines = entry and ns:PatchLines(entry) or {}
+	-- everything that is new since the version you saw last (newest first, up to 5 lines)
+	local lines = {}
+	local since = self.db and self.db.seenVersion
+	for _, e in ipairs(ns.PATCHNOTES or {}) do
+		if since and not ns.VersionNewer(e.v, since) then break end
+		for _, l in ipairs(ns:PatchLines(e)) do
+			if #lines < 5 then lines[#lines + 1] = l end
+		end
+		if not since or #lines >= 5 then break end
+	end
+	if #lines == 0 and ns.PATCHNOTES and ns.PATCHNOTES[1] then lines = ns:PatchLines(ns.PATCHNOTES[1]) end -- opened again by hand
 	for i, l in ipairs(frame.lines) do
 		local s = lines[i]
 		l.text:SetText(s or "")
