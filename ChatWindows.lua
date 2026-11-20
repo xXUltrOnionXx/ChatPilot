@@ -439,6 +439,16 @@ local LayoutTabs, Select, StartDrag -- forward
 -- so the whole name can be read. Short names stand still.
 local MQ_SPEED, MQ_PAUSE = 22, 1.4
 
+-- one fixed width for every tab: room for 10 characters plus padding
+local SAMPLE10 = "Abcdefghij"
+local function FixedTabWidth(fs, pad)
+	local old = fs:GetText()
+	fs:SetText(SAMPLE10)
+	local w = (fs.GetUnboundedStringWidth and fs:GetUnboundedStringWidth()) or fs:GetStringWidth() or 60
+	fs:SetText(old)
+	return math.floor((w or 60) + pad + 0.5)
+end
+
 -- full width of a text, even when the text box itself is narrower
 local function FullWidth(fs)
 	if fs.GetUnboundedStringWidth then return fs:GetUnboundedStringWidth() or 0 end
@@ -588,30 +598,6 @@ end
 -------------------------------------------------------------------------------
 local TAB_GAP, TAB_MAX, TAB_MIN = 2, 200, 64
 
--- Widths so the tabs fill the row exactly: wider when there is room, narrower
--- (down to TAB_MIN, the names then scroll) when there is not.
-local function FitWidths(widths, gap, avail)
-	local n = #widths
-	if n == 0 or avail <= 0 then return widths end
-	local total = gap * (n - 1)
-	for i = 1, n do total = total + widths[i] end
-	if total < avail then
-		local extra = math.floor((avail - total) / n)
-		for i = 1, n do widths[i] = widths[i] + extra end
-	elseif total > avail and n * TAB_MIN + gap * (n - 1) <= avail then
-		-- shrink the widest tabs first until everything fits
-		local room = avail - gap * (n - 1)
-		local cap = TAB_MAX
-		for _ = 1, 40 do
-			local sum = 0
-			for i = 1, n do sum = sum + math.max(TAB_MIN, math.min(widths[i], cap)) end
-			if sum <= room then break end
-			cap = cap - math.max(1, (sum - room) / n)
-		end
-		for i = 1, n do widths[i] = math.floor(math.max(TAB_MIN, math.min(widths[i], cap))) end
-	end
-	return widths
-end
 
 -- clip: frame that cuts off what is outside; strip: holds the tabs
 -- Dropdown with all tabs of a row: full names, active marked, unread dot.
@@ -894,11 +880,10 @@ function LayoutTabs(g)
 	for i, id in ipairs(g.data.order) do
 		local t = wins[id].tab
 		t.text:SetText(WindowName(wins[id]))
-		widths[i] = math.min(FullWidth(t.text) + 22, TAB_MAX)
+		-- every tab the same size, whatever the name; longer names run through
+		widths[i] = FixedTabWidth(t.text, 10 + 8 + 2)
 		total = total + widths[i] + (i > 1 and TAB_GAP or 0)
 	end
-	-- tabs fill the whole row; long names scroll inside their tab
-	FitWidths(widths, TAB_GAP, row:GetWidth() or 0)
 	for i, id in ipairs(g.data.order) do
 		local w = wins[id]
 		local t = w.tab
@@ -2288,12 +2273,12 @@ function UpdateLaunchers()
 				w.launch = w.launch or CreateLauncher(w)
 				w.launch.text:SetText(WindowName(w))
 				list[#list + 1] = { g = g, id = id, w = w }
-				widths[#list] = math.min(FullWidth(w.launch.text) + 20, TAB_MAX)
+				widths[#list] = FixedTabWidth(w.launch.text, 9 + 7 + 2) -- same size for every tab
 				total = total + widths[#list] + (#list > 1 and 3 or 0)
 			end
 		end
 	end
-	if launchRow and #list > 0 then FitWidths(widths, 3, launchRow:GetWidth() or 0) end
+
 	for i, e in ipairs(list) do
 		local g, id, w = e.g, e.id, e.w
 		do

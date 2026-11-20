@@ -2,7 +2,8 @@
 
 ## 1.7.11
 - Rundgang aktualisiert: neue Schritte zu Tippgeräuschen & Pfeiltasten, zu den Tabs (umbenennen, laufende Namen, ▾) und zu „Gut zu wissen“ (Chats leeren, beim Ausloggen leeren, normales Design, Patchnotes). Erscheint nach dem Update einmal neu
-- Tabs passen sich genau in die Leiste ein: Ist zu wenig Platz, werden sie schmaler (statt am Rand abgeschnitten zu werden) – Namen mit mehr als 10 Zeichen (Leerzeichen mitgezählt) zeigen 10 Zeichen auf einmal und laufen langsam durch. Erst wenn es sehr eng wird, wandern Tabs ins ▾-Menü
+- Alle Tabs haben eine **feste, gleiche Größe** für 10 Zeichen, egal wie lang der Name ist. Namen mit mehr als 10 Zeichen (Leerzeichen mitgezählt) laufen im Tab vom ersten bis zum letzten Zeichen durch. Passen nicht alle Tabs in die Leiste, stehen die übrigen im ▾-Menü
+- Der ausgewählte Tab ist immer sichtbar und richtig markiert, auch direkt nach dem Umschalten
 - Das ▾ im Hauptchat steht außerhalb des Chats, in einer Linie mit den Knöpfen daneben (Zahnrad, @ …)
 
 ## 1.7.10
