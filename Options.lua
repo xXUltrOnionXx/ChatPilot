@@ -445,6 +445,39 @@ local function BuildTyping(content)
 	local auto = ToggleRow(flow, "autocomplete")
 	ToggleRow(flow, "keepAt", auto)
 	ToggleRow(flow, "whisperNames")
+	local ts = ToggleRow(flow, "typeSounds", nil, function(v) if v and ns.PlayTypeSound then ns.PlayTypeSound("key1") end end)
+	do -- which sound (two rows of buttons)
+		local r = CreateFrame("Frame", nil, flow.child)
+		r:SetHeight(42 + math.ceil(#(ns.TYPE_SOUNDS or {}) / 5) * 28)
+		UI.Fill(r, C.row)
+		local label = UI.Text(r, "GameFontHighlight")
+		label:SetPoint("TOPLEFT", 14, -10)
+		label:SetText(L.SOUND_KIND)
+		local seg = {}
+		local function Mark()
+			local cur = ns.KIND and ns.KIND[ns.S.typeSound] and ns.S.typeSound or "own"
+			for v, b in pairs(seg) do UI.Ink(b.label, cur == v and C.accent or C.muted) end
+		end
+		local names = {
+			own = L.SOUND_OWN .. " 1", own2 = L.SOUND_OWN .. " 2", metal = L.SOUND_METAL, real = L.SOUND_REAL, mech = L.SOUND_MECH, soft = L.SOUND_SOFT,
+			creamy = "Creamy", thocky = "Thocky", clacky = "Clacky", poppy = "Poppy", clicky = "Clicky", lego = "Lego", blue = "Blue Switch",
+		}
+		for i, v in ipairs(ns.TYPE_SOUNDS or {}) do
+			local b = UI.Button(r, names[v] or v, 80, 24)
+			local col, row = (i - 1) % 5, math.floor((i - 1) / 5)
+			b:SetPoint("TOPLEFT", r, "TOPLEFT", 14 + col * 84, -34 - row * 28)
+			b:SetScript("OnClick", function()
+				ns.S.typeSound = v
+				Mark()
+				if ns.PlayTypeSound then ns.PlayTypeSound("key1", true) end -- a sample right away
+			end)
+			seg[v] = b
+		end
+		r:SetScript("OnShow", Mark)
+		Mark()
+		FlowAdd(flow, r, ts)
+		MakeExpandable(ts, ts.toggle, -14)
+	end
 	ToggleRow(flow, "raidIcons")
 	ToggleRow(flow, "charCounter")
 	local sn = ToggleRow(flow, "snippets")

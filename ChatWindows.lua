@@ -629,14 +629,26 @@ local function TabRow(parent)
 		for _, sp in ipairs(spans) do
 			local full = sp[2] >= self.scroll - 0.5 and sp[3] <= self.scroll + view + 0.5
 			any = any or full
+			sp.vis = full
 			sp[1]:SetAlpha(full and 1 or 0)
 			if sp[1].EnableMouse then sp[1]:EnableMouse(full) end
 		end
 		if not any and spans[1] then
 			-- very narrow: show the first tab anyway
 			for _, sp in ipairs(spans) do
-				if sp[2] >= self.scroll - 0.5 then sp[1]:SetAlpha(1); if sp[1].EnableMouse then sp[1]:EnableMouse(true) end break end
+				if sp[2] >= self.scroll - 0.5 then sp.vis = true; sp[1]:SetAlpha(1); if sp[1].EnableMouse then sp[1]:EnableMouse(true) end break end
 			end
+		end
+		-- the ▾ hangs right behind the last tab you can see
+		local lastEnd
+		for _, sp in ipairs(spans) do
+			if sp.vis then lastEnd = sp[3] end
+		end
+		self.drop:ClearAllPoints()
+		if lastEnd then
+			self.drop:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", math.max(0, lastEnd - self.scroll + 3), 1)
+		else
+			self.drop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1)
 		end
 	end
 	local apply = clip.Apply

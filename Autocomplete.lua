@@ -418,6 +418,7 @@ end
 function ns.HookEditBox(box)
 	if not box or hooked[box] or not box.HookScript then return end
 	hooked[box] = true
+	if ns.HookTyping then ns.HookTyping(box) end -- typing sounds, arrow keys move the cursor
 
 	-- own little frame above the input box, so no texture can ever cover the counter
 	local holder = CreateFrame("Frame", nil, box)

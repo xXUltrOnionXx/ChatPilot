@@ -31,6 +31,8 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 ## Funktionen
 
 ### Schreiben
+- **Tippgeräusche:** leise Tastaturgeräusche beim Schreiben – dreizehn Klänge zur Wahl, z. B. zwei echte Tastatur-Aufnahmen, Metallisch, Blue Switch, Creamy, Thocky, Clacky, Clicky (abschaltbar).
+- **Pfeiltasten** bewegen den Cursor zwischen den Buchstaben – ohne Alt.
 - **@-Erwähnungen:** Tippe `@` und ChatPilot schlägt Namen vor – Leute aus deiner Gruppe, deinem Ziel, Spieler in deiner Nähe, wer gerade im Chat geschrieben hat, Freunde, Gildenmitglieder und Mitglieder deiner Communities. Ist jemand völlig unbekannt, sucht die letzte Zeile „Auf dem Server suchen“ ihn über die Wer-Liste. Die Namen sind in Klassenfarben.
   - Wer gerade schreibt, steht weiter oben. `@` allein zeigt die aktivsten Leute.
   - **Enter**, **Tab** oder **Klick** fügt den markierten Namen ein (es wird noch nichts gesendet), **Pfeil hoch/runter** wählt aus.
@@ -160,6 +162,8 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 ### Features
 
 #### Typing
+- **Typing sounds:** quiet keyboard sounds while you type – thirteen sounds to choose from, e.g. two real keyboard recordings, Metallic, Blue Switch, Creamy, Thocky, Clacky, Clicky (can be turned off).
+- **Arrow keys** move the cursor between the letters – no Alt needed.
 - **@-mentions:** type `@` and ChatPilot suggests names – people in your group, your target, players near you, whoever just wrote in chat, friends, guild members and members of your communities. For someone completely unknown, the last row "Search the server" looks them up via the who list. Names are class-coloured.
   - Recent chatters are ranked higher. A bare `@` shows the most active people.
   - **Enter**, **Tab** or **click** inserts the marked name (nothing is sent yet), **arrow up/down** selects.
