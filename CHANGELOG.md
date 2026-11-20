@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.7.10
+- Fix: Im Fenster „Verpasste Flüsternachrichten“ verdeckten die Knöpfe den Namen – der Name steht jetzt in einer eigenen Zeile, die Knöpfe darunter
 - Im Hauptchat sitzt das ▾ jetzt **außerhalb**, direkt rechts neben dem Chat – die Tabs haben die volle Breite des Chats
 - Neu: Einstellungsseite **„Patchnotes“** mit allen bisherigen Updates in Kurzform, in allen 10 Sprachen (passend zur Sprache des Spiels)
 
