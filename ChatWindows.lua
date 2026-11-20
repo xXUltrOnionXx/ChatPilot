@@ -771,6 +771,15 @@ local function TabRow(parent)
 			sp[1]:SetAlpha(full and 1 or 0)
 			if sp[1].EnableMouse then sp[1]:EnableMouse(full) end
 		end
+		-- the selected tab is always shown, even if the row is (still) too narrow
+		for _, sp in ipairs(spans) do
+			if sp.active and not sp.vis then
+				any = true
+				sp.vis = true
+				sp[1]:SetAlpha(1)
+				if sp[1].EnableMouse then sp[1]:EnableMouse(true) end
+			end
+		end
 		if not any and spans[1] then
 			-- very narrow: show the first tab anyway
 			for _, sp in ipairs(spans) do
@@ -845,7 +854,16 @@ local function TabRow(parent)
 	end
 	clip:EnableMouseWheel(true)
 	clip:SetScript("OnMouseWheel", function(self, delta) self:ScrollBy(-delta * 60) end)
-	clip:SetScript("OnSizeChanged", function(self) self:Apply() end)
+	clip:SetScript("OnSizeChanged", function(self)
+		-- the real width is known now: lay the tabs out again (once)
+		if self.Relayout and not self.relaying then
+			self.relaying = true
+			pcall(self.Relayout)
+			self.relaying = nil
+		else
+			self:Apply()
+		end
+	end)
 	clip:HookScript("OnHide", function(self) self.drop:Hide() end)
 	clip:HookScript("OnShow", function(self) self:Apply() end)
 	return clip
@@ -866,6 +884,7 @@ function LayoutTabs(g)
 			return list
 		end
 		g.tabRow.onPick = function(it) Select(g, it.w) end
+		g.tabRow.Relayout = function() LayoutTabs(g) end
 		g.tabRow.onDrag = function(it) if it.w.group then StartDrag(it.w.group, it.w) end end
 	end
 	local row = g.tabRow
@@ -892,7 +911,7 @@ function LayoutTabs(g)
 		t:SetPoint("BOTTOMLEFT", row.strip, "BOTTOMLEFT", x, 0)
 		local active = g.data.active == id
 		if active then ax1, ax2 = x, x + width end
-		spans[#spans + 1] = { t, x, x + width }
+		spans[#spans + 1] = { t, x, x + width, active = active }
 		x = x + width + TAB_GAP
 		t.line:SetShown(active)
 		UI.Ink(t.text, active and C.text or C.muted)
@@ -916,6 +935,11 @@ function Select(g, w)
 	ns:CW_UpdateChip(g)
 	ns:CW_UpdateBell(g)
 	if g.data.main and UpdateLaunchers then UpdateLaunchers() end
+	-- once more on the next frame, when all sizes are settled
+	C_Timer.After(0, function()
+		if g.data then LayoutTabs(g) end
+		if g.data and g.data.main and UpdateLaunchers then UpdateLaunchers() end
+	end)
 	if menu and menu:IsShown() and menu.group == g then ns:CW_OpenMenu(g) end
 end
 
@@ -2217,6 +2241,7 @@ function UpdateLaunchers()
 		launchRow = TabRow(UIParent)
 		launchRow:SetFrameStrata((main.GetFrameStrata and main:GetFrameStrata()) or "LOW")
 		launchRow:SetHeight(22)
+		launchRow.Relayout = function() UpdateLaunchers() end
 	end
 	if launchRow then
 		launchRow:ClearAllPoints()
@@ -2281,9 +2306,9 @@ function UpdateLaunchers()
 				if b.UpdateMarquee then b:UpdateMarquee() end
 				b:ClearAllPoints()
 				b:SetPoint("BOTTOMLEFT", launchRow.strip, "BOTTOMLEFT", x, 0)
-				local active = g.mainOpen and g.data.active == id
+				local active = g.mainOpen and (not g.IsShown or g:IsShown()) and g.data.active == id
 				if active then ax1, ax2 = x, x + width end
-				spans[#spans + 1] = { b, x, x + width }
+				spans[#spans + 1] = { b, x, x + width, active = active }
 				x = x + width + 3
 				b.line:SetShown(active)
 				UI.Ink(b.text, active and C.text or C.muted)
@@ -2315,7 +2340,10 @@ ns.CW_UpdateLaunchers = function() UpdateLaunchers() end
 
 -- the game's tabs keep working: picking one of them hides our window again
 local function OnGameTabSelected()
-	if CloseMainOverlays() then UpdateLaunchers() end
+	CloseMainOverlays()
+	-- always refresh: the marked tab must follow the tab you picked
+	UpdateLaunchers()
+	C_Timer.After(0, UpdateLaunchers)
 end
 if type(FCF_SelectDockFrame) == "function" then hooksecurefunc("FCF_SelectDockFrame", OnGameTabSelected) end
 if type(FCF_Tab_OnClick) == "function" then
