@@ -5,6 +5,7 @@ Run from the repository root with Lua 5.1:
 ```sh
 lua tests/docking.lua
 lua tests/chat_look.lua
+lua tests/history.lua
 ```
 
 The tests load the production Lua modules. WoW frames are simulated; docking tests replace unrelated rendering callbacks using debug upvalues. These checks do not certify WoW rendering, protected-frame behavior or compatibility with other addons.

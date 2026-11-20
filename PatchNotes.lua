@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.14",
+		de = { "Doppelt so viel Verlauf in eigenen und Blizzard-Chats, einschließlich Scrollback und gespeicherter Nachrichten", "Flüsterverlauf und Erwähnungen ebenfalls verdoppelt" },
+		en = { "Doubled history capacity in custom and Blizzard chats, including scrollback and saved messages", "Whisper history and mentions also doubled" },
+		fr = { "Capacité de l'historique doublée dans les chats personnalisés et Blizzard, y compris les messages sauvegardés", "Historique des chuchotements et mentions également doublé" },
+		es = { "Capacidad del historial duplicada en chats propios y de Blizzard, incluidos los mensajes guardados", "Historial de susurros y menciones también duplicado" },
+		it = { "Capacità della cronologia raddoppiata nelle chat personalizzate e Blizzard, inclusi i messaggi salvati", "Raddoppiate anche la cronologia dei sussurri e delle menzioni" },
+		pt = { "Capacidade do histórico duplicada nos chats próprios e da Blizzard, incluindo mensagens salvas", "Histórico de sussurros e menções também duplicado" },
+		ru = { "Вдвое больше истории в собственных чатах и чатах Blizzard, включая сохранённые сообщения", "История шёпота и упоминаний также удвоена" },
+		ko = { "사용자 채팅과 Blizzard 채팅의 기록 용량 두 배 증가, 저장된 메시지 포함", "귓속말 및 언급 기록도 두 배 증가" },
+		zh = { "自定义及暴雪聊天的历史容量翻倍，包括滚动记录和保存的消息", "密语和提及记录容量也翻倍" },
+		tw = { "自訂及暴雪聊天的歷史容量加倍，包括捲動記錄及儲存的訊息", "密語與提及記錄容量也加倍" },
+	},
 	{ v = "1.7.13",
 		de = { "Fix: Modernes Design und Chat-Aufbereitung funktionieren wieder an bereits erkannten Blizzard-Chatfenstern, auch beim Einschalten ohne Reload", "Andocken am sichtbaren Hauptchat-Tab und an überlappenden eigenen Fenstern korrigiert", "Benötigte Tippgeräusche werden mitgeliefert" },
 		en = { "Fix: modern chat styling now initializes on already-discovered Blizzard chat windows, including when enabled without a reload", "Fixed docking to the visible main chat tab and overlapping custom windows", "Required typing sounds are included in the package" },

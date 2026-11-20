@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.14
+- Verlauf verdoppelt: eigene Chatfenster zeigen bis zu 1.000 statt 500 Zeilen und speichern 200 statt 100 Zeilen über Reload/Logout.
+- Blizzard-Chats: jeweilige Scrollback-Kapazität pro Fenster verdoppelt (auch Kampflog und temporäre Flüsterfenster); gespeicherter Verlauf 240 statt 120 Zeilen pro normalem Chatfenster. Der Kampflog wird weiterhin nicht über Logout gespeichert.
+- Nachrichtenpuffer für den Designwechsel: 400 statt 200 Zeilen.
+- Flüsterverlauf: 60 statt 30 Gespräche mit jeweils 50 statt 25 Nachrichten. Erwähnungsverlauf: 200 statt 100 Einträge.
+- Bestehender Verlauf bleibt erhalten. Die bisherige Aufbewahrungsdauer und gewählte automatische Leerungen bleiben unverändert.
+
 ## 1.7.13
 - Fix aus 1.7.12: Modernes Design und Nachrichten-Aufbereitung werden jetzt auch an bereits beim Login erkannten Blizzard-Chatfenstern installiert. Einschalten nach dem Login funktioniert ohne Reload; neue Chatfenster werden weiterhin erfasst. Bei ausgeschaltetem modernem Design oder erkanntem Design-Konflikt werden diese Hooks nicht erstmals installiert.
 - Andocken und Einrasten am Hauptchat verwenden den sichtbaren, ausgewählten Blizzard-Tab, auch wenn „Allgemein“ ausgeblendet ist (z. B. beim Kampflog).

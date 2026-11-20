@@ -10,7 +10,7 @@ local C = UI.C
 
 local HEADER_H = 24
 local MIN_W, MIN_H, MAX_W, MAX_H = 220, 110, 900, 700
-local MAX_SAVED_LINES = 100
+local MAX_SAVED_LINES = 200
 
 -------------------------------------------------------------------------------
 -- Categories
@@ -1165,7 +1165,7 @@ local function CreateMessageFrame(w)
 	local m = CreateFrame("ScrollingMessageFrame", nil, UIParent)
 	m:SetFontObject(UI.MessageFont())
 	m:SetJustifyH("LEFT")
-	m:SetMaxLines(500)
+	m:SetMaxLines(1000)
 	m:SetFading(false)
 	if m.SetSpacing then m:SetSpacing(2) end
 	if m.SetIndentedWordWrap then m:SetIndentedWordWrap(false) end

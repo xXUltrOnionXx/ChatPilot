@@ -142,6 +142,13 @@ test("chat beautification formats real messages and toggles immediately", functi
     ns:RefreshMainChat()
     assert(#ChatFrame1.lines == 2 and ChatFrame1.lines[2] == "|r|rhello")
 end)
+test("design changes retain the latest 400 history lines", function()
+    local ns = setup(true)
+    for i = 1, 450 do ChatFrame1:AddMessage("message " .. i) end
+    ns:RefreshMainChat()
+    assert(#ChatFrame1.lines == 400)
+    assert(ChatFrame1.lines[1] == "message 51" and ChatFrame1.lines[400] == "message 450")
+end)
 local failures = 0
 for _, entry in ipairs(tests) do
     local ok, err = pcall(entry[2])
