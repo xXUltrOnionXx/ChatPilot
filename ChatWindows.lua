@@ -576,6 +576,7 @@ local function CreateTab(w)
 	t.dot:Hide()
 	t:SetScript("OnClick", function(self, button)
 		if button == "RightButton" then return StartRename(w, self) end
+		ns.cwLast = w.group
 		Select(w.group, w)
 	end)
 	t:SetScript("OnDragStart", function() StartDrag(w.group, w) end)
@@ -873,7 +874,7 @@ function LayoutTabs(g)
 			end
 			return list
 		end
-		g.tabRow.onPick = function(it) Select(g, it.w) end
+		g.tabRow.onPick = function(it) ns.cwLast = g; Select(g, it.w) end
 		g.tabRow.Relayout = function() LayoutTabs(g) end
 		g.tabRow.onDrag = function(it) if it.w.group then StartDrag(it.w.group, it.w) end end
 	end
@@ -981,6 +982,8 @@ local function CreateGroupFrame(g)
 	g.bg = UI.Fill(f, C.chatBg)
 	UI.Border(f, C.border)
 	g.frame = f
+	-- clicking anywhere in the window = the next Enter belongs to it
+	f:HookScript("OnMouseDown", function() ns.cwLast = g end)
 
 	local header = CreateFrame("Button", nil, f)
 	header:SetPoint("TOPLEFT", 1, -1)
@@ -1171,6 +1174,7 @@ local function CreateMessageFrame(w)
 	if m.SetIndentedWordWrap then m:SetIndentedWordWrap(false) end
 	if m.SetHyperlinksEnabled then m:SetHyperlinksEnabled(true) end
 	if ns.DecorateMessages then ns.DecorateMessages(m, function() return ns.S.chatStyle ~= false end) end
+	m:HookScript("OnMouseDown", function() if w.group then ns.cwLast = w.group end end)
 	m:EnableMouseWheel(true)
 	m:SetScript("OnMouseWheel", function(self, delta)
 		if delta > 0 then
@@ -1918,6 +1922,10 @@ local function EnterToWindow(text)
 	g.input:SetFocus()
 end
 local function GameSent() ns.cwLast = nil end
+-- clicking a game chat window hands Enter back to the game
+ns.OnChatFrame(function(frame)
+	pcall(frame.HookScript, frame, "OnMouseDown", GameSent)
+end)
 
 local function HookFn(tbl, name, fn)
 	if tbl and type(tbl[name]) == "function" then hooksecurefunc(tbl, name, fn) return true end
