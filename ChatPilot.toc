@@ -15,7 +15,7 @@
 ## Version: 1.7.20
 ## Category: Chat & Communication
 ## IconTexture: Interface\Icons\INV_Letter_15
-## SavedVariables: ChatPilotDB
+## SavedVariables: ChatPilotDB, ChatPilotBackup
 ## AddonCompartmentFunc: ChatPilot_OnAddonCompartmentClick
 ## AddonCompartmentFuncOnEnter: ChatPilot_OnAddonCompartmentEnter
 ## AddonCompartmentFuncOnLeave: ChatPilot_OnAddonCompartmentLeave

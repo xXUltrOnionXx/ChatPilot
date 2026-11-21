@@ -37,16 +37,16 @@ local function Enc(v, buf, depth)
 	elseif t == "table" and depth < MAX_DEPTH + 2 then
 		local n, count = #v, 0
 		for _ in pairs(v) do count = count + 1 end
-		local sep = depth <= 6 and ",\n" or ","
+		local sep = depth <= 4 and ",\n" or ","
 		if n > 0 and n == count then
-			buf[#buf + 1] = depth <= 6 and "[\n" or "["
+			buf[#buf + 1] = depth <= 4 and "[\n" or "["
 			for i = 1, n do
 				if i > 1 then buf[#buf + 1] = sep end
 				Enc(v[i], buf, depth + 1)
 			end
 			buf[#buf + 1] = "]"
 		else
-			buf[#buf + 1] = depth <= 6 and "{\n" or "{"
+			buf[#buf + 1] = depth <= 4 and "{\n" or "{"
 			local first = true
 			for k, val in pairs(v) do
 				local key
@@ -275,6 +275,145 @@ function ns:BackupParse(text)
 	return data, info
 end
 
+-- big exports: compressed, as short pages -------------------------------------
+-- The game's text box shows nothing once the text gets too long, so a big
+-- export is packed small and split into pages of PAGE characters.
+local PAGE = 6000
+local floor = math.floor
+local unpackFn = unpack or table.unpack
+local B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+local ENC, DEC = {}, {}
+for i = 1, 64 do ENC[i - 1] = B64:sub(i, i); DEC[B64:byte(i)] = i - 1 end
+
+local function B64Enc(s)
+	local out = {}
+	for i = 1, #s, 3 do
+		local a, b, c = s:byte(i, i + 2)
+		local n = a * 65536 + (b or 0) * 256 + (c or 0)
+		out[#out + 1] = ENC[floor(n / 262144)] .. ENC[floor(n / 4096) % 64]
+			.. (b and ENC[floor(n / 64) % 64] or "=") .. (c and ENC[n % 64] or "=")
+	end
+	return table.concat(out)
+end
+
+local function B64Dec(s)
+	s = s:gsub("[^%w%+/]", "")
+	local out = {}
+	for i = 1, #s, 4 do
+		local a, b, c, d = s:byte(i, i + 3)
+		a, b = DEC[a], DEC[b]
+		c, d = c and DEC[c], d and DEC[d]
+		if not a or not b then return nil end
+		local n = a * 262144 + b * 4096 + (c or 0) * 64 + (d or 0)
+		out[#out + 1] = string.char(floor(n / 65536)) .. (c and string.char(floor(n / 256) % 256) or "") .. (d and string.char(n % 256) or "")
+	end
+	return table.concat(out)
+end
+
+-- LZ77: 1..127 = that many literal bytes follow; 128..255 = copy (len-3) from 2 byte offset
+local function LZPack(s)
+	local out, n, tbl = {}, #s, {}
+	local i, litStart = 1, 1
+	local function Flush(upto)
+		local p = litStart
+		while p <= upto do
+			local e = math.min(upto, p + 126)
+			out[#out + 1] = string.char(e - p + 1) .. s:sub(p, e)
+			p = e + 1
+		end
+	end
+	local function Add(k)
+		local key = s:sub(k, k + 2)
+		local c = tbl[key]
+		if not c then c = {}; tbl[key] = c end
+		c[#c + 1] = k
+		if #c > 24 then table.remove(c, 1) end
+	end
+	while i <= n do
+		local len, off = 0, 0
+		if i + 2 <= n then
+			local c = tbl[s:sub(i, i + 2)]
+			if c then
+				for ci = #c, 1, -1 do
+					local j = c[ci]
+					if i - j > 65535 then break end
+					local l = 3
+					while l < 130 and i + l <= n and s:byte(j + l) == s:byte(i + l) do l = l + 1 end
+					if l > len then len, off = l, i - j end
+					if l >= 130 then break end
+				end
+			end
+		end
+		if len >= 4 or (len == 3 and off < 256) then
+			Flush(i - 1)
+			out[#out + 1] = string.char(128 + len - 3, off % 256, floor(off / 256))
+			for k = i, math.min(i + len - 1, n - 2) do Add(k) end
+			i = i + len
+			litStart = i
+		else
+			if i + 2 <= n then Add(i) end
+			i = i + 1
+		end
+	end
+	Flush(n)
+	return table.concat(out)
+end
+
+local function LZUnpack(z)
+	local buf, nb, i, n = {}, 0, 1, #z
+	while i <= n do
+		local c = z:byte(i)
+		i = i + 1
+		if c < 128 then
+			if c == 0 or i + c - 1 > n then return nil end
+			for k = 0, c - 1 do nb = nb + 1; buf[nb] = z:byte(i + k) end
+			i = i + c
+		else
+			if i + 1 > n then return nil end
+			local off = z:byte(i) + z:byte(i + 1) * 256
+			i = i + 2
+			if off == 0 or off > nb then return nil end
+			for _ = 1, c - 128 + 3 do nb = nb + 1; buf[nb] = buf[nb - off] end
+		end
+		if nb > MAX_INPUT then return nil end
+	end
+	local parts = {}
+	for p = 1, nb, 2000 do parts[#parts + 1] = string.char(unpackFn(buf, p, math.min(nb, p + 1999))) end
+	return table.concat(parts)
+end
+
+-- text -> list of pages (a short export stays one readable page)
+function ns:BackupPages(text)
+	if #text <= PAGE then return { text } end
+	local b = B64Enc(LZPack(text))
+	local n = math.ceil(#b / PAGE)
+	local pages = {}
+	for i = 1, n do pages[i] = ("CP1|%d/%d|"):format(i, n) .. b:sub((i - 1) * PAGE + 1, i * PAGE) end
+	return pages
+end
+
+-- "CP1|2/6|..." -> 2, 6, chunk
+function ns:BackupPageInfo(text)
+	if type(text) ~= "string" then return nil end
+	local i, n, rest = text:match("^%s*CP1|(%d+)/(%d+)|(.*)$")
+	i, n = tonumber(i), tonumber(n)
+	if not i or i < 1 or i > n or n > 600 then return nil end
+	return i, n, rest
+end
+
+-- all chunks together -> the plain export text
+function ns:BackupJoin(parts, n)
+	local t = {}
+	for i = 1, n do
+		if not parts[i] then return nil end
+		t[i] = parts[i]
+	end
+	local z = B64Dec(table.concat(t))
+	if not z or z == "" then return nil end
+	local plain = LZUnpack(z)
+	return plain ~= "" and plain or nil
+end
+
 -- checking what goes into the saved data ---------------------------------------
 local SKIP_SETTINGS = { seenVersion = true, tutorialSeen = true, tutorialVersion = true, tutorialDone = true }
 
@@ -362,6 +501,7 @@ end
 function ns:WipeAllData()
 	if InCombatLockdown() then ns.Print(L.BK_COMBAT) return false end
 	local keep = ns.db
+	_G.ChatPilotBackup = nil
 	for k in pairs(keep) do keep[k] = nil end
 	ns.noLogoutSave = true
 	ns.reloading = true
@@ -383,7 +523,7 @@ local function CountText(info)
 end
 
 local function CreateWin()
-	local f = UI.Window("ChatPilotBackup", L.BK_TITLE_EXPORT, 640, 520)
+	local f = UI.Window("ChatPilotBackup", L.BK_TITLE_EXPORT, 640, 570)
 	f.sel = { settings = true, notes = true, chats = true }
 
 	-- what to include
@@ -403,7 +543,7 @@ local function CreateWin()
 
 	local box = CreateFrame("Frame", nil, f.content)
 	box:SetPoint("TOPLEFT", 14, -104)
-	box:SetPoint("BOTTOMRIGHT", -14, 86)
+	box:SetPoint("BOTTOMRIGHT", -14, 146)
 	UI.Fill(box, C.panel)
 	UI.Border(box)
 	local scroll = UI.ScrollArea(box)
@@ -436,7 +576,7 @@ local function CreateWin()
 	f.eb, f.scroll = eb, scroll
 
 	f.hint = UI.Text(f.content, "GameFontHighlightSmall", C.muted)
-	f.hint:SetPoint("BOTTOMLEFT", 16, 50)
+	f.hint:SetPoint("BOTTOMLEFT", 16, 48)
 	f.hint:SetPoint("RIGHT", f.content, "RIGHT", -16, 0)
 	f.hint:SetJustifyH("LEFT")
 	f.hint:SetSpacing(2)
@@ -444,6 +584,16 @@ local function CreateWin()
 	f.status:SetPoint("BOTTOMLEFT", 16, 24)
 	f.status:SetPoint("RIGHT", f.content, "RIGHT", -300, 0)
 	f.status:SetJustifyH("LEFT")
+
+	-- file route (the save file of the game) and page buttons
+	f.fileBtn = UI.Button(f.content, L.BK_FILE_SAVE, 220, 28)
+	f.fileBtn:SetPoint("BOTTOMLEFT", 14, 108)
+	f.nextBtn = UI.Button(f.content, ">", 44, 28)
+	f.nextBtn:SetPoint("BOTTOMRIGHT", -14, 108)
+	f.prevBtn = UI.Button(f.content, "<", 44, 28)
+	f.prevBtn:SetPoint("RIGHT", f.nextBtn, "LEFT", -6, 0)
+	f.prevBtn:SetScript("OnClick", function() f:SetPage((f.page or 1) - 1) end)
+	f.nextBtn:SetScript("OnClick", function() f:SetPage((f.page or 1) + 1) end)
 
 	f.close = UI.Button(f.content, CLOSE or "Close", 100, 28)
 	f.close:SetPoint("BOTTOMRIGHT", -14, 12)
@@ -459,25 +609,65 @@ local function CreateWin()
 		if ReloadUI then ReloadUI() end
 	end
 
+	function f:SetPage(p)
+		local n = self.pages and #self.pages or 0
+		if n == 0 then return end
+		self.page = math.max(1, math.min(n, p))
+		self.exportText = self.pages[self.page]
+		eb:SetText(self.exportText)
+		self.status:SetText(n > 1 and L.BK_PAGE:format(self.page, n, #self.fullText) or L.BK_SIZE:format(#self.fullText))
+		self.prevBtn:SetShown(n > 1)
+		self.nextBtn:SetShown(n > 1)
+		eb:SetFocus()
+		eb:HighlightText()
+		C_Timer.After(0, function() scroll.child:SetHeight(math.max(eb:GetHeight(), 10)) end)
+	end
+
 	function f:Refresh()
 		if self.mode == "export" then
 			local any = self.sel.settings or self.sel.notes or self.sel.chats
 			local okB, built = pcall(ns.BackupBuild, ns, self.sel)
 			if not okB then self.status:SetText(tostring(built)) return end
-			self.exportText = any and built or ""
-			eb:SetText(self.exportText)
-			self.status:SetText(any and L.BK_SIZE:format(#self.exportText) or L.BK_EMPTY)
-			if any then eb:SetFocus(); eb:HighlightText() end
+			self.fullText = any and built or ""
+			if not any then
+				self.pages, self.exportText = nil, ""
+				eb:SetText("")
+				self.status:SetText(L.BK_EMPTY)
+				self.prevBtn:Hide()
+				self.nextBtn:Hide()
+				return
+			end
+			local okP, pages = pcall(ns.BackupPages, ns, self.fullText)
+			if not okP then self.status:SetText(tostring(pages)) return end
+			self.pages = pages
+			self:SetPage(1)
 		end
-		C_Timer.After(0, function() scroll.child:SetHeight(math.max(eb:GetHeight(), 10)) end)
 	end
+
+	-- the file route: the game writes the text into its own save file at reload/logout
+	function f:FileAction()
+		if self.mode == "export" then
+			if not self.fullText or self.fullText == "" then return end
+			_G.ChatPilotBackup = { text = self.fullText, created = time(), version = ns.version }
+			self.status:SetText(L.BK_FILE_SAVED)
+		else
+			local fb = _G.ChatPilotBackup
+			if type(fb) ~= "table" or type(fb.text) ~= "string" or fb.text == "" then
+				self.status:SetText(L.BK_FILE_NONE)
+				return
+			end
+			self:Analyze(fb.text)
+		end
+	end
+	f.fileBtn:SetScript("OnClick", function() f:FileAction() end)
 	f.OnSelect = f.Refresh
 
-	function f:Analyze()
-		local data, info = ns:BackupParse(eb:GetText())
+	function f:Analyze(text)
+		text = text or eb:GetText()
+		local data, info = ns:BackupParse(text)
 		self.data = data
 		if not data then
-			self.status:SetText(eb:GetText() == "" and "" or L.BK_BAD)
+			self.status:SetText(text == "" and "" or L.BK_BAD)
 			self.doImport:Hide()
 			for _, key in ipairs(PARTS) do self.rows[key]:Hide() end
 			return
@@ -492,7 +682,27 @@ local function CreateWin()
 		self.doImport:Show()
 	end
 	function f:OnPaste()
-		C_Timer.After(0.25, function() if self:IsShown() and self.mode == "import" then self:Analyze() end end)
+		C_Timer.After(0.25, function()
+			if not (self:IsShown() and self.mode == "import") then return end
+			local text = eb:GetText()
+			local i, n, chunk = ns:BackupPageInfo(text)
+			if not i then self.parts = nil; self:Analyze(text) return end
+			if not self.parts or self.partsN ~= n then self.parts, self.partsN = {}, n end
+			self.parts[i] = chunk
+			eb:SetText("")
+			local got = 0
+			for k = 1, n do if self.parts[k] then got = got + 1 end end
+			if got < n then
+				self.data = nil
+				self.doImport:Hide()
+				self.status:SetText(L.BK_PART:format(got, n))
+				return
+			end
+			local full = ns:BackupJoin(self.parts, n)
+			self.parts = nil
+			if not full then self.status:SetText(L.BK_BAD) return end
+			self:Analyze(full)
+		end)
 	end
 	return f
 end
@@ -510,7 +720,11 @@ function ns:ShowBackup(mode)
 		win.rows[key]:SetShown(mode == "export")
 	end
 	win.doImport:SetShown(false)
-	win.exportText = nil
+	win.exportText, win.pages, win.fullText, win.parts = nil, nil, nil, nil
+	win.fileBtn.label:SetText(mode == "export" and L.BK_FILE_SAVE or L.BK_FILE_LOAD)
+	win.prevBtn:Hide()
+	win.nextBtn:Hide()
+	win.hint:SetText((mode == "export" and L.BK_HINT_EXPORT or L.BK_HINT_IMPORT) .. "\n" .. (mode == "export" and L.BK_HINT_FILE_EXPORT or L.BK_HINT_FILE_IMPORT))
 	win.eb:SetText("")
 	win:Show()
 	win:Raise()
