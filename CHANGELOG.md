@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.19
+- Behoben (wichtig): War ein eigenes Chatfenster hochgescrollt, erschienen neue Nachrichten nur als Kopfzeile ohne Text. Ursache war ein Fehler im Hinweis „Neue Nachrichten“ aus 1.7.16. Jetzt kommt die Nachricht immer an, und der Hinweis kann sie nicht mehr stören.
+
 ## 1.7.18
 - Sichern & übertragen: Unter „Gut zu wissen“ lassen sich Einstellungen, Notizen und Chats (eigene Fenster, Verlauf, Flüstern, Erwähnungen) als Text exportieren und später wieder importieren, z. B. nach einer Neuinstallation oder auf einem anderen Computer. Das Format ist einfaches JSON. Beim Import wird alles geprüft; Ungültiges wird verworfen. Auch per `/chatpilot export` und `/chatpilot import`.
 - Hinweis zum Entfernen des Addons: Löscht man den Addon-Ordner, bleiben Notizen und Chatverlauf in der Speicherdatei von WoW liegen. Das steht jetzt ausdrücklich in „Gut zu wissen“. Neu: Der Knopf „ALLE Daten löschen und neu laden“ leert die Speicherdatei, bevor man das Addon entfernt.

@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.19",
+		de = { "Behoben: Im hochgescrollten Fenster fehlte bei neuen Nachrichten der Text" },
+		en = { "Fixed: new messages lacked their text in a scrolled-up window" },
+		fr = { "Corrigé : le texte des nouveaux messages manquait dans une fenêtre défilée vers le haut" },
+		es = { "Corregido: faltaba el texto de los mensajes nuevos en una ventana desplazada hacia arriba" },
+		it = { "Corretto: mancava il testo dei nuovi messaggi in una finestra scorsa verso l'alto" },
+		pt = { "Corrigido: faltava o texto das novas mensagens numa janela rolada para cima" },
+		ru = { "Исправлено: в прокрученном вверх окне у новых сообщений не было текста" },
+		ko = { "수정: 위로 스크롤한 창에서 새 메시지의 본문이 보이지 않던 문제" },
+		zh = { "已修复：向上滚动的窗口中新消息缺少正文" },
+		tw = { "已修復：向上捲動的視窗中新訊息缺少內文" },
+	},
 	{ v = "1.7.18",
 		de = { "Neu: Einstellungen, Notizen und Chats lassen sich als Text exportieren und wieder importieren (Gut zu wissen)", "Hinweis: Beim Löschen des Addons bleiben Daten in WoWs Speicherdatei; neuer Knopf löscht vorher alles" },
 		en = { "New: export and import settings, notes and chats as text (Good to know)", "Note: deleting the addon leaves data in WoW's save file; a new button wipes everything first" },

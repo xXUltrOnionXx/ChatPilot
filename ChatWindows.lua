@@ -1165,6 +1165,7 @@ local function CreateGroupFrame(g)
 	return f
 end
 
+local CheckBottom -- defined further down (the message frame needs it)
 local function CreateMessageFrame(w)
 	local m = CreateFrame("ScrollingMessageFrame", nil, UIParent)
 	m:SetFontObject(UI.MessageFont())
@@ -1183,9 +1184,9 @@ local function CreateMessageFrame(w)
 		else
 			if IsShiftKeyDown() then self:ScrollToBottom() else self:ScrollDown() end
 		end
-		CheckBottom(w)
+		pcall(CheckBottom, w)
 	end)
-	if m.SetOnScrollChangedCallback then m:SetOnScrollChangedCallback(function() CheckBottom(w) end) end
+	if m.SetOnScrollChangedCallback then m:SetOnScrollChangedCallback(function() pcall(CheckBottom, w) end) end
 	m:SetScript("OnHyperlinkClick", function(self, link, text, button)
 		if ns.LinkClick(link) then return end
 		local cid = ns.CensorID(link)
@@ -1391,7 +1392,7 @@ local MAX_LIVE = 1000
 
 -- glowing hint at the bottom while you read further up and new lines arrive
 local function HideNewHint(w) if w.newHint then w.newHint:Hide() end end
-local function CheckBottom(w)
+function CheckBottom(w)
 	local m = w.msg
 	if w.newHint and w.newHint:IsShown() and m.AtBottom and m:AtBottom() == true then w.newHint:Hide() end
 end
@@ -1437,7 +1438,14 @@ end
 local function AddLine(w, text, r, g, b, save, cid, ph)
 	local away = w.msg.AtBottom and w.msg:AtBottom() == false
 	w.msg:AddMessage(text, r, g, b)
-	if away then ShowNewHint(w) end
+	-- the hint is an extra: whatever goes wrong there must never cost a message
+	if away then
+		local okH, errH = pcall(ShowNewHint, w)
+		if not okH and not ns.hintErrShown then
+			ns.hintErrShown = true
+			ns.Print("hint: " .. tostring(errH))
+		end
+	end
 	Live(w, text, r, g, b, cid, ph)
 	w.count = (w.count or 0) + 1
 	if save then
@@ -2705,4 +2713,4 @@ ns._cwPlus = function() return plus end
 ns._cwLaunchers = function() return launchers end
 ns._cw = { wins = wins, groups = groups, Format = Format, Deliver = Deliver, FinishDrag = FinishDrag,
 	StartDrag = StartDrag, ChannelCat = ChannelCat, Rename = StartRename, WindowName = WindowName,
-	EnterToWindow = EnterToWindow, GameSent = GameSent } -- for tests
+	EnterToWindow = EnterToWindow, GameSent = GameSent, CheckBottom = function(w) return CheckBottom(w) end } -- for tests
