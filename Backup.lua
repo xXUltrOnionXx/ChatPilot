@@ -464,6 +464,11 @@ local function ImportChats(db, data)
 					if type(l) == "table" and type(l[1]) == "string" and #lines < 400 then lines[#lines + 1] = l end
 				end
 				wd.lines = lines
+				local arch = {}
+				for _, s in ipairs(type(wd.archive) == "table" and wd.archive or {}) do
+					if type(s) == "string" and #arch < 3000 then arch[#arch + 1] = s:sub(1, 1000) end
+				end
+				wd.archive = #arch > 0 and arch or nil
 				windows[#windows + 1] = wd
 				if wd.id > maxId then maxId = wd.id end
 			end

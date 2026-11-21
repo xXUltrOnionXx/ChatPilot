@@ -765,6 +765,26 @@ local function BuildInfo(content)
 	b5:SetPoint("TOPLEFT", b3, "BOTTOMLEFT", 0, -10)
 	store:SetScript("OnShow", Count)
 
+	-- archive of the older lines of every window
+	local arRows = {}
+	local ar = InfoBox(flow, c, L.INFO_ARCHIVE, L.INFO_ARCHIVE_TEXT, function() return 14 + math.max(1, #arRows) * 32 end)
+	local function FillArchive()
+		local list = ns.CW_List and ns:CW_List() or {}
+		for i, w in ipairs(list) do
+			local r = arRows[i]
+			if not r then
+				r = UI.Button(ar, "", 468, 28)
+				r:SetPoint("TOPLEFT", ar.body, "BOTTOMLEFT", 0, -10 - (i - 1) * 32)
+				arRows[i] = r
+			end
+			r.id = w.id
+			r.label:SetText(L.AR_ROW:format(w.name, #ns:CW_ArchiveGet(w.id)))
+			r:SetScript("OnClick", function() ns:ShowArchive(w.id) end)
+			r:Show()
+		end
+		for i = #list + 1, #arRows do arRows[i]:Hide() end
+	end
+
 	-- back up / move your data
 	local bk = InfoBox(flow, c, L.INFO_BACKUP, L.INFO_BACKUP_TEXT, 46)
 	local be = UI.Button(bk, L.BK_EXPORT, 230, 28, "accent")
@@ -821,7 +841,7 @@ local function BuildInfo(content)
 	InfoBox(flow, c, L.INFO_SAFE, L.INFO_SAFE_TEXT)
 	InfoBox(flow, c, L.INFO_CMDS, L.INFO_CMDS_TEXT)
 
-	sf:SetScript("OnShow", function() Count(); FillAuto(); Relayout(flow) end)
+	sf:SetScript("OnShow", function() Count(); FillAuto(); FillArchive(); Relayout(flow) end)
 	return sf
 end
 
@@ -1042,6 +1062,8 @@ SlashCmdList.CHATPILOT = function(input)
 		ns.Print(L.CLEARED, L.CLEAR_MAIN)
 	elseif cmd == "info" then
 		ns:OpenOptions(6)
+	elseif cmd == "archive" or cmd == "archiv" then
+		ns:ShowArchive()
 	elseif cmd == "export" or cmd == "import" or cmd == "backup" then
 		ns:ShowBackup(cmd == "import" and "import" or "export")
 	elseif cmd == "thanks" or cmd == "danke" or cmd == "news" or cmd == "patchnotes" then

@@ -11,6 +11,7 @@ local C = UI.C
 local HEADER_H = 24
 local MIN_W, MIN_H, MAX_W, MAX_H = 220, 110, 900, 700
 local MAX_SAVED_LINES = 200
+local MAX_ARCHIVE = 3000 -- older lines of a window, kept as plain text
 
 -------------------------------------------------------------------------------
 -- Categories
@@ -1435,6 +1436,30 @@ local function CensoredLine(lineID)
 	return ok and hidden and true or false
 end
 
+-- lines that no longer fit the saved 200 move to the archive of their window (plain text)
+local function ArchivePlain(text, t)
+	local s = tostring(text)
+	s = s:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|A.-|a", ""):gsub("|n", " ")
+	s = s:gsub("||", "\1"):gsub("|", ""):gsub("\1", "|")
+	return date("%d.%m. %H:%M", tonumber(t) or time()) .. "  " .. s
+end
+
+local function Archive(w, line)
+	if type(line) ~= "table" or line[6] or type(line[1]) ~= "string" then return end -- not a hidden-message placeholder
+	local a = w.data.archive
+	if not a then a = {}; w.data.archive = a end
+	a[#a + 1] = ArchivePlain(line[1], line[5])
+	if #a > MAX_ARCHIVE + 100 then
+		local n = {}
+		for i = #a - MAX_ARCHIVE + 1, #a do n[#n + 1] = a[i] end
+		w.data.archive = n
+	end
+	if ns.db and not ns.db.archiveTold then
+		ns.db.archiveTold = true
+		ns.Print(L.CW_ARCHIVED)
+	end
+end
+
 local function AddLine(w, text, r, g, b, save, cid, ph)
 	local away = w.msg.AtBottom and w.msg:AtBottom() == false
 	w.msg:AddMessage(text, r, g, b)
@@ -1451,7 +1476,7 @@ local function AddLine(w, text, r, g, b, save, cid, ph)
 	if save then
 		local lines = w.data.lines
 		lines[#lines + 1] = { text, r, g, b, time(), cid, ph }
-		while #lines > MAX_SAVED_LINES do table.remove(lines, 1) end
+		while #lines > MAX_SAVED_LINES do pcall(Archive, w, table.remove(lines, 1)) end
 	end
 	if w.group and w.group.data and w.group.data.active ~= w.data.id then
 		if not w.unread then
@@ -2221,6 +2246,7 @@ function ns:CW_ClearWindow(w)
 	w.msg:Clear()
 	w.live = nil
 	if w.data.lines then wipe(w.data.lines) end
+	w.data.archive = nil
 	w.lastKey, w.lastT, w.count, w.unread = nil, nil, 0, nil
 	if w.group then LayoutTabs(w.group) end
 	UpdateLaunchers()
@@ -2229,7 +2255,7 @@ end
 function ns:CW_ClearAll()
 	for _, w in pairs(wins) do self:CW_ClearWindow(w) end
 	-- also windows that are saved but not built right now
-	if Data then for _, d in ipairs(Data.windows) do if d.lines then wipe(d.lines) end end end
+	if Data then for _, d in ipairs(Data.windows) do if d.lines then wipe(d.lines) end d.archive = nil end end
 end
 
 -- all own windows by name (for "empty when logging out")
@@ -2247,7 +2273,23 @@ end
 function ns:CW_ClearById(id)
 	local w = wins[id]
 	if w then return self:CW_ClearWindow(w) end
-	if Data then for _, d in ipairs(Data.windows) do if d.id == id and d.lines then wipe(d.lines) end end end
+	if Data then for _, d in ipairs(Data.windows) do if d.id == id then if d.lines then wipe(d.lines) end d.archive = nil end end end
+end
+
+-- archive of one window (list of plain text lines) and how many there are in all
+function ns:CW_ArchiveGet(id)
+	if Data then for _, d in ipairs(Data.windows) do if d.id == id then return d.archive or {} end end end
+	return {}
+end
+
+function ns:CW_ArchiveCount()
+	local n = 0
+	if Data then for _, d in ipairs(Data.windows) do n = n + (d.archive and #d.archive or 0) end end
+	return n
+end
+
+function ns:CW_ArchiveClear(id)
+	if Data then for _, d in ipairs(Data.windows) do if d.id == id then d.archive = nil end end end
 end
 
 function ns:CW_SavedLines()

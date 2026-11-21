@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.22
+- Neu: Archiv für eigene Chatfenster. Ältere Zeilen gehen nicht mehr verloren, sondern wandern als Text ins Archiv des Fensters (bis zu 3000 Zeilen). Lesen und Suchen unter Einstellungen > Gut zu wissen > Archiv oder mit /chatpilot archiv. Export und Import nehmen das Archiv mit.
+
 ## 1.7.21
 - Neu: Export und Import für Einstellungen, Notizen und Chats, als Text in Seiten zum Kopieren oder als Datei (ChatPilotBackup.lua im SavedVariables-Ordner); Knopf zum Löschen aller Daten vor dem Entfernen des Addons.
 - Neu: leuchtender Hinweis auf neue Nachrichten im hochgescrollten Fenster; die Eingabeleiste blitzt beim Senden auf.

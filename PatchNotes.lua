@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.22",
+		de = { "Neu: Archiv für Chatfenster – ältere Zeilen gehen nicht mehr verloren, du kannst sie lesen und durchsuchen (Einstellungen > Gut zu wissen)" },
+		en = { "New: archive for chat windows - older lines are no longer lost, you can read and search them (Settings > Good to know)" },
+		fr = { "Nouveau : archive pour les fenêtres de chat - les anciennes lignes ne sont plus perdues, on peut les lire et les chercher (Réglages > À savoir)" },
+		es = { "Nuevo: archivo para las ventanas de chat - las líneas antiguas ya no se pierden, se pueden leer y buscar (Ajustes > Conviene saber)" },
+		it = { "Novità: archivio per le finestre di chat - le righe più vecchie non si perdono più, puoi leggerle e cercarle (Impostazioni > Da sapere)" },
+		pt = { "Novo: arquivo para as janelas de chat - as linhas antigas já não se perdem, pode lê-las e pesquisá-las (Configurações > Bom saber)" },
+		ru = { "Новое: архив для окон чата - старые строки больше не теряются, их можно читать и искать (Настройки > Полезно знать)" },
+		ko = { "신규: 채팅창 보관함 - 오래된 줄이 더 이상 사라지지 않으며 읽고 검색할 수 있음 (설정 > 알아두기)" },
+		zh = { "新增：聊天窗口存档——较早的内容不再丢失，可阅读和搜索（设置 > 须知）" },
+		tw = { "新增：聊天視窗封存——較早的內容不再遺失，可閱讀與搜尋（設定 > 須知）" },
+	},
 	{ v = "1.7.21",
 		de = { "Neu: Einstellungen, Notizen und Chats exportieren und importieren (Text in Seiten zum Kopieren oder als Datei); Knopf zum Löschen aller Daten vor dem Entfernen des Addons", "Neu: leuchtender Hinweis auf neue Nachrichten, wenn du hochgescrollt bist; die Eingabeleiste blitzt beim Senden auf", "Verbessert: Enter öffnet wieder den zuletzt genutzten Chat, auch nach einem Klick; beim Senden springt der Chat nach unten", "Behoben: ausgeblendete Nachrichten lassen sich anzeigen; Shift-Klick auf Items fügt sie in eigene Chats ein", "Behoben: fehlender Text im hochgescrollten Fenster, Text blieb nach dem Senden stehen, Export zeigte keinen Text", "Neu: Anleitung im Export-/Import-Fenster; der Rundgang kennt alle neuen Funktionen" },
 		en = { "New: export and import settings, notes and chats (text in pages to copy, or as a file); button to wipe all data before removing the addon", "New: glowing hint for new messages while scrolled up; the input bar flashes when you send", "Improved: Enter reopens the last used chat, also after a click; sending jumps the chat to the bottom", "Fixed: hidden messages can be shown; shift-click on items inserts them into custom chats", "Fixed: missing text in a scrolled-up window, text left in the input after sending, export showing no text", "New: guide in the export/import window; the tour covers all new features" },
