@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.20",
+		de = { "Behoben: Der Export zeigte keinen Text zum Kopieren" },
+		en = { "Fixed: the export showed no text to copy" },
+		fr = { "Corrigé : l'export n'affichait aucun texte à copier" },
+		es = { "Corregido: la exportación no mostraba texto para copiar" },
+		it = { "Corretto: l'esportazione non mostrava testo da copiare" },
+		pt = { "Corrigido: a exportação não mostrava texto para copiar" },
+		ru = { "Исправлено: при экспорте не показывался текст для копирования" },
+		ko = { "수정: 내보내기에서 복사할 텍스트가 표시되지 않던 문제" },
+		zh = { "已修复：导出时没有显示可复制的文本" },
+		tw = { "已修復：匯出時沒有顯示可複製的文字" },
+	},
 	{ v = "1.7.19",
 		de = { "Behoben: Im hochgescrollten Fenster fehlte bei neuen Nachrichten der Text" },
 		en = { "Fixed: new messages lacked their text in a scrolled-up window" },

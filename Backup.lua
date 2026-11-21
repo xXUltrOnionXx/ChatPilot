@@ -37,15 +37,16 @@ local function Enc(v, buf, depth)
 	elseif t == "table" and depth < MAX_DEPTH + 2 then
 		local n, count = #v, 0
 		for _ in pairs(v) do count = count + 1 end
+		local sep = depth <= 6 and ",\n" or ","
 		if n > 0 and n == count then
-			buf[#buf + 1] = "["
+			buf[#buf + 1] = depth <= 6 and "[\n" or "["
 			for i = 1, n do
-				if i > 1 then buf[#buf + 1] = "," end
+				if i > 1 then buf[#buf + 1] = sep end
 				Enc(v[i], buf, depth + 1)
 			end
 			buf[#buf + 1] = "]"
 		else
-			buf[#buf + 1] = "{"
+			buf[#buf + 1] = depth <= 6 and "{\n" or "{"
 			local first = true
 			for k, val in pairs(v) do
 				local key
@@ -53,7 +54,7 @@ local function Enc(v, buf, depth)
 				elseif type(k) == "number" then key = "#n:" .. Num(k) end
 				local vt = type(val)
 				if key and (vt == "string" or vt == "number" or vt == "boolean" or vt == "table") then
-					if not first then buf[#buf + 1] = "," end
+					if not first then buf[#buf + 1] = sep end
 					first = false
 					buf[#buf + 1] = '"' .. Esc(key) .. '":'
 					Enc(val, buf, depth + 1)
@@ -461,7 +462,9 @@ local function CreateWin()
 	function f:Refresh()
 		if self.mode == "export" then
 			local any = self.sel.settings or self.sel.notes or self.sel.chats
-			self.exportText = any and ns:BackupBuild(self.sel) or ""
+			local okB, built = pcall(ns.BackupBuild, ns, self.sel)
+			if not okB then self.status:SetText(tostring(built)) return end
+			self.exportText = any and built or ""
 			eb:SetText(self.exportText)
 			self.status:SetText(any and L.BK_SIZE:format(#self.exportText) or L.BK_EMPTY)
 			if any then eb:SetFocus(); eb:HighlightText() end
