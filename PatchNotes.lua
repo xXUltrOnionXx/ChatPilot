@@ -3,7 +3,7 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
-	{ v = "1.7.20",
+	{ v = "1.7.21",
 		de = { "Neu: Einstellungen, Notizen und Chats exportieren und importieren (Text in Seiten zum Kopieren oder als Datei); Knopf zum Löschen aller Daten vor dem Entfernen des Addons", "Neu: leuchtender Hinweis auf neue Nachrichten, wenn du hochgescrollt bist; die Eingabeleiste blitzt beim Senden auf", "Verbessert: Enter öffnet wieder den zuletzt genutzten Chat, auch nach einem Klick; beim Senden springt der Chat nach unten", "Behoben: ausgeblendete Nachrichten lassen sich anzeigen; Shift-Klick auf Items fügt sie in eigene Chats ein", "Behoben: fehlender Text im hochgescrollten Fenster, Text blieb nach dem Senden stehen, Export zeigte keinen Text", "Neu: Anleitung im Export-/Import-Fenster; der Rundgang kennt alle neuen Funktionen" },
 		en = { "New: export and import settings, notes and chats (text in pages to copy, or as a file); button to wipe all data before removing the addon", "New: glowing hint for new messages while scrolled up; the input bar flashes when you send", "Improved: Enter reopens the last used chat, also after a click; sending jumps the chat to the bottom", "Fixed: hidden messages can be shown; shift-click on items inserts them into custom chats", "Fixed: missing text in a scrolled-up window, text left in the input after sending, export showing no text", "New: guide in the export/import window; the tour covers all new features" },
 		fr = { "Nouveau : exporter et importer réglages, notes et chats sous forme de texte ; bouton pour tout effacer avant de supprimer l'addon", "Nouveau : indicateur lumineux pour les nouveaux messages pendant la lecture plus haut ; la barre de saisie clignote à l'envoi", "Amélioré : Entrée rouvre le dernier chat utilisé, même après un clic ; l'envoi ramène le chat en bas", "Corrigé : les messages masqués peuvent être affichés ; Maj+clic sur les objets les insère dans les chats personnalisés", "Corrigé : texte manquant dans une fenêtre défilée vers le haut, texte resté dans le champ après l'envoi, export sans texte", "Nouveau : guide dans la fenêtre d'export/import ; la visite guidée couvre toutes les nouveautés" },
@@ -14,6 +14,18 @@ ns.PATCHNOTES = {
 		ko = { "신규: 설정, 메모, 채팅을 텍스트로 내보내고 가져오기; 애드온 제거 전 모든 데이터를 지우는 버튼", "신규: 위로 스크롤했을 때 새 메시지를 알리는 빛나는 표시; 전송 시 입력창이 깜박임", "개선: Enter가 마지막으로 쓴 채팅을 다시 열며 클릭 후에도 동작; 전송하면 채팅이 맨 아래로 이동", "수정: 숨겨진 메시지를 표시할 수 있음; 아이템 Shift+클릭이 사용자 채팅에 입력됨", "수정: 위로 스크롤한 창의 누락된 본문, 전송 후 입력창에 남던 텍스트, 텍스트가 보이지 않던 내보내기", "신규: 내보내기/가져오기 창의 안내; 둘러보기에 모든 새 기능 포함" },
 		zh = { "新增：设置、笔记和聊天可导出为文本并导入；移除插件前可一键清除全部数据", "新增：向上滚动时有新消息会显示发光提示；发送时输入栏会闪烁", "改进：回车会重新打开上次使用的聊天（点击后同样有效）；发送后聊天跳到底部", "修复：隐藏的消息可以显示；Shift+点击物品可插入自定义聊天", "修复：向上滚动窗口中缺失的正文、发送后输入框残留文字、导出不显示文本", "新增：导出/导入窗口内的指南；导览涵盖所有新功能" },
 		tw = { "新增：設定、筆記與聊天可匯出為文字並匯入；移除插件前可一鍵清除全部資料", "新增：向上捲動時有新訊息會顯示發光提示；傳送時輸入列會閃爍", "改進：Enter 會重新開啟上次使用的聊天（點擊後同樣有效）；傳送後聊天跳到底部", "修復：隱藏的訊息可以顯示；Shift+點擊物品可插入自訂聊天", "修復：向上捲動視窗中缺少的內文、傳送後輸入框殘留文字、匯出不顯示文字", "新增：匯出/匯入視窗內的指南；導覽涵蓋所有新功能" },
+	},
+	{ v = "1.7.20",
+		de = { "Behoben: Der Export zeigte keinen Text zum Kopieren" },
+		en = { "Fixed: the export showed no text to copy" },
+		fr = { "Corrigé : l'export n'affichait aucun texte à copier" },
+		es = { "Corregido: la exportación no mostraba texto para copiar" },
+		it = { "Corretto: l'esportazione non mostrava testo da copiare" },
+		pt = { "Corrigido: a exportação não mostrava texto para copiar" },
+		ru = { "Исправлено: при экспорте не показывался текст для копирования" },
+		ko = { "수정: 내보내기에서 복사할 텍스트가 표시되지 않던 문제" },
+		zh = { "已修复：导出时没有显示可复制的文本" },
+		tw = { "已修復：匯出時沒有顯示可複製的文字" },
 	},
 	{ v = "1.7.19",
 		de = { "Behoben: Im hochgescrollten Fenster fehlte bei neuen Nachrichten der Text" },
