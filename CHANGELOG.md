@@ -1,7 +1,11 @@
 # Changelog
 
 ## 1.7.20
-- Behoben: Beim Export erschien kein Text zum Kopieren. Der Export steht jetzt in vielen kurzen Zeilen statt in einer riesigen, die das Textfeld des Spiels nicht anzeigen konnte. Der Import liest beide Formen.
+- Neu: Export und Import für Einstellungen, Notizen und Chats als Text; Knopf zum Löschen aller Daten vor dem Entfernen des Addons.
+- Neu: leuchtender Hinweis auf neue Nachrichten im hochgescrollten Fenster; die Eingabeleiste blitzt beim Senden auf.
+- Verbessert: Enter öffnet den zuletzt genutzten Chat, auch nach einem Klick; beim Senden springt der Chat nach unten.
+- Behoben: ausgeblendete Nachrichten lassen sich anzeigen; Shift-Klick auf Items fügt sie in eigene Chats ein.
+- Behoben: fehlender Text im hochgescrollten Fenster, Text blieb nach dem Senden stehen, Export zeigte keinen Text.
 
 ## 1.7.19
 - Behoben (wichtig): War ein eigenes Chatfenster hochgescrollt, erschienen neue Nachrichten nur als Kopfzeile ohne Text. Ursache war ein Fehler im Hinweis „Neue Nachrichten“ aus 1.7.16. Jetzt kommt die Nachricht immer an, und der Hinweis kann sie nicht mehr stören.
