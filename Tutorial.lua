@@ -7,7 +7,7 @@ local C = UI.C
 -- features and can be watched again any time (/chatpilot tutorial, or the
 -- button in the settings). It only shows information.
 
-local TUTORIAL_VERSION = 3 -- raise when the tour gets new steps: shows once more after the update
+local TUTORIAL_VERSION = 4 -- raise when the tour gets new steps: shows once more after the update
 local W, H = 540, 330
 local tut, spot, overlay
 local index = 1
@@ -218,6 +218,44 @@ local PICTURES = {
 		tip:SetPoint("CENTER", 0, -22)
 		tip:SetText(L.TUT_RIGHTCLICK)
 	end,
+	enter = function(p)
+		KeyChip(p, "Enter", -22, 22)
+		local box = CreateFrame("Frame", nil, p)
+		box:SetSize(112, 24)
+		box:SetPoint("CENTER", 0, -22)
+		UI.Fill(box, C.btn)
+		UI.Border(box, C.accent)
+		local caret = box:CreateTexture(nil, "OVERLAY")
+		caret:SetSize(2, 14)
+		caret:SetPoint("LEFT", 10, 0)
+		UI.Paint(caret, C.text)
+		Lines(p, C.accent, { { 2, 12, 36, 2 }, { 8, 2, 33, -4, -45 }, { 8, 2, 39, -4, 45 } })
+	end,
+	scroll = function(p)
+		for i = 1, 3 do
+			local r = CreateFrame("Frame", nil, p)
+			r:SetSize(112, 10)
+			r:SetPoint("CENTER", 0, 38 - i * 16)
+			UI.Fill(r, C.row)
+		end
+		local chip = CreateFrame("Frame", nil, p)
+		chip:SetSize(96, 24)
+		chip:SetPoint("CENTER", 0, -30)
+		UI.Fill(chip, C.accent)
+		local t = UI.Text(chip, "GameFontHighlightSmall", C.dark)
+		t:SetPoint("CENTER")
+		t:SetText("\226\150\188 3")
+	end,
+	backup = function(p)
+		for i = 0, 1 do
+			local f = CreateFrame("Frame", nil, p)
+			f:SetSize(52, 64)
+			f:SetPoint("CENTER", -14 + i * 22, 6 - i * 6)
+			UI.Fill(f, i == 1 and C.panel or C.row)
+			UI.Border(f, i == 1 and C.accent or C.border)
+		end
+		Lines(p, C.accent, { { 24, 2, 14, 2 }, { 24, 2, 14, -8 }, { 16, 2, 10, -18 } })
+	end,
 	tidy = function(p)
 		for i = 1, 3 do
 			local r = CreateFrame("Frame", nil, p)
@@ -328,8 +366,11 @@ local STEPS = {
 	{ key = "windows", target = function() return ns._cwPlus and ns._cwPlus() end },
 	{ key = "writing" },
 	{ key = "tabs" },
+	{ key = "enter" },
+	{ key = "scroll" },
 	{ key = "design", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
 	{ key = "tidy", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
+	{ key = "backup", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
 	{ key = "done" },
 }
 ns.TUTORIAL_STEPS = STEPS

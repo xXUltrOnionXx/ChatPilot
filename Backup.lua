@@ -575,6 +575,20 @@ local function CreateWin()
 	box:SetScript("OnMouseDown", function() eb:SetFocus() end)
 	f.eb, f.scroll = eb, scroll
 
+	-- step by step guide, laid over the text box
+	f.guide = CreateFrame("Frame", nil, box)
+	f.guide:SetAllPoints()
+	f.guide:SetFrameLevel(box:GetFrameLevel() + 20)
+	f.guide:EnableMouse(true)
+	UI.Fill(f.guide, C.panel)
+	f.guideText = UI.Text(f.guide, "GameFontHighlight", C.text)
+	f.guideText:SetPoint("TOPLEFT", 14, -12)
+	f.guideText:SetPoint("RIGHT", f.guide, "RIGHT", -14, 0)
+	f.guideText:SetJustifyH("LEFT")
+	f.guideText:SetJustifyV("TOP")
+	f.guideText:SetSpacing(3)
+	f.guide:Hide()
+
 	f.hint = UI.Text(f.content, "GameFontHighlightSmall", C.muted)
 	f.hint:SetPoint("BOTTOMLEFT", 16, 48)
 	f.hint:SetPoint("RIGHT", f.content, "RIGHT", -16, 0)
@@ -588,6 +602,9 @@ local function CreateWin()
 	-- file route (the save file of the game) and page buttons
 	f.fileBtn = UI.Button(f.content, L.BK_FILE_SAVE, 220, 28)
 	f.fileBtn:SetPoint("BOTTOMLEFT", 14, 108)
+	f.guideBtn = UI.Button(f.content, L.BK_GUIDE_SHOW, 160, 28)
+	f.guideBtn:SetPoint("LEFT", f.fileBtn, "RIGHT", 8, 0)
+	f.guideBtn:SetScript("OnClick", function() f:SetGuide(not f.guide:IsShown()) end)
 	f.nextBtn = UI.Button(f.content, ">", 44, 28)
 	f.nextBtn:SetPoint("BOTTOMRIGHT", -14, 108)
 	f.prevBtn = UI.Button(f.content, "<", 44, 28)
@@ -607,6 +624,12 @@ local function CreateWin()
 		if not ok then self.status:SetText(err or "") return end
 		ns.Print(L.BK_DONE)
 		if ReloadUI then ReloadUI() end
+	end
+
+	function f:SetGuide(on)
+		self.guideText:SetText(self.mode == "export" and L.BK_GUIDE_EXPORT or L.BK_GUIDE_IMPORT)
+		self.guide:SetShown(on and true or false)
+		self.guideBtn.label:SetText(on and L.BK_GUIDE_HIDE or L.BK_GUIDE_SHOW)
 	end
 
 	function f:SetPage(p)
@@ -664,6 +687,7 @@ local function CreateWin()
 
 	function f:Analyze(text)
 		text = text or eb:GetText()
+		if text ~= "" then self:SetGuide(false) end
 		local data, info = ns:BackupParse(text)
 		self.data = data
 		if not data then
@@ -687,6 +711,7 @@ local function CreateWin()
 			local text = eb:GetText()
 			local i, n, chunk = ns:BackupPageInfo(text)
 			if not i then self.parts = nil; self:Analyze(text) return end
+			self:SetGuide(false)
 			if not self.parts or self.partsN ~= n then self.parts, self.partsN = {}, n end
 			self.parts[i] = chunk
 			eb:SetText("")
@@ -726,6 +751,8 @@ function ns:ShowBackup(mode)
 	win.nextBtn:Hide()
 	win.hint:SetText((mode == "export" and L.BK_HINT_EXPORT or L.BK_HINT_IMPORT) .. "\n" .. (mode == "export" and L.BK_HINT_FILE_EXPORT or L.BK_HINT_FILE_IMPORT))
 	win.eb:SetText("")
+	win:SetGuide(mode == "import" and not (ns.db and ns.db.backupGuideSeen))
+	if mode == "import" and ns.db then ns.db.backupGuideSeen = true end
 	win:Show()
 	win:Raise()
 	if mode == "export" then

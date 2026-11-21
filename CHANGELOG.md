@@ -5,6 +5,7 @@
 - Neu: leuchtender Hinweis auf neue Nachrichten im hochgescrollten Fenster; die Eingabeleiste blitzt beim Senden auf.
 - Verbessert: Enter öffnet den zuletzt genutzten Chat, auch nach einem Klick; beim Senden springt der Chat nach unten.
 - Behoben: ausgeblendete Nachrichten lassen sich anzeigen; Shift-Klick auf Items fügt sie in eigene Chats ein.
+- Neu: Anleitung im Export-/Import-Fenster; der Rundgang zeigt alle neuen Funktionen (drei neue Schritte).
 - Behoben: fehlender Text im hochgescrollten Fenster, Text blieb nach dem Senden stehen, Export zeigte bei großen Datenmengen keinen Text (jetzt komprimiert und in Seiten).
 
 ## 1.7.19
