@@ -1091,6 +1091,7 @@ local function CreateGroupFrame(g)
 	g.chip = chip
 
 	local holder = CreateFrame("Frame", nil, row)
+	g.inputHolder = holder
 	holder:SetPoint("TOPLEFT", chip, "TOPRIGHT", 4, 0)
 	holder:SetPoint("BOTTOMRIGHT")
 	UI.Fill(holder, C.btn)
@@ -1888,6 +1889,30 @@ function ns:CW_Reveal(cid)
 	end
 end
 
+-- short flash on the input bar: the message left
+function ns:CW_SendFlash(g)
+	local holder = g.inputHolder
+	if not holder then return end
+	local fl = g.sendFlash
+	if not fl then
+		fl = CreateFrame("Frame", nil, holder)
+		fl:SetAllPoints(holder)
+		fl:SetFrameLevel(holder:GetFrameLevel() + 5)
+		fl.tex = fl:CreateTexture(nil, "OVERLAY")
+		fl.tex:SetAllPoints()
+		fl.tex:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 1)
+		fl:SetScript("OnUpdate", function(self, dt)
+			self.a = (self.a or 0) - (dt or 0.016) * 3.2
+			if self.a <= 0 then self:Hide() return end
+			self.tex:SetAlpha(self.a)
+		end)
+		g.sendFlash = fl
+	end
+	fl.a = 0.55
+	fl.tex:SetAlpha(fl.a)
+	fl:Show()
+end
+
 function ns:CW_Submit(g)
 	local eb = g.input
 	local text = eb:GetText() or ""
@@ -1913,15 +1938,17 @@ function ns:CW_Submit(g)
 	end
 	local ok = pcall(Send, t, text)
 	if ok then
-		if w and w.msg then w.msg:ScrollToBottom(); HideNewHint(w) end
-		if t.type == "WHISPER" and ChatEdit_SetLastTellTarget and ns.Usable(t.name) then
-			pcall(ChatEdit_SetLastTellTarget, t.name, "WHISPER")
-		end
+		-- first the input itself: empty it and give the keyboard back, then the extras
 		if eb.AddHistoryLine then eb:AddHistoryLine(text) end
 		eb:SetText("")
 		-- like the normal chat: after sending, the keyboard goes back to the game
 		-- (otherwise ability keys would end up in the input box in a fight)
 		eb:ClearFocus()
+		pcall(ns.CW_SendFlash, ns, g)
+		if w and w.msg then pcall(function() w.msg:ScrollToBottom(); HideNewHint(w) end) end
+		if t.type == "WHISPER" and ChatEdit_SetLastTellTarget and ns.Usable(t.name) then
+			pcall(ChatEdit_SetLastTellTarget, t.name, "WHISPER")
+		end
 	else
 		eb:SetText("")
 		eb:ClearFocus()

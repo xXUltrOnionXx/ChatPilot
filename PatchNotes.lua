@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.17",
+		de = { "Behoben: Nach dem Absenden bleibt kein Text mehr im Eingabefeld; die Leiste blitzt kurz auf" },
+		en = { "Fixed: no text is left in the input after sending; the bar flashes briefly" },
+		fr = { "Corrigé : plus de texte dans le champ après l'envoi ; la barre clignote brièvement" },
+		es = { "Corregido: ya no queda texto en el campo tras enviar; la barra parpadea brevemente" },
+		it = { "Corretto: dopo l'invio non resta testo nel campo; la barra lampeggia brevemente" },
+		pt = { "Corrigido: não sobra texto no campo após enviar; a barra pisca brevemente" },
+		ru = { "Исправлено: после отправки в поле ввода не остаётся текста; панель коротко вспыхивает" },
+		ko = { "수정: 전송 후 입력창에 텍스트가 남지 않으며, 입력줄이 잠깐 반짝입니다" },
+		zh = { "已修复：发送后输入框不再残留文字；输入栏会短暂闪烁" },
+		tw = { "已修復：送出後輸入框不再殘留文字；輸入列會短暫閃爍" },
+	},
 	{ v = "1.7.16",
 		de = { "Shift-Klick auf Items und Links fügt sie jetzt auch in eigene Chatfenster ein", "Beim Absenden springt der Chat nach unten; ein leuchtender Hinweis zeigt neue Nachrichten, während du weiter oben liest" },
 		en = { "Shift-click on items and links now inserts them into custom chat windows too", "Sending jumps the chat to the bottom; a glowing hint shows new messages while you read further up" },

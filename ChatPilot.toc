@@ -12,7 +12,7 @@
 ## Notes-zhCN: 更直观的聊天：@ 提及与名字推荐、提及提醒、错过的密语、可点击链接等。
 ## Notes-zhTW: 更直覺的聊天：@ 提及與名字建議、提及提醒、錯過的密語、可點擊連結等。
 ## Author: xXUltrOnionXx
-## Version: 1.7.16
+## Version: 1.7.17
 ## Category: Chat & Communication
 ## IconTexture: Interface\Icons\INV_Letter_15
 ## SavedVariables: ChatPilotDB

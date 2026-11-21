@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.17
+- Behoben: War der Chat hochgescrollt, blieb der Text nach dem Absenden im Eingabefeld stehen. Das Feld wird jetzt zuerst geleert, danach springt der Chat nach unten.
+- Sichtbare Rückmeldung beim Absenden: Die Eingabeleiste blitzt kurz in der Akzentfarbe auf.
+
 ## 1.7.16
 - Itemlinks per Shift-Klick funktionieren jetzt auch in den eigenen Chatfenstern: Der Link landet im Eingabefeld des Fensters, in dem du gerade schreibst (aus Taschen, Chatlinks usw.).
 - Nach oben gescrollt? Sobald du eine Nachricht mit Enter abschickst, springt dieser Chat ganz nach unten (eigene und normale Chatfenster). Nicht beim Tippen.
