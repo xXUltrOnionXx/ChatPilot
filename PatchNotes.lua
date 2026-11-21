@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.24",
+		de = { "Neu: Flüsterfenster zeigen einen Punkt am Tab: grün = online, grau = offline oder unbekannt", "Neu: Wenn du jemandem schreibst, der nicht online ist, steht jetzt ein Hinweis im Fenster" },
+		en = { "New: whisper windows show a dot on the tab: green = online, grey = offline or unknown", "New: if you write to someone who is not online, a notice now appears in the window" },
+		fr = { "Nouveau : les fenêtres de chuchotement affichent un point sur l'onglet : vert = en ligne, gris = hors ligne ou inconnu", "Nouveau : si vous écrivez à quelqu'un qui n'est pas en ligne, un message s'affiche dans la fenêtre" },
+		es = { "Nuevo: las ventanas de susurros muestran un punto en la pestaña: verde = conectado, gris = desconectado o desconocido", "Nuevo: si escribes a alguien que no está conectado, aparece un aviso en la ventana" },
+		it = { "Novità: le finestre dei sussurri mostrano un punto sulla scheda: verde = online, grigio = offline o sconosciuto", "Novità: se scrivi a qualcuno che non è online, compare un avviso nella finestra" },
+		pt = { "Novo: as janelas de sussurros mostram um ponto no separador: verde = online, cinzento = offline ou desconhecido", "Novo: se escrever a alguém que não está online, aparece um aviso na janela" },
+		ru = { "Новое: окна личных сообщений показывают точку на вкладке: зелёная - в сети, серая - не в сети или неизвестно", "Новое: если вы пишете тому, кто не в сети, в окне появляется уведомление" },
+		ko = { "신규: 귓속말 창 탭에 상태 점 표시: 초록 = 접속 중, 회색 = 오프라인 또는 알 수 없음", "신규: 접속 중이 아닌 사람에게 보내면 창에 안내가 표시됨" },
+		zh = { "新增：私聊窗口标签上显示圆点：绿色=在线，灰色=离线或未知", "新增：给不在线的人发消息时，窗口中会显示提示" },
+		tw = { "新增：密語視窗分頁上顯示圓點：綠色=在線，灰色=離線或未知", "新增：傳訊給不在線的人時，視窗中會顯示提示" },
+	},
 	{ v = "1.7.23",
 		de = { "Neu: Probleme beim Anzeigen von Chatzeilen werden gemeldet statt still verschluckt (/chatpilot fehler)" },
 		en = { "New: problems while showing chat lines are reported instead of silently swallowed (/chatpilot errors)" },

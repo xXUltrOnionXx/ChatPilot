@@ -575,6 +575,11 @@ local function CreateTab(w)
 	t.dot:SetPoint("RIGHT", -4, 4)
 	UI.Paint(t.dot, C.orange)
 	t.dot:Hide()
+	-- whisper windows: green = online, grey = offline or unknown
+	t.status = t:CreateTexture(nil, "OVERLAY")
+	t.status:SetSize(6, 6)
+	t.status:SetPoint("LEFT", 3, 0)
+	t.status:Hide()
 	t:SetScript("OnClick", function(self, button)
 		if button == "RightButton" then return StartRename(w, self) end
 		ns.cwLast = w.group
@@ -584,6 +589,13 @@ local function CreateTab(w)
 	t:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_TOP")
 		GameTooltip:SetText(WindowName(w))
+		if w.data.partner and ns.CW_PartnerOnline then
+			if ns.CW_PartnerOnline(w.data.partner) then
+				GameTooltip:AddLine(L.CW_ST_ON, 0.3, 0.85, 0.45)
+			else
+				GameTooltip:AddLine(L.CW_ST_OFF, 0.6, 0.64, 0.7)
+			end
+		end
 		GameTooltip:AddLine(L.CW_TAB_TIP, 0.8, 0.8, 0.8, true)
 		GameTooltip:AddLine(L.CW_RENAME_TIP, 0.31, 0.79, 1, true)
 		GameTooltip:Show()
@@ -1700,6 +1712,102 @@ local evFrame = CreateFrame("Frame")
 for ev in pairs(EVENT_CAT) do evFrame:RegisterEvent(ev) end
 evFrame:RegisterEvent("CHAT_MSG_CHANNEL")
 evFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+-------------------------------------------------------------------------------
+-- Is the person of a whisper window online? Only what the game tells us is used:
+-- friends, Battle.net friends, guild, group, nearby/target, and who spoke to you lately.
+-------------------------------------------------------------------------------
+local seenWhisper = {} -- key -> { t = when we last heard from / delivered to them, offline = true when the game said so }
+
+function ns.CW_PartnerOnline(p)
+	if not p then return false end
+	if p.bn then
+		local ok, res = pcall(function()
+			local acc = C_BattleNet and C_BattleNet.GetAccountInfoByID and C_BattleNet.GetAccountInfoByID(p.id)
+			local g = acc and acc.gameAccountInfo
+			return g and g.isOnline
+		end)
+		return ok and res and true or false
+	end
+	local key = p.key
+	if ns.live and ns.live[key] then
+		local st = seenWhisper[key]
+		if st then st.offline = nil end
+		return true
+	end
+	local st = seenWhisper[key]
+	if st and not st.offline and GetTime() - st.t < 600 then return true end
+	return false
+end
+
+local function RefreshStatus()
+	for _, w in pairs(wins) do
+		local p = w.data.partner
+		local tab = w.tab
+		if tab and tab.status then
+			if p then
+				local on = ns.CW_PartnerOnline(p)
+				if on then tab.status:SetColorTexture(0.30, 0.85, 0.45, 1) else tab.status:SetColorTexture(0.45, 0.48, 0.54, 1) end
+				tab.status:Show()
+			else
+				tab.status:Hide()
+			end
+		end
+	end
+end
+ns.CW_RefreshStatus = RefreshStatus
+
+-- "No player named 'X' is currently playing." -> X
+local function NotFoundName(msg)
+	local fmt = _G.ERR_CHAT_PLAYER_NOT_FOUND_S
+	if type(fmt) ~= "string" or type(msg) ~= "string" then return end
+	local pat = "^" .. fmt:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0"):gsub("%%%%s", "(.+)") .. "$"
+	return msg:match(pat)
+end
+
+local function Offline(msg)
+	if not ns.Usable(msg) then return end
+	local name = NotFoundName(msg)
+	if not name or name == "" then return end
+	local key = ns.Normalize(name)
+	local short = name:lower()
+	for _, w in pairs(wins) do
+		local p = w.data.partner
+		if p and not p.bn and w.group and (p.key == key or Ambiguate(p.key, "short"):lower() == short or Ambiguate(p.name or "", "short"):lower() == short) then
+			seenWhisper[p.key] = { t = GetTime(), offline = true }
+			AddLine(w, UI.Hex(C.muted) .. L.CW_OFFLINE:format(Ambiguate(p.name or name, "none")) .. "|r", 0.62, 0.67, 0.74, false)
+		end
+	end
+	RefreshStatus()
+end
+
+local stFrame = CreateFrame("Frame")
+stFrame:RegisterEvent("CHAT_MSG_SYSTEM")
+stFrame:RegisterEvent("CHAT_MSG_WHISPER")
+stFrame:RegisterEvent("CHAT_MSG_WHISPER_INFORM")
+stFrame:SetScript("OnEvent", function(_, event, msg, author)
+	if not ns.loggedIn then return end
+	if event == "CHAT_MSG_SYSTEM" then
+		pcall(Offline, msg)
+	elseif ns.Usable(author) then
+		local key = ns.Normalize(author)
+		if key then seenWhisper[key] = { t = GetTime() } end
+		pcall(RefreshStatus)
+	end
+end)
+do
+	local acc = 0
+	stFrame:SetScript("OnUpdate", function(_, elapsed)
+		acc = acc + elapsed
+		if acc < 8 then return end
+		acc = 0
+		if next(wins) then
+			if ns.RefreshLive then pcall(ns.RefreshLive, ns) end
+			pcall(RefreshStatus)
+		end
+	end)
+end
+ns._cwOffline = Offline
+
 evFrame:SetScript("OnEvent", function(_, event, ...)
 	if event == "PLAYER_REGEN_DISABLED" then
 		-- a fight starts: give the keyboard back to the game if nothing is being typed
@@ -2755,4 +2863,4 @@ ns._cwPlus = function() return plus end
 ns._cwLaunchers = function() return launchers end
 ns._cw = { wins = wins, groups = groups, Format = Format, Deliver = Deliver, FinishDrag = FinishDrag,
 	StartDrag = StartDrag, ChannelCat = ChannelCat, Rename = StartRename, WindowName = WindowName,
-	EnterToWindow = EnterToWindow, GameSent = GameSent, CheckBottom = function(w) return CheckBottom(w) end } -- for tests
+	EnterToWindow = EnterToWindow, GameSent = GameSent, Offline = Offline, RefreshStatus = RefreshStatus, SeenWhisper = seenWhisper, CheckBottom = function(w) return CheckBottom(w) end } -- for tests

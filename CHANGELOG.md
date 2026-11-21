@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.24
+- Neu: Flüsterfenster zeigen einen Punkt am Tab (grün = online, grau = offline oder unbekannt).
+- Neu: Schreibst du jemandem, der nicht online ist, erscheint ein Hinweis im Fenster.
+
 ## 1.7.23
 - Neu: Probleme beim Anzeigen von Chatzeilen werden gemeldet statt still verschluckt (/chatpilot fehler).
 
