@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.18
+- Sichern & übertragen: Unter „Gut zu wissen“ lassen sich Einstellungen, Notizen und Chats (eigene Fenster, Verlauf, Flüstern, Erwähnungen) als Text exportieren und später wieder importieren, z. B. nach einer Neuinstallation oder auf einem anderen Computer. Das Format ist einfaches JSON. Beim Import wird alles geprüft; Ungültiges wird verworfen. Auch per `/chatpilot export` und `/chatpilot import`.
+- Hinweis zum Entfernen des Addons: Löscht man den Addon-Ordner, bleiben Notizen und Chatverlauf in der Speicherdatei von WoW liegen. Das steht jetzt ausdrücklich in „Gut zu wissen“. Neu: Der Knopf „ALLE Daten löschen und neu laden“ leert die Speicherdatei, bevor man das Addon entfernt.
+
 ## 1.7.17
 - Behoben: War der Chat hochgescrollt, blieb der Text nach dem Absenden im Eingabefeld stehen. Das Feld wird jetzt zuerst geleert, danach springt der Chat nach unten.
 - Sichtbare Rückmeldung beim Absenden: Die Eingabeleiste blitzt kurz in der Akzentfarbe auf.

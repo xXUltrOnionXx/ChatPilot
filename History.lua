@@ -57,6 +57,8 @@ ev:RegisterEvent("PLAYER_LOGIN")
 ev:RegisterEvent("PLAYER_LOGOUT")
 ev:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_LOGOUT" then
+		-- after an import or a full wipe the data must stay exactly as it is
+		if ns.noLogoutSave then return end
 		pcall(Save)
 		-- after saving: empty what you chose under "Good to know"
 		if ns.AutoClearOnLogout then pcall(ns.AutoClearOnLogout, ns) end

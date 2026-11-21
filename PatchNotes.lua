@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.18",
+		de = { "Neu: Einstellungen, Notizen und Chats lassen sich als Text exportieren und wieder importieren (Gut zu wissen)", "Hinweis: Beim Löschen des Addons bleiben Daten in WoWs Speicherdatei; neuer Knopf löscht vorher alles" },
+		en = { "New: export and import settings, notes and chats as text (Good to know)", "Note: deleting the addon leaves data in WoW's save file; a new button wipes everything first" },
+		fr = { "Nouveau : exporter et importer réglages, notes et chats sous forme de texte (À savoir)", "Remarque : supprimer l'addon laisse des données dans le fichier de sauvegarde ; un nouveau bouton efface tout avant" },
+		es = { "Nuevo: exportar e importar ajustes, notas y chats como texto (Conviene saber)", "Aviso: borrar el addon deja datos en el archivo de WoW; un botón nuevo lo borra todo antes" },
+		it = { "Novità: esporta e importa impostazioni, note e chat come testo (Da sapere)", "Nota: eliminare l'addon lascia dati nel file di WoW; un nuovo pulsante cancella tutto prima" },
+		pt = { "Novo: exportar e importar configurações, notas e chats como texto (Bom saber)", "Aviso: apagar o addon deixa dados no arquivo do WoW; um novo botão apaga tudo antes" },
+		ru = { "Новое: экспорт и импорт настроек, заметок и чатов в виде текста (Полезно знать)", "Важно: при удалении аддона данные остаются в файле WoW; новая кнопка сначала стирает всё" },
+		ko = { "신규: 설정, 메모, 채팅을 텍스트로 내보내고 가져오기 (알아두기)", "안내: 애드온을 삭제해도 WoW 저장 파일에 데이터가 남으며, 새 버튼으로 먼저 모두 지울 수 있습니다" },
+		zh = { "新增：设置、笔记和聊天可导出为文本并重新导入（须知）", "提示：删除插件后数据仍留在魔兽存档文件中；新按钮可先清除全部数据" },
+		tw = { "新增：設定、筆記與聊天可匯出為文字並重新匯入（須知）", "提示：刪除插件後資料仍留在魔獸存檔中；新按鈕可先清除全部資料" },
+	},
 	{ v = "1.7.17",
 		de = { "Behoben: Nach dem Absenden bleibt kein Text mehr im Eingabefeld; die Leiste blitzt kurz auf" },
 		en = { "Fixed: no text is left in the input after sending; the bar flashes briefly" },

@@ -765,6 +765,20 @@ local function BuildInfo(content)
 	b5:SetPoint("TOPLEFT", b3, "BOTTOMLEFT", 0, -10)
 	store:SetScript("OnShow", Count)
 
+	-- back up / move your data
+	local bk = InfoBox(flow, c, L.INFO_BACKUP, L.INFO_BACKUP_TEXT, 46)
+	local be = UI.Button(bk, L.BK_EXPORT, 230, 28, "accent")
+	be:SetPoint("TOPLEFT", bk.body, "BOTTOMLEFT", 0, -12)
+	be:SetScript("OnClick", function() ns:ShowBackup("export") end)
+	local bi = UI.Button(bk, L.BK_IMPORT, 230, 28)
+	bi:SetPoint("LEFT", be, "RIGHT", 8, 0)
+	bi:SetScript("OnClick", function() ns:ShowBackup("import") end)
+
+	-- removing the addon does not remove the data
+	local rm = InfoBox(flow, c, L.INFO_REMOVE, L.INFO_REMOVE_TEXT, 46)
+	local bw = UI.ConfirmButton(rm, L.BK_WIPE, 468, 28, function() ns:WipeAllData() end)
+	bw:SetPoint("TOPLEFT", rm.body, "BOTTOMLEFT", 0, -12)
+
 	-- empty chosen chats when logging out
 	local autoRows, autoCount = {}, 0
 	local auto = InfoBox(flow, c, L.INFO_AUTO, L.INFO_AUTO_TEXT, function() return 8 + autoCount * 28 end)
@@ -1028,6 +1042,8 @@ SlashCmdList.CHATPILOT = function(input)
 		ns.Print(L.CLEARED, L.CLEAR_MAIN)
 	elseif cmd == "info" then
 		ns:OpenOptions(6)
+	elseif cmd == "export" or cmd == "import" or cmd == "backup" then
+		ns:ShowBackup(cmd == "import" and "import" or "export")
 	elseif cmd == "thanks" or cmd == "danke" or cmd == "news" or cmd == "patchnotes" then
 		if ns.ShowThanks then ns:ShowThanks() end
 	elseif cmd == "copy" then
