@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.16
+- Itemlinks per Shift-Klick funktionieren jetzt auch in den eigenen Chatfenstern: Der Link landet im Eingabefeld des Fensters, in dem du gerade schreibst (aus Taschen, Chatlinks usw.).
+- Nach oben gescrollt? Sobald du eine Nachricht mit Enter abschickst, springt dieser Chat ganz nach unten (eigene und normale Chatfenster). Nicht beim Tippen.
+- Kommen in einem eigenen Fenster neue Nachrichten an, während du weiter oben liest, leuchtet unten ein kleiner Hinweis „Neue Nachrichten“. Ein Klick springt nach unten, der Hinweis verschwindet auch von selbst, sobald du unten bist. Deine Leseposition bleibt dabei erhalten.
+
 ## 1.7.15
 - Enter merkt sich den Chat: Hast du ein eigenes Fenster angeklickt (irgendwo im Fenster, auf einem Tab oder im Eingabefeld) oder darin gesendet (auch ohne Text, nur Enter zum Schließen), bringt dich die nächste Enter-Taste wieder in dasselbe Fenster mit demselben Ziel (Flüstern, Kanal, Gilde ...). Sendest du danach im normalen Eingabefeld des Spiels, gilt wieder dessen Verhalten. Bei einer Flüstern-Antwort merkt sich auch das Spiel das Ziel.
 - Ausgeblendete (anstößige) Nachrichten lassen sich wieder anzeigen: Der Link „Anzeigen“ gibt die Nachricht frei und schreibt sie in allen Chatfenstern neu. In deinen eigenen Fenstern steht bis zum Klick nur ein Hinweis statt des Textes, ohne Erwähnungs-Alarm oder Hinweisfenster. Bei Nachrichten aus einer früheren Sitzung steht „nicht mehr verfügbar“.

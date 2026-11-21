@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.16",
+		de = { "Shift-Klick auf Items und Links fügt sie jetzt auch in eigene Chatfenster ein", "Beim Absenden springt der Chat nach unten; ein leuchtender Hinweis zeigt neue Nachrichten, während du weiter oben liest" },
+		en = { "Shift-click on items and links now inserts them into custom chat windows too", "Sending jumps the chat to the bottom; a glowing hint shows new messages while you read further up" },
+		fr = { "Maj+clic sur les objets et liens les insère aussi dans les fenêtres personnalisées", "L'envoi ramène le chat en bas ; un indicateur lumineux signale les nouveaux messages pendant la lecture plus haut" },
+		es = { "Mayús+clic en objetos y enlaces ahora también los inserta en las ventanas propias", "Al enviar, el chat baja hasta el final; un aviso brillante indica mensajes nuevos mientras lees más arriba" },
+		it = { "Maiusc+clic su oggetti e link ora li inserisce anche nelle finestre personalizzate", "Con l'invio la chat scorre in fondo; un avviso luminoso segnala i nuovi messaggi mentre leggi più in alto" },
+		pt = { "Shift+clique em itens e links agora os insere também nas janelas próprias", "Ao enviar, o chat vai para o fim; um aviso brilhante mostra novas mensagens enquanto você lê mais acima" },
+		ru = { "Shift+клик по предметам и ссылкам теперь вставляет их и в собственные окна чата", "При отправке чат прокручивается вниз; светящаяся подсказка сообщает о новых сообщениях, пока вы читаете выше" },
+		ko = { "아이템과 링크를 Shift+클릭하면 사용자 채팅 창에도 삽입됩니다", "전송하면 채팅이 맨 아래로 이동하고, 위쪽을 읽는 동안 새 메시지는 빛나는 알림으로 표시됩니다" },
+		zh = { "按住Shift点击物品和链接现在也能插入自定义聊天窗口", "发送时聊天会滚动到底部；向上阅读时，新消息会以发光提示显示" },
+		tw = { "按住Shift點擊物品與連結現在也能插入自訂聊天視窗", "送出時聊天會捲到底部；向上閱讀時，新訊息會以發光提示顯示" },
+	},
 	{ v = "1.7.15",
 		de = { "Enter bringt dich nach einem Klick ins Fenster oder nach dem Senden in dasselbe Fenster und denselben Chat zurück", "Ausgeblendete Nachrichten lassen sich über „Anzeigen“ wieder einblenden, in normalen und eigenen Chatfenstern" },
 		en = { "After clicking into a window or sending, Enter takes you back to the same window and chat", "Hidden messages can be shown again with 'Show', in normal and custom chat windows" },

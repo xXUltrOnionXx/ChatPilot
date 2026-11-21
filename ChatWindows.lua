@@ -1108,8 +1108,8 @@ local function CreateGroupFrame(g)
 	ph:SetPoint("LEFT", 9, 0)
 	ph:SetText(L.CW_WRITE)
 	local function upd() ph:SetShown(eb:GetText() == "" and not eb:HasFocus()) end
-	eb:SetScript("OnEditFocusGained", function() ns.cwLast = g; upd(); holder:SetBorderColor(unpack(C.accent)) end)
-	eb:SetScript("OnEditFocusLost", function() upd(); holder:SetBorderColor(unpack(C.border)) end)
+	eb:SetScript("OnEditFocusGained", function() ns.cwLast = g; ns.cwFocusEB = eb; upd(); holder:SetBorderColor(unpack(C.accent)) end)
+	eb:SetScript("OnEditFocusLost", function() ns.cwLostAt = GetTime(); upd(); holder:SetBorderColor(unpack(C.border)) end)
 	eb:SetScript("OnTextChanged", function(self)
 		upd()
 		local text = self:GetText() or ""
@@ -1182,7 +1182,9 @@ local function CreateMessageFrame(w)
 		else
 			if IsShiftKeyDown() then self:ScrollToBottom() else self:ScrollDown() end
 		end
+		CheckBottom(w)
 	end)
+	if m.SetOnScrollChangedCallback then m:SetOnScrollChangedCallback(function() CheckBottom(w) end) end
 	m:SetScript("OnHyperlinkClick", function(self, link, text, button)
 		if ns.LinkClick(link) then return end
 		local cid = ns.CensorID(link)
@@ -1386,6 +1388,29 @@ end
 
 local MAX_LIVE = 1000
 
+-- glowing hint at the bottom while you read further up and new lines arrive
+local function HideNewHint(w) if w.newHint then w.newHint:Hide() end end
+local function CheckBottom(w)
+	local m = w.msg
+	if w.newHint and w.newHint:IsShown() and m.AtBottom and m:AtBottom() == true then w.newHint:Hide() end
+end
+local function ShowNewHint(w)
+	local b = w.newHint
+	if not b then
+		b = UI.Button(w.msg, L.CW_NEWMSG, 130, 20, "accent")
+		b:SetPoint("BOTTOM", w.msg, "BOTTOM", 0, 3)
+		b:SetFrameLevel(w.msg:GetFrameLevel() + 12)
+		local width = tonumber(b.label:GetStringWidth())
+		if width then b:SetWidth(width + 26) end
+		b:SetScript("OnClick", function() w.msg:ScrollToBottom(); b:Hide() end)
+		b:SetScript("OnUpdate", function(self)
+			self:SetAlpha(0.72 + 0.28 * math.sin(GetTime() * 4))
+		end)
+		w.newHint = b
+	end
+	b:Show()
+end
+
 -- every line shown in a window (so a hidden message can be released later)
 local function Live(w, text, r, g, b, cid, ph)
 	local live = w.live
@@ -1409,7 +1434,9 @@ local function CensoredLine(lineID)
 end
 
 local function AddLine(w, text, r, g, b, save, cid, ph)
+	local away = w.msg.AtBottom and w.msg:AtBottom() == false
 	w.msg:AddMessage(text, r, g, b)
+	if away then ShowNewHint(w) end
 	Live(w, text, r, g, b, cid, ph)
 	w.count = (w.count or 0) + 1
 	if save then
@@ -1886,6 +1913,7 @@ function ns:CW_Submit(g)
 	end
 	local ok = pcall(Send, t, text)
 	if ok then
+		if w and w.msg then w.msg:ScrollToBottom(); HideNewHint(w) end
 		if t.type == "WHISPER" and ChatEdit_SetLastTellTarget and ns.Usable(t.name) then
 			pcall(ChatEdit_SetLastTellTarget, t.name, "WHISPER")
 		end
@@ -1921,7 +1949,14 @@ local function EnterToWindow(text)
 	end
 	g.input:SetFocus()
 end
-local function GameSent() ns.cwLast = nil end
+local function GameSent(editBox)
+	ns.cwLast = nil
+	-- sending jumps that game chat window to its newest line
+	if type(editBox) == "table" then
+		local cf = rawget(editBox, "chatFrame")
+		if cf and cf.ScrollToBottom then pcall(cf.ScrollToBottom, cf) end
+	end
+end
 -- clicking a game chat window hands Enter back to the game
 ns.OnChatFrame(function(frame)
 	pcall(frame.HookScript, frame, "OnMouseDown", GameSent)
@@ -1938,6 +1973,31 @@ local function HookFn(tbl, name, fn)
 end
 HookFn(_G, "ChatFrame_OpenChat", EnterToWindow)
 HookFn(ChatFrameUtil, "OpenChat", EnterToWindow)
+-- Shift-click an item (bag, chat link ...): the game puts the link into ITS box.
+-- With one of our inputs in use, the link goes there instead.
+local lastInsert, lastInsertAt
+local function InsertToWindow(text)
+	local eb = ns.cwFocusEB
+	if not eb or type(text) ~= "string" or not ns.Usable(text) then return end
+	local now = GetTime()
+	if lastInsert == text and lastInsertAt == now then return end
+	local mine = eb:HasFocus()
+	if not mine and not (ns.cwLostAt and now - ns.cwLostAt < 0.25) then return end
+	if Locked() then return end
+	lastInsert, lastInsertAt = text, now
+	if not mine then
+		local box = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
+		if box then
+			pcall(box.SetText, box, "")
+			if ChatEdit_DeactivateChat then pcall(ChatEdit_DeactivateChat, box) end
+		end
+		eb:SetFocus()
+	end
+	eb:Insert(text)
+end
+ns.cwInsert = InsertToWindow
+HookFn(_G, "ChatEdit_InsertLink", InsertToWindow)
+HookFn(ChatFrameUtil, "InsertLink", InsertToWindow)
 HookFn(_G, "ChatEdit_SendText", GameSent)
 HookFn(ChatFrameUtil, "SendText", GameSent)
 
