@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.23
+- Neu: Probleme beim Anzeigen von Chatzeilen werden gemeldet statt still verschluckt (/chatpilot fehler).
+
 ## 1.7.22
 - Neu: Archiv für eigene Chatfenster. Ältere Zeilen gehen nicht mehr verloren, sondern wandern als Text ins Archiv des Fensters (bis zu 3000 Zeilen). Lesen und Suchen unter Einstellungen > Gut zu wissen > Archiv oder mit /chatpilot archiv. Export und Import nehmen das Archiv mit.
 

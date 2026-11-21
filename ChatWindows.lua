@@ -1711,8 +1711,8 @@ evFrame:SetScript("OnEvent", function(_, event, ...)
 		return
 	end
 	if not ns.S or not ns.loggedIn then return end
-	local ok = pcall(Deliver, event, ...)
-	if not ok then return end
+	local ok, err = pcall(Deliver, event, ...)
+	if not ok then ns.ReportError("window", err) end
 end)
 
 -------------------------------------------------------------------------------

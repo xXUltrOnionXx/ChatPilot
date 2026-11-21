@@ -1062,6 +1062,9 @@ SlashCmdList.CHATPILOT = function(input)
 		ns.Print(L.CLEARED, L.CLEAR_MAIN)
 	elseif cmd == "info" then
 		ns:OpenOptions(6)
+	elseif cmd == "errors" or cmd == "fehler" then
+		if #ns.errors == 0 then ns.Print(L.ERR_NONE) end
+		for _, e in ipairs(ns.errors) do ns.Print(e) end
 	elseif cmd == "archive" or cmd == "archiv" then
 		ns:ShowArchive()
 	elseif cmd == "export" or cmd == "import" or cmd == "backup" then

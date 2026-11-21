@@ -1,5 +1,18 @@
 local _, ns = ...
 
+-- Problems while showing chat lines are kept (and told once) instead of vanishing silently
+ns.errors = {}
+function ns.ReportError(where, err)
+	local list = ns.errors
+	local msg = tostring(err):gsub("|", "||"):sub(1, 300)
+	list[#list + 1] = date("%H:%M:%S") .. " " .. where .. ": " .. msg
+	if #list > 20 then table.remove(list, 1) end
+	if not ns.errorTold and ns.Print then
+		ns.errorTold = true
+		ns.Print(ns.L and ns.L.ERR_TOLD or "A problem was caught. Type /chatpilot errors to see it.")
+	end
+end
+
 -- Midnight-era clients can hand addons "secret" values (e.g. chat text in
 -- restricted situations). Those must never be inspected, so every handler
 -- checks them first and simply does nothing if a value is secret.

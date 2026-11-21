@@ -313,6 +313,7 @@ function ns.InstallMainChatFrame(frame)
 				and (text:find("|Hplayer:", 1, true) or text:find("|HBNplayer:", 1, true)) then
 				local ok, out = pcall(AddLevels, text)
 				if ok and out then text = out end
+				if not ok then ns.ReportError("levels", out) end
 			end
 			-- "[2. Handel - Deutsch 41]" -> "[Handel]" (the channel link stays clickable)
 			text = text:gsub("(|Hchannel:[^|]+|h)%[(.-)%](|h)", function(open, inner, close)
@@ -323,6 +324,7 @@ function ns.InstallMainChatFrame(frame)
 			if ns.StyleMainLine and ns.MainLookActive() then
 				local ok, done = pcall(ns.StyleMainLine, self, text, orig, ...)
 				if ok and done then return end
+				if not ok then ns.ReportError("chat style", done) end
 			end
 		end
 		self.cpHint = nil

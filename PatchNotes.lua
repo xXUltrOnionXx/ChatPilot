@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.23",
+		de = { "Neu: Probleme beim Anzeigen von Chatzeilen werden gemeldet statt still verschluckt (/chatpilot fehler)" },
+		en = { "New: problems while showing chat lines are reported instead of silently swallowed (/chatpilot errors)" },
+		fr = { "Nouveau : les problèmes d'affichage des lignes de chat sont signalés au lieu d'être ignorés (/chatpilot errors)" },
+		es = { "Nuevo: los problemas al mostrar líneas de chat se avisan en vez de ignorarse (/chatpilot errors)" },
+		it = { "Novità: i problemi nel mostrare le righe di chat vengono segnalati invece di essere ignorati (/chatpilot errors)" },
+		pt = { "Novo: problemas ao mostrar linhas de chat são avisados em vez de ignorados (/chatpilot errors)" },
+		ru = { "Новое: проблемы при показе строк чата теперь сообщаются, а не скрываются (/chatpilot errors)" },
+		ko = { "신규: 채팅 줄 표시 중 문제가 조용히 무시되지 않고 알림 (/chatpilot errors)" },
+		zh = { "新增：显示聊天内容时出现的问题会被提示，而不是被悄悄忽略（/chatpilot errors）" },
+		tw = { "新增：顯示聊天內容時發生的問題會被提示，而不是被悄悄忽略（/chatpilot errors）" },
+	},
 	{ v = "1.7.22",
 		de = { "Neu: Archiv für Chatfenster – ältere Zeilen gehen nicht mehr verloren, du kannst sie lesen und durchsuchen (Einstellungen > Gut zu wissen)" },
 		en = { "New: archive for chat windows - older lines are no longer lost, you can read and search them (Settings > Good to know)" },
