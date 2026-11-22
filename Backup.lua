@@ -528,7 +528,7 @@ local function CountText(info)
 end
 
 local function CreateWin()
-	local f = UI.Window("ChatPilotBackup", L.BK_TITLE_EXPORT, 640, 570)
+	local f = UI.Window("ChatPilotBackupWindow", L.BK_TITLE_EXPORT, 640, 570)
 	f.sel = { settings = true, notes = true, chats = true }
 
 	-- what to include

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.25
+- Behoben: Fehlermeldung beim Drücken von Escape, nachdem der Export in eine Datei gespeichert wurde (Namensgleichheit zwischen Fenster und Sicherungsdatei).
+
 ## 1.7.24
 - Neu: Flüsterfenster zeigen einen Punkt am Tab (grün = online, grau = offline oder unbekannt).
 - Neu: Schreibst du jemandem, der nicht online ist, erscheint ein Hinweis im Fenster.

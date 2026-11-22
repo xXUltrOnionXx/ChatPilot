@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.25",
+		de = { "Behoben: Fehlermeldung beim Drücken von Escape, nachdem der Export in eine Datei gespeichert wurde" },
+		en = { "Fixed: error when pressing Escape after saving the export to a file" },
+		fr = { "Corrigé : erreur en appuyant sur Échap après l'enregistrement de l'export dans un fichier" },
+		es = { "Corregido: error al pulsar Esc tras guardar la exportación en un archivo" },
+		it = { "Corretto: errore premendo Esc dopo aver salvato l'esportazione in un file" },
+		pt = { "Corrigido: erro ao premir Esc depois de guardar a exportação num ficheiro" },
+		ru = { "Исправлено: ошибка при нажатии Esc после сохранения экспорта в файл" },
+		ko = { "수정: 내보내기를 파일로 저장한 뒤 Esc를 누르면 오류가 나던 문제" },
+		zh = { "已修复：将导出保存为文件后按 Esc 出现错误的问题" },
+		tw = { "已修復：將匯出儲存為檔案後按 Esc 出現錯誤的問題" },
+	},
 	{ v = "1.7.24",
 		de = { "Neu: Flüsterfenster zeigen einen Punkt am Tab: grün = online, grau = offline oder unbekannt", "Neu: Wenn du jemandem schreibst, der nicht online ist, steht jetzt ein Hinweis im Fenster" },
 		en = { "New: whisper windows show a dot on the tab: green = online, grey = offline or unknown", "New: if you write to someone who is not online, a notice now appears in the window" },
