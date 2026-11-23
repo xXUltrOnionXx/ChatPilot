@@ -30,6 +30,7 @@ local CATS = {
 	{ key = "channels", channel = true },
 	{ key = "community", events = { "CHAT_MSG_COMMUNITIES_CHANNEL" } },
 	{ key = "system", events = { "CHAT_MSG_SYSTEM" } },
+	{ key = "presence", events = {} }, -- "X has come online." / "X has gone offline." (arrives as a system message)
 }
 ns.CW_CATS = CATS
 local EVENT_CAT = {}
@@ -1577,9 +1578,31 @@ end
 ns.ChatLook = { CALM = CALM, Dot = Dot, INDENT = INDENT, ChannelLabel = ChannelLabel, ShortChannel = ShortChannel,
 	HeadMark = HeadMark, BODY = BODY, PlainName = PlainName, StripeColor = StripeColor }
 
+-- "|Hplayer:Name|h[Name]|h has come online." / "Name has gone offline." -> name, online
+local presencePatterns
+local function PresenceOf(msg)
+	if type(msg) ~= "string" then return end
+	if not presencePatterns then
+		presencePatterns = {}
+		local function mk(fmt, state)
+			if type(fmt) ~= "string" then return end
+			local pat = fmt:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0"):gsub("%%%%s", "(.-)")
+			presencePatterns[#presencePatterns + 1] = { "^" .. pat .. "$", state }
+		end
+		mk(_G.ERR_FRIEND_ONLINE_SS, true)
+		mk(_G.ERR_FRIEND_OFFLINE_S, false)
+	end
+	for _, p in ipairs(presencePatterns) do
+		local a = msg:match(p[1])
+		if a and a ~= "" then return a, p[2] end
+	end
+end
+
 local function Deliver(event, ...)
 	if #groups == 0 then return end
 	local cat = EVENT_CAT[event]
+	-- online / offline notices also go to windows that picked them
+	local presence = event == "CHAT_MSG_SYSTEM" and ns.Usable((...)) and PresenceOf((...)) and true or false
 	if event == "CHAT_MSG_CHANNEL" then
 		local zoneChannelID, channelNumber = select(7, ...)
 		if ns.Usable(zoneChannelID, channelNumber) then cat = ChannelCat(zoneChannelID, channelNumber) else cat = "channels" end
@@ -1588,7 +1611,7 @@ local function Deliver(event, ...)
 
 	local targets = {}
 	for _, w in pairs(wins) do
-		if w.data.cats[cat] and w.group then
+		if (w.data.cats[cat] or (presence and w.data.cats.presence)) and w.group then
 			-- a conversation window only takes whispers with its one person
 			local p = w.data.partner
 			local ok = true
@@ -1730,12 +1753,13 @@ function ns.CW_PartnerOnline(p)
 		return ok and res and true or false
 	end
 	local key = p.key
+	local st = seenWhisper[key]
+	-- the game just said they left: believe that until the roster catches up
+	if st and st.offline and GetTime() - st.t < 15 then return false end
 	if ns.live and ns.live[key] then
-		local st = seenWhisper[key]
 		if st then st.offline = nil end
 		return true
 	end
-	local st = seenWhisper[key]
 	if st and not st.offline and GetTime() - st.t < 600 then return true end
 	return false
 end
@@ -1781,6 +1805,26 @@ local function Offline(msg)
 	RefreshStatus()
 end
 
+-- a person of a whisper window comes online / goes offline
+local function Presence(msg)
+	if not ns.Usable(msg) then return end
+	local name, online = PresenceOf(msg)
+	if not name then return end
+	local key = ns.Normalize(name)
+	local short = Ambiguate(name, "short"):lower()
+	for _, w in pairs(wins) do
+		local p = w.data.partner
+		if p and not p.bn and w.group and (p.key == key or Ambiguate(p.key, "short"):lower() == short) then
+			seenWhisper[p.key] = online and { t = GetTime() } or { t = GetTime(), offline = true }
+			if not (w.data.cats.presence or w.data.cats.system) then
+				local txt = (online and L.CW_NOW_ON or L.CW_NOW_OFF):format(Ambiguate(p.name or name, "none"))
+				AddLine(w, UI.Hex(C.muted) .. txt .. "|r", 0.62, 0.67, 0.74, false)
+			end
+		end
+	end
+	RefreshStatus()
+end
+
 local stFrame = CreateFrame("Frame")
 stFrame:RegisterEvent("CHAT_MSG_SYSTEM")
 stFrame:RegisterEvent("CHAT_MSG_WHISPER")
@@ -1789,6 +1833,7 @@ stFrame:SetScript("OnEvent", function(_, event, msg, author)
 	if not ns.loggedIn then return end
 	if event == "CHAT_MSG_SYSTEM" then
 		pcall(Offline, msg)
+		pcall(Presence, msg)
 	elseif ns.Usable(author) then
 		local key = ns.Normalize(author)
 		if key then seenWhisper[key] = { t = GetTime() } end
@@ -2864,4 +2909,4 @@ ns._cwPlus = function() return plus end
 ns._cwLaunchers = function() return launchers end
 ns._cw = { wins = wins, groups = groups, Format = Format, Deliver = Deliver, FinishDrag = FinishDrag,
 	StartDrag = StartDrag, ChannelCat = ChannelCat, Rename = StartRename, WindowName = WindowName,
-	EnterToWindow = EnterToWindow, GameSent = GameSent, Offline = Offline, RefreshStatus = RefreshStatus, SeenWhisper = seenWhisper, CheckBottom = function(w) return CheckBottom(w) end } -- for tests
+	EnterToWindow = EnterToWindow, GameSent = GameSent, Offline = Offline, Presence = Presence, RefreshStatus = RefreshStatus, SeenWhisper = seenWhisper, CheckBottom = function(w) return CheckBottom(w) end } -- for tests
