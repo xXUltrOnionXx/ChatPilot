@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.26
+- Verbessert: Kanalnamen mit kyrillischen und anderen nicht-lateinischen Buchstaben werden sicherer verarbeitet (Russisch: Kanalname erschien ohne Text).
+- Verbessert: alle neuen Texte (Export/Import, Archiv, Rundgang, Online-Anzeige) sind in allen Sprachen übersetzt.
+
 ## 1.7.25
 - Behoben: Fehlermeldung beim Drücken von Escape, nachdem der Export in eine Datei gespeichert wurde (Namensgleichheit zwischen Fenster und Sicherungsdatei).
 

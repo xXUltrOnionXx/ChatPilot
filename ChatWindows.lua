@@ -260,7 +260,7 @@ local function TargetLabel(t)
 		return "@" .. n
 	elseif t.type == "CHANNEL" then
 		-- "Allgemein - Sturmwind" -> "Allgemein" (short enough for the button)
-		local n = (t.name or ""):gsub("%s+%-%s+.*$", "")
+		local n = (t.name or ""):gsub("[ \t]+%-[ \t]+.*$", "")
 		return tostring(t.number) .. ". " .. n
 	end
 	return L[TYPE_LABEL[t.type] or ""] or t.type
@@ -1550,9 +1550,10 @@ local function StripeColor(isOwn, mentioned, class, calm)
 end
 
 local function ShortChannel(name)
-	name = tostring(name or "")
-	name = name:gsub("^%d+%.%s*", ""):gsub("%s+%-%s+.*$", "")
-	return name
+	-- plain spaces only: %s can match bytes of Cyrillic letters in some locales
+	local full = tostring(name or "")
+	local short = full:gsub("^%d+%.[ \t]*", ""):gsub("[ \t]+%-[ \t]+.*$", "")
+	return short ~= "" and short or full
 end
 
 -- label after the time: where the message was written

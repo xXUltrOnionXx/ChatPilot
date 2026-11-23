@@ -317,7 +317,8 @@ function ns.InstallMainChatFrame(frame)
 			end
 			-- "[2. Handel - Deutsch 41]" -> "[Handel]" (the channel link stays clickable)
 			text = text:gsub("(|Hchannel:[^|]+|h)%[(.-)%](|h)", function(open, inner, close)
-				local short = inner:gsub("^%d+%.%s*", ""):gsub("%s+%-%s+.*$", "")
+				-- plain spaces only: %s can match bytes of Cyrillic letters in some locales
+				local short = inner:gsub("^%d+%.[ \t]*", ""):gsub("[ \t]+%-[ \t]+.*$", "")
 				if short == "" then return nil end
 				return open .. "[" .. short .. "]" .. close
 			end)

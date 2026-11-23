@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.26",
+		de = { "Verbessert: Kanalnamen mit kyrillischen und anderen nicht-lateinischen Buchstaben werden sicherer verarbeitet", "Verbessert: alle neuen Texte sind jetzt in allen Sprachen übersetzt" },
+		en = { "Improved: channel names with Cyrillic and other non-Latin letters are handled more safely", "Improved: all new texts are now translated in every language" },
+		fr = { "Amélioré : les noms de canaux en cyrillique et autres alphabets non latins sont mieux gérés", "Amélioré : tous les nouveaux textes sont traduits dans toutes les langues" },
+		es = { "Mejorado: los nombres de canal con letras cirílicas y otros alfabetos no latinos se tratan con más seguridad", "Mejorado: todos los textos nuevos están traducidos a todos los idiomas" },
+		it = { "Migliorato: i nomi dei canali con lettere cirilliche e altri alfabeti non latini sono gestiti in modo più sicuro", "Migliorato: tutti i nuovi testi sono tradotti in tutte le lingue" },
+		pt = { "Melhorado: nomes de canais com letras cirílicas e outros alfabetos não latinos são tratados com mais segurança", "Melhorado: todos os textos novos estão traduzidos em todos os idiomas" },
+		ru = { "Улучшено: названия каналов с кириллицей и другими нелатинскими буквами обрабатываются надёжнее", "Улучшено: все новые тексты переведены на все языки" },
+		ko = { "개선: 키릴 문자 등 비라틴 문자가 포함된 채널 이름을 더 안전하게 처리", "개선: 모든 새 문구가 전체 언어로 번역됨" },
+		zh = { "改进：含西里尔字母等非拉丁字母的频道名称处理更稳妥", "改进：所有新文本现已翻译为全部语言" },
+		tw = { "改進：含西里爾字母等非拉丁字母的頻道名稱處理更穩妥", "改進：所有新文字現已翻譯為全部語言" },
+	},
 	{ v = "1.7.25",
 		de = { "Behoben: Fehlermeldung beim Drücken von Escape, nachdem der Export in eine Datei gespeichert wurde" },
 		en = { "Fixed: error when pressing Escape after saving the export to a file" },
