@@ -133,7 +133,8 @@ function ns.StyleMainLine(frame, text, orig, r, g, b, ...)
 		-- keep the game's channel link (clickable), just without the brackets
 		local co, cin, cc = prefix:match("(|Hchannel:[^|]+|h)%[(.-)%](|h)")
 		if co then
-			label = co .. look.ShortChannel(cin) .. cc
+			local sh = look.ShortChannel(cin)
+			label = co .. (sh ~= "" and sh or cin) .. cc
 		else
 			label = look.ChannelLabel(chatType, h.chanNum, h.chanBase or "", h.chan, h.author)
 		end

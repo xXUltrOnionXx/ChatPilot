@@ -316,12 +316,13 @@ function ns.InstallMainChatFrame(frame)
 				if not ok then ns.ReportError("levels", out) end
 			end
 			-- "[2. Handel - Deutsch 41]" -> "[Handel]" (the channel link stays clickable)
-			text = text:gsub("(|Hchannel:[^|]+|h)%[(.-)%](|h)", function(open, inner, close)
-				-- plain spaces only: %s can match bytes of Cyrillic letters in some locales
-				local short = inner:gsub("^%d+%.[ \t]*", ""):gsub("[ \t]+%-[ \t]+.*$", "")
+			-- the same short name as everywhere else; if anything goes wrong the line stays as the game wrote it
+			local okC, shortened = pcall(string.gsub, text, "(|Hchannel:[^|]+|h)%[(.-)%](|h)", function(open, inner, close)
+				local short = ns.ChatLook and ns.ChatLook.ShortChannel(inner) or ""
 				if short == "" then return nil end
 				return open .. "[" .. short .. "]" .. close
 			end)
+			if okC and type(shortened) == "string" and shortened ~= "" then text = shortened end
 			if ns.StyleMainLine and ns.MainLookActive() then
 				local ok, done = pcall(ns.StyleMainLine, self, text, orig, ...)
 				if ok and done then return end

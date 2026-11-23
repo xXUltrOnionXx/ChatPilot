@@ -254,6 +254,29 @@ local function SameTarget(a, b)
 	return a and b and a.type == b.type and a.name == b.name and a.number == b.number
 end
 
+local function ShortChannel(name)
+	-- "2. Торговля - Москва" -> "Торговля". Plain byte comparisons only (no pattern classes),
+	-- so letters of any alphabet and any system language behave the same.
+	local full = tostring(name or "")
+	local short = full
+	local dot = short:find(".", 1, true)
+	if dot and dot > 1 and dot <= 4 then
+		local digits = true
+		for i = 1, dot - 1 do
+			local b = short:byte(i)
+			if b < 48 or b > 57 then digits = false break end
+		end
+		if digits then
+			local i = dot + 1
+			while short:byte(i) == 32 or short:byte(i) == 9 do i = i + 1 end
+			short = short:sub(i)
+		end
+	end
+	local sep = short:find(" - ", 1, true)
+	if sep and sep > 1 then short = short:sub(1, sep - 1) end
+	return short ~= "" and short or full
+end
+
 local function TargetLabel(t)
 	if not t then return L.CW_NO_TARGET end
 	if t.type == "WHISPER" or t.type == "BN_WHISPER" then
@@ -261,7 +284,7 @@ local function TargetLabel(t)
 		return "@" .. n
 	elseif t.type == "CHANNEL" then
 		-- "Allgemein - Sturmwind" -> "Allgemein" (short enough for the button)
-		local n = (t.name or ""):gsub("[ \t]+%-[ \t]+.*$", "")
+		local n = ShortChannel(t.name or "")
 		return tostring(t.number) .. ". " .. n
 	end
 	return L[TYPE_LABEL[t.type] or ""] or t.type
@@ -1550,12 +1573,6 @@ local function StripeColor(isOwn, mentioned, class, calm)
 	return calm
 end
 
-local function ShortChannel(name)
-	-- plain spaces only: %s can match bytes of Cyrillic letters in some locales
-	local full = tostring(name or "")
-	local short = full:gsub("^%d+%.[ \t]*", ""):gsub("[ \t]+%-[ \t]+.*$", "")
-	return short ~= "" and short or full
-end
 
 -- label after the time: where the message was written
 local function ChannelLabel(chatType, channelNumber, baseName, channelString, author)

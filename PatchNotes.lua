@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.28",
+		de = { "Verbessert: Kanalnamen (auch russisch, koreanisch, chinesisch) werden jetzt ohne Textmuster gekürzt und fallen bei Problemen auf den Originalnamen zurück" },
+		en = { "Improved: channel names (also Russian, Korean, Chinese) are now shortened without text patterns and fall back to the original name if anything goes wrong" },
+		fr = { "Amélioré : les noms de canaux (aussi russes, coréens, chinois) sont raccourcis sans motifs de texte et reviennent au nom d'origine en cas de problème" },
+		es = { "Mejorado: los nombres de canal (también rusos, coreanos, chinos) se acortan sin patrones de texto y vuelven al nombre original si algo falla" },
+		it = { "Migliorato: i nomi dei canali (anche russi, coreani, cinesi) vengono accorciati senza modelli di testo e tornano al nome originale in caso di problemi" },
+		pt = { "Melhorado: os nomes dos canais (também russos, coreanos, chineses) são encurtados sem padrões de texto e voltam ao nome original se algo falhar" },
+		ru = { "Улучшено: названия каналов (в том числе русские, корейские, китайские) сокращаются без текстовых шаблонов и при проблемах возвращаются к исходному названию" },
+		ko = { "개선: 채널 이름(러시아어, 한국어, 중국어 포함)을 텍스트 패턴 없이 줄이며 문제가 생기면 원래 이름으로 되돌림" },
+		zh = { "改进：频道名称（包括俄语、韩语、中文）现在不再使用文本模式来缩短，出现问题时会回退为原名称" },
+		tw = { "改進：頻道名稱（包括俄語、韓語、中文）現在不再使用文字模式來縮短，發生問題時會還原為原名稱" },
+	},
 	{ v = "1.7.27",
 		de = { "Neu: Online-/Offline-Meldungen lassen sich in jedem Chatfenster einschalten (Filter-Menü)", "Neu: Flüsterfenster zeigen, wenn die Person online kommt oder offline geht, und der Punkt am Tab wechselt sofort" },
 		en = { "New: online / offline notices can be switched on in every chat window (filter menu)", "New: whisper windows show when the person comes online or goes offline, and the dot on the tab changes at once" },
