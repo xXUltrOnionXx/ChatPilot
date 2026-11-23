@@ -90,6 +90,10 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
   - **Direkt im Fenster schreiben:** Jedes Fenster hat ein Eingabefeld. Der Knopf links daneben zeigt, wohin die Nachricht geht – standardmäßig dorthin, woher die letzte Nachricht kam. Klick auf einen Namen = ihm flüstern. @-Vorschläge funktionieren auch hier.
   - **Chat-Befehle wie gewohnt:** `/w Name`, `/r`, `/g`, `/p`, `/ra`, `/s`, `/y`, `/2` … werden zum Ziel des Fensters – die Nachricht bleibt im Fenster. Rücktaste im leeren Feld setzt das Ziel zurück.
   - **Glocke:** pro Fenster an-/ausschaltbar – Ton und Hinweis bei neuen Nachrichten.
+  - **Online-Punkt in Flüsterfenstern:** grün = online, grau = offline oder unbekannt. Schreibst du jemandem, der nicht online ist, erscheint ein Hinweis im Fenster.
+  - **Online-/Offline-Meldungen:** im Filter-Menü jedes Fensters einschaltbar – du siehst, wer gerade online gekommen oder offline gegangen ist.
+  - **Enter und Shift-Klick:** Enter öffnet den zuletzt genutzten Chat mit demselben Ziel, Shift-Klick fügt Item-Links in das Eingabefeld des Fensters ein, und nach dem Senden springt der Chat nach unten. Neue Nachrichten beim Hochscrollen zeigt ein kleiner Hinweis.
+  - **Archiv:** ältere Zeilen gehen nicht verloren, sondern wandern in ein durchsuchbares Archiv des Fensters (bis zu 3000 Zeilen).
   - Namen, Items und Links sind anklickbar, die letzten Nachrichten bleiben gespeichert.
   - **Leeren:** Trichter-Symbol → „Dieses Fenster leeren“.
   - **Umbenennen:** Rechtsklick auf den Tab. Lange Namen laufen im Tab langsam durch.
@@ -97,6 +101,9 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 ### Gut zu wissen
 - Eigene Einstellungsseite **„Gut zu wissen“**: zeigt, was ChatPilot speichert (Chatverlauf für nach /reload, eigene Fenster, verpasste Flüsternachrichten, Erwähnungen) und wie viel gerade gespeichert ist.
 - **Jeden Chat leeren** – normaler Chat, eigene Fenster, Flüster-Verlauf, Erwähnungen oder alles auf einmal (zweimal klicken zur Sicherheit). Spart Speicher; Einstellungen, Notizen und Fenster bleiben.
+- **Archiv:** Lesen, Suchen und Leeren der Fenster-Archive unter „Gut zu wissen“ oder mit `/chatpilot archiv`.
+- **Sichern & übertragen:** Einstellungen, Notizen und Chats als Text in Seiten kopieren oder als Datei speichern/laden (`/chatpilot export`, `/chatpilot import`), z. B. für eine Neuinstallation oder einen anderen Computer. Eine kurze Anleitung ist im Fenster. Dort gibt es auch den Knopf „ALLE Daten löschen“ vor dem Entfernen des Addons.
+- **Fehlerprotokoll:** Probleme beim Anzeigen werden gemeldet statt verschluckt, Details mit `/chatpilot fehler`.
 - **Patchnotes:** alle Updates in Kurzform unter Einstellungen → Patchnotes.
 - **Beim Ausloggen automatisch leeren:** wähle einzeln, welche Chats beim Ausloggen geleert werden (nicht bei /reload).
 - Dazu kurz erklärt: normales WoW-Design, Verhalten in Bosskämpfen und die Blizzard-Regeln.
@@ -124,6 +131,9 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 | `/chatpilot design forever` / `modern` | Design wechseln |
 | `/chatpilot clear` / `clear all` | Aktuellen Chat-Tab / alle Chat-Tabs leeren |
 | `/chatpilot info` | „Gut zu wissen“ öffnen |
+| `/chatpilot export` / `import` | Sichern & übertragen |
+| `/chatpilot archiv` | Archive der Chat-Fenster |
+| `/chatpilot fehler` | Fehlerprotokoll |
 | `/chatpilot copy` | Aktuellen Chat kopieren |
 | `/chatpilot feedback` | Feedback geben |
 | `/chatpilot add <Wort>` / `del <Wort>` / `list` | Stichwörter verwalten |
@@ -223,6 +233,10 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
   - **Write right in the window:** every window has its own input box. The button on its left shows where your message goes – by default back to where the last message came from. Click a name to whisper that person. @ suggestions work here too.
   - **Chat commands as usual:** `/w Name`, `/r`, `/g`, `/p`, `/ra`, `/s`, `/y`, `/2` … become the window's target – the message stays in the window. Backspace in an empty box resets the target.
   - **Bell:** turn it on per window – sound and notice for new messages.
+  - **Online dot in whisper windows:** green = online, grey = offline or unknown. If you write to someone who is not online, a notice appears in the window.
+  - **Online/offline notices:** can be switched on in each window's filter menu – you see who just came online or went offline.
+  - **Enter and Shift-click:** Enter opens the last used chat with the same target, Shift-click puts item links into the window's input box, and the chat jumps down after sending. A small hint shows new messages while you are scrolled up.
+  - **Archive:** older lines are not lost – they move into a searchable archive of the window (up to 3000 lines).
   - Names, items and links are clickable, recent messages are saved.
   - **Empty it:** funnel icon → "Empty this window".
   - **Rename:** right-click the tab. Long names scroll slowly inside the tab.
@@ -230,6 +244,9 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 #### Good to know
 - Its own settings page **"Good to know"**: shows what ChatPilot saves (chat history for after /reload, your own windows, missed whispers, mentions) and how much is saved right now.
 - **Empty any chat** – normal chat, your own windows, whisper log, mentions or everything at once (two clicks, to be safe). Saves memory; settings, notes and windows stay.
+- **Archive:** read, search and empty the window archives under "Good to know" or with `/chatpilot archive`.
+- **Back up & transfer:** copy settings, notes and chats as text in pages, or save/load them as a file (`/chatpilot export`, `/chatpilot import`), e.g. for a reinstall or another computer. A short guide is in the window, which also has the "Delete ALL data" button to use before removing the addon.
+- **Error log:** display problems are reported instead of swallowed, details with `/chatpilot errors`.
 - **Patch notes:** every update in short under Settings → Patch notes.
 - **Empty when logging out:** choose which chats are emptied automatically when you log out (not on /reload).
 - Plus short notes on the normal WoW design, boss fights and Blizzard's rules.
@@ -257,6 +274,9 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 | `/chatpilot design forever` / `modern` | Switch design |
 | `/chatpilot clear` / `clear all` | Empty the current chat tab / all chat tabs |
 | `/chatpilot info` | Open "Good to know" |
+| `/chatpilot export` / `import` | Back up & transfer |
+| `/chatpilot archive` | Chat window archives |
+| `/chatpilot errors` | Error log |
 | `/chatpilot copy` | Copy current chat |
 | `/chatpilot feedback` | Give feedback |
 | `/chatpilot add <word>` / `del <word>` / `list` | Manage keywords |
