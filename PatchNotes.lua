@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.7.27",
+		de = { "Neu: Online-/Offline-Meldungen lassen sich in jedem Chatfenster einschalten (Filter-Menü)", "Neu: Flüsterfenster zeigen, wenn die Person online kommt oder offline geht, und der Punkt am Tab wechselt sofort" },
+		en = { "New: online / offline notices can be switched on in every chat window (filter menu)", "New: whisper windows show when the person comes online or goes offline, and the dot on the tab changes at once" },
+		fr = { "Nouveau : les avis de connexion / déconnexion peuvent être activés dans chaque fenêtre de chat (menu des filtres)", "Nouveau : les fenêtres de chuchotement indiquent quand la personne se connecte ou se déconnecte, et le point de l'onglet change aussitôt" },
+		es = { "Nuevo: los avisos de conexión/desconexión se pueden activar en cada ventana de chat (menú de filtros)", "Nuevo: las ventanas de susurros indican cuándo la persona se conecta o desconecta, y el punto de la pestaña cambia al instante" },
+		it = { "Novità: gli avvisi di connessione/disconnessione si possono attivare in ogni finestra di chat (menu filtri)", "Novità: le finestre dei sussurri mostrano quando la persona va online o offline e il punto sulla scheda cambia subito" },
+		pt = { "Novo: os avisos de ligação/saída podem ser ativados em cada janela de chat (menu de filtros)", "Novo: as janelas de sussurros mostram quando a pessoa fica online ou offline e o ponto do separador muda logo" },
+		ru = { "Новое: уведомления о входе и выходе можно включить в любом окне чата (меню фильтров)", "Новое: окна личных сообщений показывают, когда человек входит в игру или выходит, и точка на вкладке меняется сразу" },
+		ko = { "신규: 모든 채팅창에서 접속/종료 알림을 켤 수 있음 (필터 메뉴)", "신규: 귓속말 창이 상대의 접속/종료를 표시하며 탭의 점이 즉시 바뀜" },
+		zh = { "新增：每个聊天窗口都可开启上线/下线提示（过滤菜单）", "新增：私聊窗口会显示对方上线或下线，标签上的圆点立即变化" },
+		tw = { "新增：每個聊天視窗都可開啟上線/下線提示（過濾選單）", "新增：密語視窗會顯示對方上線或下線，分頁上的圓點立即變化" },
+	},
 	{ v = "1.7.26",
 		de = { "Verbessert: Kanalnamen mit kyrillischen und anderen nicht-lateinischen Buchstaben werden sicherer verarbeitet", "Verbessert: alle neuen Texte sind jetzt in allen Sprachen übersetzt" },
 		en = { "Improved: channel names with Cyrillic and other non-Latin letters are handled more safely", "Improved: all new texts are now translated in every language" },

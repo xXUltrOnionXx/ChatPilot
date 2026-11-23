@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.27
+- Neu: Online-/Offline-Meldungen lassen sich in jedem Chatfenster einschalten (Filter-Menü, Eintrag Online-/Offline-Meldungen).
+- Neu: Flüsterfenster zeigen, wenn die Person online kommt oder offline geht; der Punkt am Tab wechselt sofort.
+
 ## 1.7.26
 - Verbessert: Kanalnamen mit kyrillischen und anderen nicht-lateinischen Buchstaben werden sicherer verarbeitet (Russisch: Kanalname erschien ohne Text).
 - Verbessert: alle neuen Texte (Export/Import, Archiv, Rundgang, Online-Anzeige) sind in allen Sprachen übersetzt.
