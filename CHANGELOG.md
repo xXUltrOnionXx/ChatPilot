@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.0
+- Neu: Warnung bei Links in Flüsternachrichten von Fremden (falsche Gegenstands-Links und Community-Einladungen werden markiert, verdächtige mit Werbung ausgeblendet)
+- Neu: Suche in allen Chats (Spielfenster, eigene Fenster und Archive) unter Gut zu wissen oder mit /chatpilot suche
+- Behoben: Fehler beim Rechtsklick auf einen Namen in den eigenen Chatfenstern
+- Verbessert: Kurznamen und Erwähnungen funktionieren auch ohne Realm-Angaben, falls das Spiel sie später nicht mehr liefert
+
 ## 1.7.28
 - Verbessert: Kanalnamen (auch russisch, koreanisch, chinesisch) werden ohne Textmuster gekürzt und fallen bei Problemen auf den Originalnamen zurück.
 

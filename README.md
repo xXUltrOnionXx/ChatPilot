@@ -63,6 +63,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 - **Kurze Nachnamen:** „Frost Winterborn“ wird zu „Frost W.“ – gibt es zwei Frosts mit W, wächst das Kürzel automatisch („Frost Wi.“ / „Frost Wo.“). Maus über den Namen zeigt den vollen Namen; Flüstern und Klicks nutzen weiter den vollen Namen.
 - **Abkürzungen erklärt:** Begriffe wie `LFG`, `WTS`, `pst`, `LF2M`, `gz` und Dungeon-Kürzel wie `SM`, `BRD`, `UBRS`, `MC` sind leicht hellblau. Fährst du mit der Maus darüber, erscheint die Erklärung. Mehrdeutige Kürzel (`AH`, `SM`, `ST` …) zählen nur in GROSSBUCHSTABEN, damit normale Wörter nicht markiert werden.
 - **Fremde Sprachen:** Nachrichten in einer Sprache, die dein Charakter nicht kann (z. B. Gemeinsprache, wenn du Horde spielst), werden grau mit dem Hinweis „(fremde Sprache – nicht lesbar)“ angezeigt oder auf Wunsch ganz ausgeblendet. **Übersetzt werden sie nicht** – das ist technisch unmöglich (der Server schickt nur das Kauderwelsch) und von Blizzard nicht erlaubt.
+- **Warnung vor Betrugs-Links:** Gegenstands-Links und Community-Einladungen in Flüsternachrichten von Fremden werden markiert. Passt der Name nicht zum Gegenstand oder kommt eine Einladung mit Werbung, wird die Nachricht als verdächtig markiert oder ausgeblendet. Freunde, Gilde und Gruppe werden nie markiert.
 - **Werbe-Spam weg:** Goldverkäufer, bezahlte Boosts und Webseiten-Werbung werden ausgeblendet. Normaler Handel, Freunde, Gilde und Gruppe bleiben unberührt. Das Zahnrad am Chat zeigt, wie viele Spam-Nachrichten heute ausgeblendet wurden.
 - **Wiederholungen weg:** Wer in öffentlichen Kanälen (Handel, Suche nach Gruppe …) innerhalb von 90 Sekunden dasselbe noch mal schreibt, wird nur einmal angezeigt.
 
@@ -101,6 +102,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 ### Gut zu wissen
 - Eigene Einstellungsseite **„Gut zu wissen“**: zeigt, was ChatPilot speichert (Chatverlauf für nach /reload, eigene Fenster, verpasste Flüsternachrichten, Erwähnungen) und wie viel gerade gespeichert ist.
 - **Jeden Chat leeren** – normaler Chat, eigene Fenster, Flüster-Verlauf, Erwähnungen oder alles auf einmal (zweimal klicken zur Sicherheit). Spart Speicher; Einstellungen, Notizen und Fenster bleiben.
+- **Suche in allen Chats:** durchsucht die Chatfenster des Spiels, deine eigenen Fenster und deren Archive an einer Stelle (`/chatpilot suche <Wort>`).
 - **Archiv:** Lesen, Suchen und Leeren der Fenster-Archive unter „Gut zu wissen“ oder mit `/chatpilot archiv`.
 - **Sichern & übertragen:** Einstellungen, Notizen und Chats als Text in Seiten kopieren oder als Datei speichern/laden (`/chatpilot export`, `/chatpilot import`), z. B. für eine Neuinstallation oder einen anderen Computer. Eine kurze Anleitung ist im Fenster. Dort gibt es auch den Knopf „ALLE Daten löschen“ vor dem Entfernen des Addons.
 - **Fehlerprotokoll:** Probleme beim Anzeigen werden gemeldet statt verschluckt, Details mit `/chatpilot fehler`.
@@ -133,6 +135,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 | `/chatpilot info` | „Gut zu wissen“ öffnen |
 | `/chatpilot export` / `import` | Sichern & übertragen |
 | `/chatpilot archiv` | Archive der Chat-Fenster |
+| `/chatpilot suche <Wort>` | Alle Chats durchsuchen |
 | `/chatpilot fehler` | Fehlerprotokoll |
 | `/chatpilot copy` | Aktuellen Chat kopieren |
 | `/chatpilot feedback` | Feedback geben |
@@ -206,6 +209,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 - **Short surnames:** "Frost Winterborn" becomes "Frost W." – if two Frosts share the W, the tag grows automatically ("Frost Wi." / "Frost Wo."). Hover a name for the full name; whispers and clicks still use the full name.
 - **Abbreviations explained:** terms like `LFG`, `WTS`, `pst`, `LF2M`, `gz` and dungeon shortcuts like `SM`, `BRD`, `UBRS`, `MC` are tinted light blue. Hover them to see the explanation. Ambiguous ones (`AH`, `SM`, `ST` …) only count in CAPITALS, so normal words aren't marked.
 - **Foreign languages:** messages in a language your character can't speak (e.g. Orcish when you play Alliance) are greyed out with a "(foreign language – not readable)" note, or hidden entirely if you like. **They are not translated** – that's technically impossible (the server only sends scrambled text) and not allowed by Blizzard.
+- **Warning about scam links:** item links and community invitations in whispers from strangers are marked. If the name does not match the item, or an invitation comes with advertising, the message is marked as suspicious or hidden. Friends, guild and group are never marked.
 - **Ad spam gone:** gold sellers, paid boosts and website ads are hidden. Normal trading, friends, guild and group are never touched. The gear next to the chat shows how many spam messages were hidden today.
 - **Repeats gone:** if someone posts the same thing again within 90 seconds in a public channel (Trade, LookingForGroup …), it's shown only once.
 
@@ -244,6 +248,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 #### Good to know
 - Its own settings page **"Good to know"**: shows what ChatPilot saves (chat history for after /reload, your own windows, missed whispers, mentions) and how much is saved right now.
 - **Empty any chat** – normal chat, your own windows, whisper log, mentions or everything at once (two clicks, to be safe). Saves memory; settings, notes and windows stay.
+- **Search all chats:** searches the game's chat windows, your own windows and their archives in one place (`/chatpilot search <word>`).
 - **Archive:** read, search and empty the window archives under "Good to know" or with `/chatpilot archive`.
 - **Back up & transfer:** copy settings, notes and chats as text in pages, or save/load them as a file (`/chatpilot export`, `/chatpilot import`), e.g. for a reinstall or another computer. A short guide is in the window, which also has the "Delete ALL data" button to use before removing the addon.
 - **Error log:** display problems are reported instead of swallowed, details with `/chatpilot errors`.
@@ -276,6 +281,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 | `/chatpilot info` | Open "Good to know" |
 | `/chatpilot export` / `import` | Back up & transfer |
 | `/chatpilot archive` | Chat window archives |
+| `/chatpilot search <word>` | Search all chats |
 | `/chatpilot errors` | Error log |
 | `/chatpilot copy` | Copy current chat |
 | `/chatpilot feedback` | Give feedback |

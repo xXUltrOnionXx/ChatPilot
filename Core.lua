@@ -31,6 +31,7 @@ ns.defaults = {
 	whisperSummary = true,
 	versionCheck = true,
 	spamFilter = true,
+	scamWarn = true,
 	keepHistory = true,
 	showLevels = true,
 	shortSurnames = true,

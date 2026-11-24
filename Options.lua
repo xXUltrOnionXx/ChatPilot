@@ -562,6 +562,7 @@ local function BuildChat(content)
 	ToggleRow(flow, "shortSurnames", nil, function() ns:RefreshMainChat() end)
 	ToggleRow(flow, "playerInfo")
 	local spamRow = ToggleRow(flow, "spamFilter")
+	ToggleRow(flow, "scamWarn")
 	ToggleRow(flow, "keepHistory")
 	ToggleRow(flow, "urls")
 	local foreign = ToggleRow(flow, "markForeign")
@@ -784,6 +785,12 @@ local function BuildInfo(content)
 		end
 		for i = #list + 1, #arRows do arRows[i]:Hide() end
 	end
+
+	-- search over every chat
+	local sr = InfoBox(flow, c, L.INFO_SEARCH, L.INFO_SEARCH_TEXT, 46)
+	local sb = UI.Button(sr, L.SR_OPEN, 468, 28, "accent")
+	sb:SetPoint("TOPLEFT", sr.body, "BOTTOMLEFT", 0, -12)
+	sb:SetScript("OnClick", function() ns:ShowSearch() end)
 
 	-- back up / move your data
 	local bk = InfoBox(flow, c, L.INFO_BACKUP, L.INFO_BACKUP_TEXT, 46)
@@ -1067,6 +1074,8 @@ SlashCmdList.CHATPILOT = function(input)
 		for _, e in ipairs(ns.errors) do ns.Print(e) end
 	elseif cmd == "archive" or cmd == "archiv" then
 		ns:ShowArchive()
+	elseif cmd == "search" or cmd == "suche" or cmd == "find" or cmd == "history" or cmd == "verlauf" then
+		ns:ShowSearch(rest)
 	elseif cmd == "export" or cmd == "import" or cmd == "backup" then
 		ns:ShowBackup(cmd == "import" and "import" or "export")
 	elseif cmd == "thanks" or cmd == "danke" or cmd == "news" or cmd == "patchnotes" then

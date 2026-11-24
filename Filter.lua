@@ -180,6 +180,27 @@ local function Trusted(author)
 	return e and (e.src.friend or e.src.guild or e.src.group) or false
 end
 
+-- Fake links in whispers from strangers: community invitations (used to
+-- advertise gold sellers) and item links whose shown name is not the real
+-- item's name. 0 = nothing, 1 = a link from a stranger, 2 = suspicious.
+local function ScamLevelRaw(msg)
+	if msg:find("|HclubTicket:", 1, true) then return 2 end
+	local level = 0
+	for id, shown in msg:gmatch("|Hitem:(%d+)[^|]*|h%[([^%]]*)%]|h") do
+		level = 1
+		local real = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(tonumber(id))
+		if type(real) == "string" and real ~= "" and ns.Usable(real) and shown:sub(1, #real) ~= real then
+			return 2
+		end
+	end
+	return level
+end
+function ns.ScamLevel(msg)
+	if type(msg) ~= "string" or not ns.Usable(msg) then return 0 end
+	local ok, level = pcall(ScamLevelRaw, msg)
+	return ok and level or 0
+end
+
 local countedLines = {}
 local function CountSpam(lineID)
 	if lineID ~= nil and not ns.Usable(lineID) then lineID = nil end -- protected: just count
@@ -227,6 +248,19 @@ local function Filter(frame, event, msg, author, language, ...)
 		return true
 	end
 
+	-- warning for links in whispers from strangers (never for friends, guild, group)
+	local prefix = ""
+	if S.scamWarn ~= false and event == "CHAT_MSG_WHISPER" and not Trusted(author) then
+		local level = ns.ScamLevel(msg)
+		if level == 2 and S.spamFilter and SpamScore(msg) >= 1 then
+			CountSpam((select(8, ...)))
+			return true
+		end
+		if level > 0 then
+			prefix = "|cffff6a5a[!] " .. (level == 2 and L.SCAM_FAKE or L.SCAM_LINK) .. "|r "
+		end
+	end
+
 	-- with the game's normal design ChatPilot doesn't change the chat text
 	if ns.MainChatModern and not ns.MainChatModern() then return false end
 	local doUrl = S.urls
@@ -234,7 +268,7 @@ local function Filter(frame, event, msg, author, language, ...)
 	local doAbbr = S.abbrevTips
 	if doHl and ns.Usable(author) and ns.Normalize(author) == ns.playerKey then doHl = false end
 	if doHl and not S.mentionPublic and ns.PUBLIC_EVENTS[event] then doHl = false end
-	if not doUrl and not doHl and not doAbbr then return false end
+	if not doUrl and not doHl and not doAbbr and prefix == "" then return false end
 
 	local parts = ns.SplitMessage(msg)
 	local changed = false
@@ -245,10 +279,10 @@ local function Filter(frame, event, msg, author, language, ...)
 			changed = changed or c
 		end
 	end
-	if not changed then return false end
+	if not changed and prefix == "" then return false end
 	local out = {}
 	for i, part in ipairs(parts) do out[i] = part[2] end
-	local new = table.concat(out)
+	local new = prefix .. table.concat(out)
 	if type(frame) == "table" then frame.cpRaw = { orig = msg, new = new } end
 	return false, new, author, language, ...
 end

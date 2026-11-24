@@ -1202,6 +1202,27 @@ local function CreateGroupFrame(g)
 	return f
 end
 
+-- Right-click on a name: the game's own player menu. The game's menu asks
+-- whether the line can be reported; for a line it no longer knows that
+-- question ends in an error, so a line id is only passed on when the game
+-- itself accepts it. Without one the menu simply has no "Report" entry.
+function ns.ShowPlayerMenu(link)
+	if type(link) ~= "string" or not FriendsFrame_ShowDropdown then return false end
+	local name, lineID, chatType = link:sub(8):match("^([^:]*):?([^:]*):?([^:]*)")
+	if type(name) ~= "string" or name == "" then return false end
+	local id = tonumber(lineID)
+	if id and id > 0 and PlayerLocation and PlayerLocation.CreateFromChatLineID
+		and C_ReportSystem and C_ReportSystem.CanReportPlayer then
+		local okL, loc = pcall(PlayerLocation.CreateFromChatLineID, PlayerLocation, id)
+		local okR = okL and loc and pcall(C_ReportSystem.CanReportPlayer, loc)
+		if not okR then id = nil end
+	else
+		id = nil
+	end
+	if chatType == nil or chatType == "" then chatType = "WHISPER" end
+	return (pcall(FriendsFrame_ShowDropdown, name, 1, id, chatType, DEFAULT_CHAT_FRAME)) and true or false
+end
+
 local CheckBottom -- defined further down (the message frame needs it)
 local function CreateMessageFrame(w)
 	local m = CreateFrame("ScrollingMessageFrame", nil, UIParent)
@@ -1235,7 +1256,11 @@ local function CreateMessageFrame(w)
 			w.group.input:SetFocus()
 			return
 		end
-		if SetItemRef then SetItemRef(link, text, button, DEFAULT_CHAT_FRAME) end
+		if type(link) == "string" and link:sub(1, 7) == "player:" and button == "RightButton" and not IsModifierKeyDown()
+			and ns.ShowPlayerMenu(link) then
+			return
+		end
+		if SetItemRef then pcall(SetItemRef, link, text, button, DEFAULT_CHAT_FRAME) end
 	end)
 	m:SetScript("OnHyperlinkEnter", function(self, link)
 		if ns.LinkEnter(self, link) then return end
@@ -2451,6 +2476,25 @@ end
 function ns:CW_ArchiveGet(id)
 	if Data then for _, d in ipairs(Data.windows) do if d.id == id then return d.archive or {} end end end
 	return {}
+end
+
+-- all saved text of your own windows (archive first, then the lines in the window)
+function ns:CW_AllText()
+	local res = {}
+	if Data then
+		for _, d in ipairs(Data.windows) do
+			local w = wins[d.id]
+			local list = {}
+			for _, a in ipairs(d.archive or {}) do if type(a) == "string" then list[#list + 1] = a end end
+			for _, line in ipairs(d.lines or {}) do
+				if type(line) == "table" and type(line[1]) == "string" and not line[6] then
+					list[#list + 1] = ArchivePlain(line[1], line[5])
+				end
+			end
+			res[#res + 1] = { name = w and WindowName(w) or ("#" .. tostring(d.id)), lines = list }
+		end
+	end
+	return res
 end
 
 function ns:CW_ArchiveCount()
