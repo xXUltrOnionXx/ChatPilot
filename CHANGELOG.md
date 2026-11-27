@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.14
+- Wartungsupdate (keine neuen Funktionen)
+
 ## 1.10.13
 - Behoben: Item- und andere Links im Eingabefeld der eigenen Chat-Fenster. Sie werden beim Schreiben als lesbares [Name] angezeigt (statt leerer Zeichen) und beim Abschicken in den echten Link verwandelt; das Fenster verliert dabei nicht mehr den Fokus. Funktioniert mit Namen in allen Sprachen
 

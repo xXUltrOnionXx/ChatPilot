@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.14",
+		de = { "Wartungsupdate (keine neuen Funktionen)" },
+		en = { "Maintenance update (no new features)" },
+		fr = { "Mise à jour de maintenance (aucune nouvelle fonction)" },
+		es = { "Actualización de mantenimiento (sin nuevas funciones)" },
+		it = { "Aggiornamento di manutenzione (nessuna nuova funzione)" },
+		pt = { "Atualização de manutenção (sem novas funcionalidades)" },
+		ru = { "Техническое обновление (без новых функций)" },
+		ko = { "유지보수 업데이트 (새 기능 없음)" },
+		zh = { "维护更新（无新功能）" },
+		tw = { "維護更新（無新功能）" },
+	},
 	{ v = "1.10.13",
 		de = { "Behoben: Item- und andere Links im Eingabefeld der eigenen Chat-Fenster. Sie werden beim Schreiben als lesbares [Name] angezeigt (statt leerer Zeichen) und beim Abschicken in den echten Link verwandelt; das Fenster verliert dabei nicht mehr den Fokus. Funktioniert mit Namen in allen Sprachen" },
 		en = { "Fixed: item and other links in the input box of custom chat windows. While typing they show as a readable [Name] (instead of empty characters) and turn into the real link when sent; the window no longer loses focus. Works with names in all languages" },
