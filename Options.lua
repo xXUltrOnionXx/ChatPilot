@@ -1152,6 +1152,30 @@ SlashCmdList.CHATPILOT = function(input)
 		else
 			ns.Print("/chatpilot skin force  |  /chatpilot skin auto")
 		end
+	elseif (cmd == "diag" or cmd == "diagnose") and rest == "hover" then
+		-- put the mouse over the chat (or drag a window over it) during the 5 seconds
+		ns.Print("[diag] hold the mouse over the chat or drag a window above it - report in 5 seconds ...")
+		C_Timer.After(5, function() local okd, errd = pcall(function()
+			local function P(fmt, ...) ns.Print("[diag] " .. fmt, ...) end
+			local main = ns.CW_MainChat and ns.CW_MainChat()
+			if not main then P("no main chat") return end
+			local cx, cy = GetCursorPosition()
+			local function R(v) return type(v) == "number" and ("%.0f"):format(v) or tostring(v) end
+			P("main %s: left %s right %s bottom %s top %s, scale %s (UIParent %s)", tostring(main:GetName()),
+				R(main:GetLeft()), R(main:GetRight()), R(main:GetBottom()), R(main:GetTop()),
+				tostring(main:GetEffectiveScale()), tostring(UIParent:GetEffectiveScale()))
+			P("cursor %s, %s", R(cx), R(cy))
+			local a = MouseIsOver and select(2, pcall(MouseIsOver, main))
+			local b = MouseIsOver and select(2, pcall(MouseIsOver, main, 34, -8, -6, 6))
+			P("MouseIsOver plain=%s with margins=%s, ChatPilot OverMainChat=%s", tostring(a), tostring(b), tostring(ns:OverMainChat()))
+			local over = {}
+			for _, g in ipairs(ns._cw and ns._cw.groups or {}) do
+				if g.frame and g.frame:IsVisible() then
+					over[#over + 1] = (g.data and g.data.main and "main" or "free") .. ":" .. tostring(MouseIsOver and MouseIsOver(g.header) or "?")
+				end
+			end
+			P("ChatPilot windows (title bar under mouse): %s", #over > 0 and table.concat(over, " ") or "none open")
+		end); if not okd then ns.Print("[diag] error: " .. tostring(errd)) end end)
 	elseif cmd == "diag" or cmd == "diagnose" then
 		-- a short report for bug reports (what the chat look and docking see right now)
 		local function P(fmt, ...) ns.Print("[diag] " .. fmt, ...) end
