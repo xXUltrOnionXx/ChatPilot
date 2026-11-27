@@ -246,6 +246,7 @@ function UI.Window(name, title, w, h)
 
 	local close = UI.CloseButton(header, function() f:Hide() end)
 	close:SetPoint("RIGHT", -7, 0)
+	f.close = close
 
 	f.header = header
 	f.content = CreateFrame("Frame", nil, f)

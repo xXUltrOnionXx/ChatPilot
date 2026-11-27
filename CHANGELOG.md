@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.9
+- Neu: Debug-Button für das ganze ChatPilot (Käfer-Symbol im Optionsfenster, roter Punkt bei Problemen; auch /chatpilot debug). Der kopierbare Bericht zeigt Einstellungen, Fenster, Chat-Look und gespeicherte Probleme. ChatPilot sammelt Fehler jetzt automatisch: Lua-Fehler aus den eigenen Dateien und blockierte Aktionen werden mit Zähler und Zeitpunkt gespeichert (/chatpilot errors, /chatpilot errors clear); das normale Fehlerfenster des Spiels bleibt unverändert
+
 ## 1.10.8
 - Neu: jedes eigene Chat-Fenster hat in der Titelleiste einen Debug-Button (Käfer-Symbol). Er zeigt einen kopierbaren Bericht zu genau diesem Fenster: Kategorien, Zustand von Fenster und Textfläche, empfangene und gespeicherte Zeilen, letzte Zeile, abgefangene Fehler
 

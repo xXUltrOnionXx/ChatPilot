@@ -969,6 +969,36 @@ local function Build()
 	win.subtitle:SetText(ns.version)
 	local content = win.content
 
+	-- debug button for the whole addon (bug icon, red dot while problems were caught)
+	local dbg = CreateFrame("Button", nil, win.header)
+	dbg:SetSize(28, 28)
+	dbg:SetPoint("RIGHT", win.close, "LEFT", -4, 0)
+	local dhl = UI.Fill(dbg, C.rowHover)
+	dhl:Hide()
+	dbg.icon = dbg:CreateTexture(nil, "ARTWORK")
+	dbg.icon:SetSize(16, 16)
+	dbg.icon:SetPoint("CENTER")
+	dbg.icon:SetTexture("Interface\\Icons\\INV_Misc_Bug_01")
+	dbg.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	dbg.icon:SetAlpha(0.8)
+	dbg.dot = dbg:CreateTexture(nil, "OVERLAY")
+	dbg.dot:SetSize(7, 7)
+	dbg.dot:SetPoint("TOPRIGHT", -3, -3)
+	dbg.dot:SetColorTexture(1, 0.3, 0.3, 1)
+	dbg.dot:Hide()
+	dbg:SetScript("OnEnter", function(self)
+		dhl:Show()
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+		GameTooltip:SetText(L.DBG_TIP)
+		if (self.n or 0) > 0 then GameTooltip:AddLine(L.DBG_ERRS:format(self.n), 1, 0.45, 0.45, true) end
+		GameTooltip:Show()
+	end)
+	dbg:SetScript("OnLeave", function() dhl:Hide(); GameTooltip:Hide() end)
+	dbg:SetScript("OnClick", function() ns:ShowDebug() end)
+	win.dbg = dbg
+	win:HookScript("OnShow", function() ns.UpdateDebugBadge() end)
+	ns.UpdateDebugBadge()
+
 	local sidebar = CreateFrame("Frame", nil, content)
 	sidebar:SetPoint("TOPLEFT")
 	sidebar:SetPoint("BOTTOMLEFT")
@@ -1095,6 +1125,91 @@ function ChatPilot_OnAddonCompartmentEnter(_, button)
 end
 function ChatPilot_OnAddonCompartmentLeave() GameTooltip:Hide() end
 
+
+-- Report for the debug button, /chatpilot diag and /chatpilot debug: a list of lines
+function ns:DebugReport()
+	-- a short report for bug reports (what the chat look and docking see right now)
+	local out = {}
+	local function P(fmt, ...) out[#out + 1] = select("#", ...) > 0 and fmt:format(...) or fmt end
+	local skinned = 0
+	for _ in pairs(ns._skinned or {}) do skinned = skinned + 1 end
+	local main = ns.CW_MainChat and ns.CW_MainChat()
+	local dockSel = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK)
+	P("%s, interface %s", tostring(ns.version), tostring(select(4, GetBuildInfo()) or "?"))
+	P("chatSkin=%s chatStyle=%s conflict=%s hooks=%s skinnedFrames=%d",
+		tostring(ns.S.chatSkin), tostring(ns.S.chatStyle), tostring(ns.skinConflict), tostring(ns.mainHooks), skinned)
+	P("mainChat=%s visible=%s dockSelected=%s", main and tostring(main.GetName and main:GetName()) or "nil",
+		tostring(main and main.IsVisible and main:IsVisible()), dockSel and tostring(dockSel.GetName and dockSel:GetName()) or "nil")
+	local names = {}
+	for i = 1, (NUM_CHAT_WINDOWS or 0) do
+		local f = _G["ChatFrame" .. i]
+		if f then names[#names + 1] = i .. (f:IsShown() and "" or "(hidden)") .. (rawget(f, "cpDeco") and "*" or "") end
+	end
+	P("chatFrames: %s  (* = ChatPilot look active)", table.concat(names, " "))
+	local ok, over = pcall(function() return ns:OverMainChat() end)
+	P("mouse over the main chat right now: %s (hold the mouse over it and run again)", ok and tostring(over) or "error")
+	local loaded = {}
+	if C_AddOns and C_AddOns.GetNumAddOns then
+		for i = 1, C_AddOns.GetNumAddOns() do
+			local n = C_AddOns.GetAddOnInfo(i)
+			if n and C_AddOns.IsAddOnLoaded(n) and not tostring(n):find("^Blizzard_") then loaded[#loaded + 1] = n end
+		end
+	end
+	local st = ns.cwStats or {}
+	P("custom chats: shown %d, hidden by a filter %d, restricted text shown %d (failed %d), no window for event %d, kept open %d, caught errors %d",
+		st.shown or 0, st.filtered or 0, st.secret or 0, st.secretFail or 0, st.noTarget or 0, st.keptOpen or 0, #(ns.errors or {}))
+	local nGroups, nShown = 0, 0
+	for _, g in ipairs(ns._cw and ns._cw.groups or {}) do
+		nGroups = nGroups + 1
+		if g.frame:IsVisible() then nShown = nShown + 1 end
+	end
+	P("custom windows: %d (visible %d)", nGroups, nShown)
+	-- settings (only on/off and number values, never texts or names)
+	local flags = {}
+	for k, v in pairs(ns.S or {}) do
+		if type(v) == "boolean" then flags[#flags + 1] = k .. "=" .. (v and "on" or "off")
+		elseif type(v) == "number" then flags[#flags + 1] = k .. "=" .. tostring(v) end
+	end
+	table.sort(flags)
+	P("settings: %s", #flags > 0 and table.concat(flags, " ") or "-")
+	-- custom windows one by one
+	for _, g in ipairs(ns._cw and ns._cw.groups or {}) do
+		local names = {}
+		for _, id in ipairs(g.data and g.data.order or {}) do
+			local w = ns._cw.wins and ns._cw.wins[id]
+			if w then names[#names + 1] = tostring(ns._cw.WindowName and ns._cw.WindowName(w) or id) .. "(" .. tostring(w.count or 0) .. ")" end
+		end
+		P("window group: %s docked=%s open=%s visible=%s", table.concat(names, "+"), tostring(g.data and g.data.main or false),
+			tostring(g.mainOpen or false), tostring(g.frame and g.frame:IsVisible() or false))
+	end
+	-- saved problems
+	local log = ns.ErrorLog and ns.ErrorLog() or {}
+	P("saved problems: %d", #log)
+	for i = math.max(1, #log - 7), #log do
+		local e = log[i]
+		P("  [%s/%s] x%d (first %s, last %s, v%s): %s", tostring(e.kind), tostring(e.where), e.count or 1,
+			e.first and date("%d.%m. %H:%M", e.first) or "?", e.last and date("%d.%m. %H:%M", e.last) or "?", tostring(e.ver), tostring(e.msg))
+		if e.stack and i == #log then P("  stack: %s", (e.stack:gsub("\n", " | "))) end
+	end
+	P("other addons: %s", #loaded > 0 and table.concat(loaded, ", ") or "-")
+	return out
+end
+
+function ns:ShowDebug()
+	local ok, lines = pcall(function() return ns:DebugReport() end)
+	local text = ok and table.concat(lines, "\n") or ("error: " .. tostring(lines))
+	if ns.ShowCopy then ns:ShowCopy(text, L.DBG_TITLE, false) else ns.Print(text) end
+end
+
+-- red dot on the debug button while there are saved problems
+function ns.UpdateDebugBadge()
+	local b = win and win.dbg
+	if not b then return end
+	local n = ns.ErrorLog and #ns.ErrorLog() or 0
+	b.dot:SetShown(n > 0)
+	b.n = n
+end
+
 -------------------------------------------------------------------------------
 -- Slash commands
 -------------------------------------------------------------------------------
@@ -1127,8 +1242,16 @@ SlashCmdList.CHATPILOT = function(input)
 	elseif cmd == "info" then
 		ns:OpenOptions(6)
 	elseif cmd == "errors" or cmd == "fehler" then
-		if #ns.errors == 0 then ns.Print(L.ERR_NONE) end
-		for _, e in ipairs(ns.errors) do ns.Print(e) end
+		if rest:lower() == "clear" or rest:lower() == "leeren" then
+			ns.ErrorClear()
+			ns.Print(L.ERR_CLEARED)
+		else
+			local log = ns.ErrorLog()
+			if #log == 0 then ns.Print(L.ERR_NONE) end
+			for _, e in ipairs(log) do
+				ns.Print("[%s] x%d %s: %s", tostring(e.kind), e.count or 1, e.last and date("%d.%m. %H:%M", e.last) or "?", tostring(e.msg))
+			end
+		end
 	elseif cmd == "stream" or cmd == "streamer" or cmd == "live" then
 		local want
 		if rest == "on" then want = true elseif rest == "off" then want = false else want = not ns.S.stream end
@@ -1177,43 +1300,9 @@ SlashCmdList.CHATPILOT = function(input)
 			P("ChatPilot windows (title bar under mouse): %s", #over > 0 and table.concat(over, " ") or "none open")
 		end); if not okd then ns.Print("[diag] error: " .. tostring(errd)) end end)
 	elseif cmd == "diag" or cmd == "diagnose" then
-		-- a short report for bug reports (what the chat look and docking see right now)
-		local function P(fmt, ...) ns.Print("[diag] " .. fmt, ...) end
-		local skinned = 0
-		for _ in pairs(ns._skinned or {}) do skinned = skinned + 1 end
-		local main = ns.CW_MainChat and ns.CW_MainChat()
-		local dockSel = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK)
-		P("%s, interface %s", tostring(ns.version), tostring(select(4, GetBuildInfo()) or "?"))
-		P("chatSkin=%s chatStyle=%s conflict=%s hooks=%s skinnedFrames=%d",
-			tostring(ns.S.chatSkin), tostring(ns.S.chatStyle), tostring(ns.skinConflict), tostring(ns.mainHooks), skinned)
-		P("mainChat=%s visible=%s dockSelected=%s", main and tostring(main.GetName and main:GetName()) or "nil",
-			tostring(main and main.IsVisible and main:IsVisible()), dockSel and tostring(dockSel.GetName and dockSel:GetName()) or "nil")
-		local names = {}
-		for i = 1, (NUM_CHAT_WINDOWS or 0) do
-			local f = _G["ChatFrame" .. i]
-			if f then names[#names + 1] = i .. (f:IsShown() and "" or "(hidden)") .. (rawget(f, "cpDeco") and "*" or "") end
-		end
-		P("chatFrames: %s  (* = ChatPilot look active)", table.concat(names, " "))
-		local ok, over = pcall(function() return ns:OverMainChat() end)
-		P("mouse over the main chat right now: %s (hold the mouse over it and run again)", ok and tostring(over) or "error")
-		local loaded = {}
-		if C_AddOns and C_AddOns.GetNumAddOns then
-			for i = 1, C_AddOns.GetNumAddOns() do
-				local n = C_AddOns.GetAddOnInfo(i)
-				if n and C_AddOns.IsAddOnLoaded(n) and not tostring(n):find("^Blizzard_") then loaded[#loaded + 1] = n end
-			end
-		end
-		local st = ns.cwStats or {}
-		P("custom chats: shown %d, hidden by a filter %d, restricted text shown %d (failed %d), no window for event %d, kept open %d, caught errors %d",
-			st.shown or 0, st.filtered or 0, st.secret or 0, st.secretFail or 0, st.noTarget or 0, st.keptOpen or 0, #(ns.errors or {}))
-		for i = math.max(1, #(ns.errors or {}) - 2), #(ns.errors or {}) do P("error: %s", ns.errors[i]) end
-		local nGroups, nShown = 0, 0
-		for _, g in ipairs(ns._cw and ns._cw.groups or {}) do
-			nGroups = nGroups + 1
-			if g.frame:IsVisible() then nShown = nShown + 1 end
-		end
-		P("custom windows: %d (visible %d)", nGroups, nShown)
-		P("other addons: %s", #loaded > 0 and table.concat(loaded, ", ") or "-")
+		for _, line in ipairs(ns:DebugReport()) do ns.Print("[diag] " .. line) end
+	elseif cmd == "debug" then
+		ns:ShowDebug()
 	elseif cmd == "pilots" or cmd == "piloten" or cmd == "users" then
 		ns:ShowPilots()
 	elseif cmd == "archive" or cmd == "archiv" then
