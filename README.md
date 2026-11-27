@@ -63,6 +63,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 - **Kurze Nachnamen:** „Frost Winterborn“ wird zu „Frost W.“ – gibt es zwei Frosts mit W, wächst das Kürzel automatisch („Frost Wi.“ / „Frost Wo.“). Maus über den Namen zeigt den vollen Namen; Flüstern und Klicks nutzen weiter den vollen Namen.
 - **Abkürzungen erklärt:** Begriffe wie `LFG`, `WTS`, `pst`, `LF2M`, `gz` und Dungeon-Kürzel wie `SM`, `BRD`, `UBRS`, `MC` sind leicht hellblau. Fährst du mit der Maus darüber, erscheint die Erklärung. Mehrdeutige Kürzel (`AH`, `SM`, `ST` …) zählen nur in GROSSBUCHSTABEN, damit normale Wörter nicht markiert werden.
 - **Fremde Sprachen:** Nachrichten in einer Sprache, die dein Charakter nicht kann (z. B. Gemeinsprache, wenn du Horde spielst), werden grau mit dem Hinweis „(fremde Sprache – nicht lesbar)“ angezeigt oder auf Wunsch ganz ausgeblendet. **Übersetzt werden sie nicht** – das ist technisch unmöglich (der Server schickt nur das Kauderwelsch) und von Blizzard nicht erlaubt.
+- **Pilot Link:** ChatPilot-Nutzer finden sich über unsichtbare Nachrichten (keine Chat-Texte, nur andere ChatPilot-Nutzer empfangen sie). Du siehst in Name- und Tab-Tooltips, wer ChatPilot nutzt, und der Punkt am Flüster-Tab wird blau, wenn dir jemand tippt. Das Fenster „ChatPilot-Nutzer in deiner Nähe“ (`/chatpilot piloten`) listet sie mit Version und Zone. Die eigene Zone wird nur geteilt, wenn du es einschaltest. Alles lässt sich ausschalten und wird nie in Instanzen gesendet.
 - **Streamer-Modus:** nichts Privates im Stream. Flüstertexte zeigen nur „Flüstern versteckt“ (Maus drüber zum Hineinschauen), BattleTag-Nummern, Nachnamen anderer und Web-Links werden verdeckt. Ein rotes LIVE-Schild am Bildschirmrand ist zugleich der Panik-Knopf: ein Klick leert die Chatansicht und versteckt alle ChatPilot-Fenster, ein zweiter bringt alles zurück (`/chatpilot stream`, `/chatpilot panic`). Flüstern von Fremden wird ganz versteckt, auf Wunsch zeigen andere Spieler anonym als „Spieler 1“ (gegen Stream-Sniping). Es ändert nur, was angezeigt wird, nie, was du schreibst.
 - **@Namen mit Initial:** nach @ schreibt die Auswahl „Frost W.“ statt nur „Frost“ (Option).
 - **Markdown-Farben:** `*fett*`, `_kursiv_` und `Code` werden im Chat eingefärbt (nur Anzeige, Option, standardmäßig aus).
@@ -141,6 +142,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 | `/chatpilot archiv` | Archive der Chat-Fenster |
 | `/chatpilot suche <Wort>` | Alle Chats durchsuchen |
 | `/chatpilot stream` / `panic` | Streamer-Modus / Panik |
+| `/chatpilot piloten` | ChatPilot-Nutzer in deiner Nähe |
 | `/chatpilot fehler` | Fehlerprotokoll |
 | `/chatpilot copy` | Aktuellen Chat kopieren |
 | `/chatpilot feedback` | Feedback geben |
@@ -214,6 +216,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 - **Short surnames:** "Frost Winterborn" becomes "Frost W." – if two Frosts share the W, the tag grows automatically ("Frost Wi." / "Frost Wo."). Hover a name for the full name; whispers and clicks still use the full name.
 - **Abbreviations explained:** terms like `LFG`, `WTS`, `pst`, `LF2M`, `gz` and dungeon shortcuts like `SM`, `BRD`, `UBRS`, `MC` are tinted light blue. Hover them to see the explanation. Ambiguous ones (`AH`, `SM`, `ST` …) only count in CAPITALS, so normal words aren't marked.
 - **Foreign languages:** messages in a language your character can't speak (e.g. Orcish when you play Alliance) are greyed out with a "(foreign language – not readable)" note, or hidden entirely if you like. **They are not translated** – that's technically impossible (the server only sends scrambled text) and not allowed by Blizzard.
+- **Pilot Link:** ChatPilot users find each other through invisible messages (no chat text, only other ChatPilot users receive them). Name and tab tooltips show who uses ChatPilot, and the dot on a whisper tab turns blue while someone is typing to you. The "ChatPilot users around you" window (`/chatpilot pilots`) lists them with version and zone. Your own zone is only shared if you switch it on. Everything can be switched off and is never sent inside instances.
 - **Streamer mode:** nothing private on stream. Whisper texts show only "whisper hidden" (hover to peek), BattleTag numbers, other players' last names and web links are masked. A red LIVE badge doubles as the panic button: one click clears the chat view and hides all ChatPilot windows, a second brings everything back (`/chatpilot stream`, `/chatpilot panic`). Whispers from strangers are hidden completely, and other players can show anonymously as "Player 1" (against stream sniping). It only changes what is shown, never what you write.
 - **@names with initial:** after @ the pick writes "Frost W." instead of just "Frost" (option).
 - **Markdown colours:** `*bold*`, `_italic_` and `code` get coloured in chat (display only, option, off by default).
@@ -292,6 +295,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 | `/chatpilot archive` | Chat window archives |
 | `/chatpilot search <word>` | Search all chats |
 | `/chatpilot stream` / `panic` | Streamer mode / panic |
+| `/chatpilot pilots` | ChatPilot users around you |
 | `/chatpilot errors` | Error log |
 | `/chatpilot copy` | Copy current chat |
 | `/chatpilot feedback` | Give feedback |

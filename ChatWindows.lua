@@ -620,6 +620,13 @@ local function CreateTab(w)
 				GameTooltip:AddLine(L.CW_ST_OFF, 0.6, 0.64, 0.7)
 			end
 		end
+		if w.data.partner and not w.data.partner.bn and ns.PilotInfo then
+			if ns.PilotTyping and ns.PilotTyping(w.data.partner.key) then
+				GameTooltip:AddLine(L.PL_TYPING, 0.35, 0.65, 1)
+			end
+			local pe = ns.PilotInfo(w.data.partner.key)
+			if pe then GameTooltip:AddLine(L.PL_USES:format(pe.v or "?"), 0.55, 0.85, 0.65) end
+		end
 		GameTooltip:AddLine(L.CW_TAB_TIP, 0.8, 0.8, 0.8, true)
 		GameTooltip:AddLine(L.CW_RENAME_TIP, 0.31, 0.79, 1, true)
 		GameTooltip:Show()
@@ -1151,6 +1158,11 @@ local function CreateGroupFrame(g)
 	eb:SetScript("OnTextChanged", function(self)
 		upd()
 		local text = self:GetText() or ""
+		-- ChatPilot users see that you are typing (whisper windows only)
+		if text ~= "" and text:sub(1, 1) ~= "/" and ns.CW_TypingName and ns.PilotSendTyping then
+			local nm = ns.CW_TypingName(g)
+			if nm then ns.PilotSendTyping(nm) end
+		end
 		if text:sub(1, 1) ~= "/" then return end
 		local w = wins[g.data and g.data.active]
 		local t, rest = ParseCommand(w, text, false)
@@ -1835,7 +1847,9 @@ local function RefreshStatus()
 		if tab and tab.status then
 			if p then
 				local on = ns.CW_PartnerOnline(p)
-				if on then tab.status:SetColorTexture(0.30, 0.85, 0.45, 1) else tab.status:SetColorTexture(0.45, 0.48, 0.54, 1) end
+				if not p.bn and ns.PilotTyping and ns.PilotTyping(p.key) then
+					tab.status:SetColorTexture(0.35, 0.65, 1, 1) -- typing
+				elseif on then tab.status:SetColorTexture(0.30, 0.85, 0.45, 1) else tab.status:SetColorTexture(0.45, 0.48, 0.54, 1) end
 				tab.status:Show()
 			else
 				tab.status:Hide()
@@ -2098,6 +2112,12 @@ local function Current(g)
 		w.target = w.data.last or Targets(w)[1]
 	end
 	return w, w.target
+end
+
+-- name of the person the active window is writing a whisper to (nil otherwise)
+function ns.CW_TypingName(g)
+	local w, t = Current(g)
+	if w and t and t.type == "WHISPER" and type(t.name) == "string" then return t.name end
 end
 
 function ns:CW_UpdateChip(g)

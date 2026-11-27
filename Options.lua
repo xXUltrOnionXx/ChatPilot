@@ -588,6 +588,8 @@ local function BuildChat(content)
 	ToggleRow(flow, "buttonsTop", btn, function() ns:UpdateChatButtons() end)
 	ToggleRow(flow, "buttonBackground", btn, function() ns:UpdateChatButtons() end)
 	ToggleRow(flow, "versionCheck")
+	local pilotRow = ToggleRow(flow, "pilotLink")
+	ToggleRow(flow, "pilotZone", pilotRow)
 	sf:SetScript("OnShow", function()
 		local n = ns.SpamToday and ns:SpamToday() or 0
 		spamRow.desc:SetText(n > 0 and (L.DESC_spamFilter .. "  |cff8ad9a6" .. L.SPAM_TODAY:format(n) .. "|r") or L.DESC_spamFilter)
@@ -802,6 +804,12 @@ local function BuildInfo(content)
 	local sb = UI.Button(sr, L.SR_OPEN, 468, 28, "accent")
 	sb:SetPoint("TOPLEFT", sr.body, "BOTTOMLEFT", 0, -12)
 	sb:SetScript("OnClick", function() ns:ShowSearch() end)
+
+	-- ChatPilot users around you
+	local pl = InfoBox(flow, c, L.INFO_PILOTS, L.INFO_PILOTS_TEXT, 46)
+	local plb = UI.Button(pl, L.PL_OPEN, 468, 28, "accent")
+	plb:SetPoint("TOPLEFT", pl.body, "BOTTOMLEFT", 0, -12)
+	plb:SetScript("OnClick", function() ns:ShowPilots() end)
 
 	-- back up / move your data
 	local bk = InfoBox(flow, c, L.INFO_BACKUP, L.INFO_BACKUP_TEXT, 46)
@@ -1090,6 +1098,8 @@ SlashCmdList.CHATPILOT = function(input)
 	elseif cmd == "panic" then
 		if not ns.S.stream then ns:SetStream(true) end
 		ns:StreamPanic()
+	elseif cmd == "pilots" or cmd == "piloten" or cmd == "users" then
+		ns:ShowPilots()
 	elseif cmd == "archive" or cmd == "archiv" then
 		ns:ShowArchive()
 	elseif cmd == "search" or cmd == "suche" or cmd == "find" or cmd == "history" or cmd == "verlauf" then

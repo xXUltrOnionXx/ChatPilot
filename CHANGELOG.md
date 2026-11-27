@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.0
+- Neu: Pilot Link - ChatPilot-Nutzer finden sich über unsichtbare Nachrichten: im Namens-Tooltip und im Tab-Tooltip siehst du, wer ChatPilot nutzt, und der Punkt am Flüster-Tab wird blau, wenn dir jemand tippt
+- Neu: Fenster „ChatPilot-Nutzer in deiner Nähe“ (/chatpilot piloten) mit Version, Zone und Klick zum Anflüstern
+- Neu: auf Wunsch die eigene Zone mit den ChatPilot-Nutzern deiner Gilde und Gruppe teilen (standardmäßig aus)
+
 ## 1.9.1
 - Neu: Streamer-Modus versteckt Flüstern von Fremden ganz (das LIVE-Schild zählt mit) und kann andere Spieler anonym als „Spieler 1“, „Spieler 2“ zeigen, dich als „Ich“ (gegen Stream-Sniping)
 
