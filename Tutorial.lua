@@ -439,10 +439,66 @@ local function LayoutDim(target)
 	for _, t in ipairs(d) do t:Show() end
 end
 
+-- A settings row is framed from inside the row itself: the frame is a child of the row, so
+-- the scrolling page clips it and it can never hang outside of / behind the settings window.
+local rowGlow
+local function HideRowGlow()
+	if rowGlow then rowGlow:Hide() end
+end
+local function RowGlow(row)
+	if not rowGlow then
+		rowGlow = CreateFrame("Frame", nil, row)
+		rowGlow:EnableMouse(false)
+		local edges = {}
+		for i = 1, 4 do
+			local e = rowGlow:CreateTexture(nil, "OVERLAY")
+			UI.Paint(e, C.accent)
+			edges[i] = e
+		end
+		edges[1]:SetPoint("TOPLEFT"); edges[1]:SetPoint("TOPRIGHT"); edges[1]:SetHeight(2)
+		edges[2]:SetPoint("BOTTOMLEFT"); edges[2]:SetPoint("BOTTOMRIGHT"); edges[2]:SetHeight(2)
+		edges[3]:SetPoint("TOPLEFT"); edges[3]:SetPoint("BOTTOMLEFT"); edges[3]:SetWidth(2)
+		edges[4]:SetPoint("TOPRIGHT"); edges[4]:SetPoint("BOTTOMRIGHT"); edges[4]:SetWidth(2)
+		rowGlow.fill = rowGlow:CreateTexture(nil, "BACKGROUND")
+		rowGlow.fill:SetAllPoints()
+		rowGlow.fill:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 0.12)
+		rowGlow.t = 0
+		rowGlow:SetScript("OnUpdate", function(self, e)
+			self.t = self.t + e
+			self:SetAlpha(0.55 + 0.45 * math.abs(math.sin(self.t * 2.6)))
+		end)
+	end
+	rowGlow:SetParent(row)
+	rowGlow:ClearAllPoints()
+	rowGlow:SetAllPoints(row)
+	rowGlow:SetFrameLevel((row:GetFrameLevel() or 1) + 6)
+	rowGlow:Show()
+end
+
+-- anything that lives inside the settings window (a row, the side menu, a menu button)
+local function IsOptionsRow(target)
+	if not target then return false end
+	local win = ns.OptionsWindow and ns:OptionsWindow()
+	if not win then return false end
+	local f, n = target, 0
+	while f and n < 12 do
+		if f == win then return true end
+		f = f.GetParent and f:GetParent() or nil
+		n = n + 1
+	end
+	return false
+end
+
 local function ShowSpot(target, checkView)
 	local s = Spotlight()
-	if not target or not target.IsVisible or not target:IsVisible()
-		or (checkView and ns.OptionsRowInView and not ns:OptionsRowInView(target)) then
+	if IsOptionsRow(target) then
+		s:Hide()
+		LayoutDim(nil)
+		if target:IsVisible() then RowGlow(target) else HideRowGlow() end
+		return
+	end
+	HideRowGlow()
+	if not target or not target.IsVisible or not target:IsVisible() then
 		s:Hide()
 		LayoutDim(nil)
 		return
@@ -557,6 +613,7 @@ local function Build()
 		Undock()
 		overlay:Hide()
 		if spot then spot:Hide() end
+		HideRowGlow()
 		if ns.tutorialPaused then return end -- closed by a fight: not done yet
 		if ns.db then ns.db.tutorial = TUTORIAL_VERSION end
 	end)

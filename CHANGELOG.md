@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.11
+- Behoben: im Rundgang liegt der leuchtende Rahmen jetzt direkt in der gezeigten Einstellung. Er wird vom scrollenden Fenster abgeschnitten und liegt nie mehr hinter dem Einstellungsfenster oder scrollt außerhalb davon mit
+
 ## 1.10.10
 - Behoben: der Rundgang scrollt die Einstellungen jetzt genau zur gezeigten Zeile (vorher konnte sie aus dem Fenster rutschen und der Rahmen hing oben im Spiel), öffnet eingeklappte Gruppen und zeigt den Rahmen nur, wenn die Zeile sichtbar ist
 

@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.11",
+		de = { "Behoben: im Rundgang liegt der leuchtende Rahmen jetzt direkt in der gezeigten Einstellung. Er wird vom scrollenden Fenster abgeschnitten und liegt nie mehr hinter dem Einstellungsfenster oder scrollt außerhalb davon mit" },
+		en = { "Fixed: in the tour the glowing frame now sits right inside the setting being shown. The scrolling page clips it, so it is never behind the settings window or scrolls along outside of it" },
+		fr = { "Corrigé : dans le tour, le cadre lumineux se trouve maintenant directement dans le réglage montré. La page défilante le coupe, il n'est donc plus derrière la fenêtre des réglages ni ne défile en dehors" },
+		es = { "Corregido: en el recorrido, el marco luminoso ahora está dentro del ajuste mostrado. La página con desplazamiento lo recorta, así que ya no queda detrás de la ventana de ajustes ni se desplaza fuera de ella" },
+		it = { "Corretto: nel tour il riquadro luminoso ora si trova dentro l'impostazione mostrata. La pagina scorrevole lo ritaglia, quindi non finisce più dietro la finestra delle impostazioni né scorre fuori da essa" },
+		pt = { "Corrigido: no tour, a moldura luminosa fica agora dentro da definição mostrada. A página com deslocamento corta-a, por isso já não fica atrás da janela de definições nem se desloca fora dela" },
+		ru = { "Исправлено: в туре светящаяся рамка теперь находится прямо внутри показываемой настройки. Прокручиваемая страница обрезает её, поэтому она больше не оказывается за окном настроек и не прокручивается за его пределами" },
+		ko = { "수정: 둘러보기에서 빛나는 테두리가 이제 표시 중인 설정 안에 직접 들어갑니다. 스크롤 영역이 테두리를 잘라내므로 설정 창 뒤에 놓이거나 창 밖에서 함께 스크롤되지 않습니다" },
+		zh = { "修复：导览中的发光边框现在直接位于所展示的设置项内部。滚动页面会将其裁剪，因此不会再出现在设置窗口后面，也不会在窗口外随之滚动" },
+		tw = { "修復：導覽中的發光邊框現在直接位於所展示的設定項目內部。捲動頁面會將其裁切，因此不會再出現在設定視窗後面，也不會在視窗外隨之捲動" },
+	},
 	{ v = "1.10.10",
 		de = { "Behoben: der Rundgang scrollt die Einstellungen jetzt genau zur gezeigten Zeile (vorher konnte sie aus dem Fenster rutschen und der Rahmen hing oben im Spiel), öffnet eingeklappte Gruppen und zeigt den Rahmen nur, wenn die Zeile sichtbar ist" },
 		en = { "Fixed: the tour now scrolls the settings exactly to the row it shows (before, the row could slide out of the window and the frame hung at the top of the screen), opens collapsed groups and only shows the frame while the row is visible" },
