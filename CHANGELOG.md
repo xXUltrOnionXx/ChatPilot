@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.10.6
-- Behoben: eigene Chat-Fenster zeichnen ihre Zeilen neu, wenn sie sichtbar werden oder ihre Größe ändern (Zeilen, die in einem versteckten Fenster ankamen, konnten unsichtbar bleiben). /chatpilot diag zeigt jetzt, wie viele Zeilen die Fenster angezeigt, gefiltert oder nicht anzeigen konnten
+- Behoben: eigene Chat-Fenster zeichnen ihre Zeilen neu, wenn sie sichtbar werden oder ihre Größe ändern (Zeilen, die in einem versteckten Fenster ankamen, konnten unsichtbar bleiben). /chatpilot diag zeigt jetzt, wie viele Zeilen die Fenster angezeigt, gefiltert oder nicht anzeigen konnten. Das im Hauptchat geöffnete eigene Chat-Fenster öffnet sich nach einem Reload wieder von selbst
 
 ## 1.10.5
 - Behoben: Fenster ließen sich in WoW Forever nicht auf andere Fenster andocken, weil das Spiel die Mausposition dort nicht meldet - ChatPilot prüft sie jetzt selbst

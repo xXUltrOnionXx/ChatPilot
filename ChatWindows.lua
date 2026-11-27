@@ -1450,6 +1450,7 @@ function StartDrag(g, w)
 		local cx, cy = GetCursorPosition()
 		g.data.main = false
 		g.mainOpen = false
+		if Data then Data.openMain = nil end
 		g.data.w, g.data.h = math.floor(g.frame:GetWidth()), math.floor(g.frame:GetHeight())
 		g.data.x, g.data.y = math.floor(cx / scale - 40), math.floor(cy / scale + 10)
 		Place(g)
@@ -2680,7 +2681,7 @@ function ns:CW_ToggleAll()
 	local show = Data and Data.hidden or false
 	for _, g in ipairs(groups) do
 		if g.data.main then
-			if not show then g.mainOpen = false end
+			if not show then g.mainOpen = false; Data.openMain = nil end
 			g.frame:SetShown(show and g.mainOpen or false)
 		else
 			g.frame:SetShown(show)
@@ -2721,6 +2722,20 @@ local function Restore()
 		local g = NewGroup(d)
 		Select(g, wins[d.active])
 		if Data.hidden or d.main then g.frame:Hide() end
+	end
+	-- the custom chat that was open in the main chat before the reload opens again
+	-- (otherwise its lines stay behind a closed tab and look "missing")
+	local openId = Data.openMain
+	if openId and not Data.hidden then
+		C_Timer.After(1.5, function()
+			for _, g in ipairs(groups) do
+				if g.data and g.data.main and not g.mainOpen then
+					for _, id in ipairs(g.data.order) do
+						if id == openId and wins[id] then pcall(ns.CW_OpenMain, ns, g, wins[id]) return end
+					end
+				end
+			end
+		end)
 	end
 end
 
@@ -2770,6 +2785,7 @@ local function CloseMainOverlays(except)
 			changed = true
 		end
 	end
+	if changed and Data then Data.openMain = nil end
 	return changed
 end
 
@@ -2777,7 +2793,7 @@ function ns:CW_OpenMain(g, w)
 	if not g or not g.data then return end
 	CloseMainOverlays(g)
 	g.mainOpen = true
-	if Data then Data.hidden = false end
+	if Data then Data.hidden = false; Data.openMain = (w or wins[g.data.active]).data.id end
 	Place(g)
 	g.frame:Show()
 	g.frame:Raise()
