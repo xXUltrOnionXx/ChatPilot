@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.10
+- Behoben: der Rundgang scrollt die Einstellungen jetzt genau zur gezeigten Zeile (vorher konnte sie aus dem Fenster rutschen und der Rahmen hing oben im Spiel), öffnet eingeklappte Gruppen und zeigt den Rahmen nur, wenn die Zeile sichtbar ist
+
 ## 1.10.9
 - Neu: Debug-Button für das ganze ChatPilot (Käfer-Symbol im Optionsfenster, roter Punkt bei Problemen; auch /chatpilot debug). Der kopierbare Bericht zeigt Einstellungen, Fenster, Chat-Look und gespeicherte Probleme. ChatPilot sammelt Fehler jetzt automatisch: Lua-Fehler aus den eigenen Dateien und blockierte Aktionen werden mit Zähler und Zeitpunkt gespeichert (/chatpilot errors, /chatpilot errors clear); das normale Fehlerfenster des Spiels bleibt unverändert
 

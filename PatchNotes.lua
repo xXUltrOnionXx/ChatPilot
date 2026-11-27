@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.10",
+		de = { "Behoben: der Rundgang scrollt die Einstellungen jetzt genau zur gezeigten Zeile (vorher konnte sie aus dem Fenster rutschen und der Rahmen hing oben im Spiel), öffnet eingeklappte Gruppen und zeigt den Rahmen nur, wenn die Zeile sichtbar ist" },
+		en = { "Fixed: the tour now scrolls the settings exactly to the row it shows (before, the row could slide out of the window and the frame hung at the top of the screen), opens collapsed groups and only shows the frame while the row is visible" },
+		fr = { "Corrigé : le tour fait maintenant défiler les réglages exactement jusqu'à la ligne montrée (avant, elle pouvait sortir de la fenêtre et le cadre restait en haut de l'écran), ouvre les groupes repliés et n'affiche le cadre que si la ligne est visible" },
+		es = { "Corregido: el recorrido ahora desplaza los ajustes exactamente hasta la fila mostrada (antes podía salirse de la ventana y el marco quedaba arriba en la pantalla), abre los grupos plegados y solo muestra el marco si la fila es visible" },
+		it = { "Corretto: il tour ora scorre le impostazioni esattamente fino alla riga mostrata (prima poteva uscire dalla finestra e il riquadro restava in alto sullo schermo), apre i gruppi chiusi e mostra il riquadro solo se la riga è visibile" },
+		pt = { "Corrigido: o tour agora desloca as definições exatamente até à linha mostrada (antes podia sair da janela e a moldura ficava no topo do ecrã), abre os grupos recolhidos e só mostra a moldura quando a linha está visível" },
+		ru = { "Исправлено: тур теперь прокручивает настройки точно до показываемой строки (раньше она могла уехать за окно, а рамка повисала вверху экрана), раскрывает свёрнутые группы и показывает рамку, только пока строка видна" },
+		ko = { "수정: 둘러보기가 이제 설정을 보여 주는 줄까지 정확히 스크롤합니다 (이전에는 줄이 창 밖으로 밀려나 테두리가 화면 위쪽에 남을 수 있었습니다). 접힌 그룹을 열고, 줄이 보일 때만 테두리를 표시합니다" },
+		zh = { "修复：导览现在会把设置精确滚动到所展示的那一行（以前该行可能滑出窗口，边框悬在屏幕顶部），会展开已折叠的分组，并且只在该行可见时显示边框" },
+		tw = { "修復：導覽現在會把設定精確捲動到所展示的那一行（以前該行可能滑出視窗，邊框懸在畫面頂部），會展開已摺疊的群組，並且只在該行可見時顯示邊框" },
+	},
 	{ v = "1.10.9",
 		de = { "Neu: Debug-Button für das ganze ChatPilot (Käfer-Symbol im Optionsfenster, roter Punkt bei Problemen; auch /chatpilot debug). Der kopierbare Bericht zeigt Einstellungen, Fenster, Chat-Look und gespeicherte Probleme. ChatPilot sammelt Fehler jetzt automatisch: Lua-Fehler aus den eigenen Dateien und blockierte Aktionen werden mit Zähler und Zeitpunkt gespeichert (/chatpilot errors, /chatpilot errors clear); das normale Fehlerfenster des Spiels bleibt unverändert" },
 		en = { "New: debug button for the whole of ChatPilot (bug icon in the settings window, red dot when problems were caught; also /chatpilot debug). The copyable report shows settings, windows, chat look and saved problems. ChatPilot now collects errors automatically: Lua errors from its own files and blocked actions are saved with a counter and time (/chatpilot errors, /chatpilot errors clear); the game's normal error display is left untouched" },

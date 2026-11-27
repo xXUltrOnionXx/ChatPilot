@@ -439,9 +439,10 @@ local function LayoutDim(target)
 	for _, t in ipairs(d) do t:Show() end
 end
 
-local function ShowSpot(target)
+local function ShowSpot(target, checkView)
 	local s = Spotlight()
-	if not target or not target.IsVisible or not target:IsVisible() then
+	if not target or not target.IsVisible or not target:IsVisible()
+		or (checkView and ns.OptionsRowInView and not ns:OptionsRowInView(target)) then
 		s:Hide()
 		LayoutDim(nil)
 		return
@@ -649,13 +650,16 @@ function ns:TutorialGo(i)
 		Dock(before)
 		-- the page needs a moment to settle before the frame can be framed
 		C_Timer.After(0.12, function()
-			if tut and tut:IsShown() and STEPS[index] == step and step.page then ShowSpot(target) end
+			if tut and tut:IsShown() and STEPS[index] == step and step.page then ShowSpot(target, true) end
+		end)
+		C_Timer.After(0.4, function()
+			if tut and tut:IsShown() and STEPS[index] == step and step.page then ShowSpot(target, true) end
 		end)
 	else
 		Undock()
 		target = step.target and step.target()
 	end
-	ShowSpot(target)
+	if not step.page then ShowSpot(target) else ShowSpot(nil) end
 end
 
 function ns:ShowTutorial(start)

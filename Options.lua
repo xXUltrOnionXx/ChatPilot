@@ -26,6 +26,7 @@ local function Relayout(flow)
 		local p = it.parent
 		local vis = not p or (rawget(p, "flowVisible") and IsExpanded(p))
 		it.f.flowVisible = vis
+		it.f.flowY = vis and y or nil
 		it.f:SetShown(vis)
 		if vis then
 			local h = it.height and it.height() or it.f:GetHeight()
@@ -57,6 +58,7 @@ local function FlowAdd(flow, frame, parent, opts)
 	}
 	frame:SetParent(flow.child)
 	frame.flow = flow
+	frame.flowParent = parent
 end
 
 local function SetExpanded(f, value)
@@ -1066,23 +1068,46 @@ function ns:OptionsFocus(page, key)
 	else
 		target = navButtons[page]
 	end
+	-- a row inside a collapsed group: open the group first
+	if target and key and key ~= "nav" then
+		local p, changed = rawget(target, "flowParent"), false
+		while p do
+			if not IsExpanded(p) then SetExpanded(p, true); changed = true end
+			p = rawget(p, "flowParent")
+		end
+		if changed then RefreshRows(); RelayoutAll() end
+	end
 	if sf and sf.child then
+		-- the row's place is known from the layout (no waiting for the game to place frames)
 		local function Scroll()
-			if not (sf.SetVerticalScroll and sf.GetVerticalScrollRange) then return end
+			if not sf.SetVerticalScroll then return end
 			local want = 0
-			local top, ctop = target and target.GetTop and target:GetTop(), sf.child.GetTop and sf.child:GetTop()
-			if type(top) == "number" and type(ctop) == "number" and key and key ~= "nav" then
-				want = math.max(0, math.min(ctop - top - 60, sf:GetVerticalScrollRange() or 0))
+			local y = target and rawget(target, "flowY")
+			if type(y) == "number" and key and key ~= "nav" then
+				local maxScroll = math.max(0, (sf.child:GetHeight() or 0) - (sf:GetHeight() or 0))
+				want = math.max(0, math.min(-y - 60, maxScroll))
 			end
 			sf:SetVerticalScroll(want)
 		end
 		Scroll()
 		C_Timer.After(0.05, Scroll)
+		C_Timer.After(0.2, Scroll)
 	end
 	return target
 end
 
 function ns:OptionsWindow() return win end
+
+-- is this row inside the visible part of its scrolling page? (for the tour's frame)
+function ns:OptionsRowInView(r)
+	local flow = r and rawget(r, "flow")
+	local child = type(flow) == "table" and flow.child
+	local sf = child and child:GetParent()
+	if not (sf and sf.GetTop and r.GetTop) then return true end
+	local rt, rb, st, sb = r:GetTop(), r:GetBottom(), sf:GetTop(), sf:GetBottom()
+	if not (rt and rb and st and sb) then return true end
+	return rt <= st + 2 and rb >= sb - 2
+end
 
 function ns:ToggleOptions()
 	if win and win:IsShown() then win:Hide() else self:OpenOptions() end
