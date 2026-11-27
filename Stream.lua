@@ -41,6 +41,15 @@ function ns.StreamPeek(frame, link)
 	return true
 end
 
+-- "Player 1", "Player 2" ...: the same person keeps the same number while you stream
+local anon, anonN = {}, 0
+local function AnonName(name)
+	local key = ns.Normalize and ns.Normalize(name) or name
+	if key == ns.playerKey then return L.ST_ME end
+	if not anon[key] then anonN = anonN + 1; anon[key] = L.ST_PLAYER:format(anonN) end
+	return anon[key]
+end
+
 -- first name only inside player links: "[Frost Winterborn]" / "[Frost W.]" -> "[Frost]"
 local function MaskNames(text)
 	return (text:gsub("(|Hplayer:([^|]*)|h)(.-)|h", function(open, data, inner)
@@ -49,6 +58,7 @@ local function MaskNames(text)
 		local full = (name:gsub("%-", " "))
 		local first = full:match("^(%S+)%s")
 		if not first then return nil end
+		if ns.S.streamAnon then first = AnonName(name) end
 		local out = inner
 		local cands = { full }
 		local short = ns.ShortenName and ns.ShortenName(full)
@@ -72,7 +82,7 @@ function ns.StreamMask(text)
 	if S.streamTags ~= false then
 		text = text:gsub("([^%s|:%[%]]+)#(%d%d%d%d%d?%d?)%f[%D]", "%1#****")
 	end
-	if S.streamNames ~= false and text:find("|Hplayer:", 1, true) then
+	if (S.streamNames ~= false or S.streamAnon) and text:find("|Hplayer:", 1, true) then
 		text = MaskNames(text)
 	end
 	if S.streamLinks ~= false then
@@ -159,6 +169,7 @@ local function BuildBadge()
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
 		GameTooltip:SetText(L.ST_BADGE_TITLE, 1, 0.45, 0.4)
 		GameTooltip:AddLine(L.ST_BADGE_TIP, 1, 1, 1, true)
+		if (ns.streamBlocked or 0) > 0 then GameTooltip:AddLine(L.ST_BLOCKED:format(ns.streamBlocked), 0.55, 0.85, 0.65) end
 		GameTooltip:Show()
 	end)
 	badge:SetScript("OnLeave", function() GameTooltip:Hide() end)

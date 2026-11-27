@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.1
+- Neu: Streamer-Modus versteckt Flüstern von Fremden ganz (das LIVE-Schild zählt mit) und kann andere Spieler anonym als „Spieler 1“, „Spieler 2“ zeigen, dich als „Ich“ (gegen Stream-Sniping)
+
 ## 1.9.0
 - Neu: Streamer-Modus - Flüstertexte versteckt (Maus drüber zum Hineinschauen), BattleTag-Nummern, Nachnamen und Web-Links verdeckt, rotes LIVE-Schild mit Panik-Knopf (/chatpilot stream)
 - Neu: Namen nach @ lassen sich mit Initial schreiben ("Frost W."), Idee aus dem Feedback

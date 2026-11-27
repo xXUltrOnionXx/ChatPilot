@@ -247,6 +247,10 @@ local function Filter(frame, event, msg, author, language, ...)
 	if not S or type(msg) ~= "string" or ns.IsSecret(msg) then return false end
 
 	-- streamer mode: whispers show only a notice (hover to peek)
+	if S.stream and S.streamStrangers ~= false and event == "CHAT_MSG_WHISPER" and not Trusted(author) then
+		ns.streamBlocked = (ns.streamBlocked or 0) + 1
+		return true
+	end
 	if S.stream and ns.StreamHideWhisper then
 		local hidden = ns.StreamHideWhisper(event, msg)
 		if hidden then return false, hidden, author, language, ... end

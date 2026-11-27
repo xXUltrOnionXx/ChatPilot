@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.9.1",
+		de = { "Neu: Streamer-Modus versteckt Flüstern von Fremden ganz (das LIVE-Schild zählt mit) und kann andere Spieler anonym als „Spieler 1“, „Spieler 2“ zeigen, dich als „Ich“ (gegen Stream-Sniping)" },
+		en = { "New: streamer mode hides whispers from strangers completely (the LIVE badge counts them) and can show other players anonymously as \"Player 1\", \"Player 2\" and you as \"Me\" (against stream sniping)" },
+		fr = { "Nouveau : le mode streamer masque entièrement les chuchotements d'inconnus (le badge LIVE les compte) et peut afficher les autres joueurs en « Joueur 1 », « Joueur 2 » et toi en « Moi » (contre le stream sniping)" },
+		es = { "Nuevo: el modo streamer oculta por completo los susurros de desconocidos (la insignia LIVE los cuenta) y puede mostrar a los demás como «Jugador 1», «Jugador 2» y a ti como «Yo» (contra el stream sniping)" },
+		it = { "Novità: la modalità streamer nasconde del tutto i sussurri di sconosciuti (il badge LIVE li conta) e può mostrare gli altri come «Giocatore 1», «Giocatore 2» e te come «Io» (contro lo stream sniping)" },
+		pt = { "Novo: o modo streamer oculta totalmente os sussurros de desconhecidos (o selo LIVE os conta) e pode mostrar os outros como \"Jogador 1\", \"Jogador 2\" e você como \"Eu\" (contra stream sniping)" },
+		ru = { "Новое: режим стримера полностью скрывает шёпот от незнакомцев (значок LIVE их считает) и может показывать других игроков как «Игрок 1», «Игрок 2», а вас как «Я» (против стрим-снайпинга)" },
+		ko = { "신규: 스트리머 모드가 낯선 사람의 귓속말을 완전히 숨기고(LIVE 배지가 개수를 셈), 다른 플레이어를 \"플레이어 1\", \"플레이어 2\", 나를 \"나\"로 익명 표시할 수 있음 (방송 저격 방지)" },
+		zh = { "新增：主播模式会完全隐藏陌生人的密语（LIVE 标记会计数），并可将其他玩家匿名显示为“玩家 1”“玩家 2”，你显示为“我”（防止直播狙击）" },
+		tw = { "新增：實況主模式會完全隱藏陌生人的密語（LIVE 標記會計數），並可將其他玩家匿名顯示為「玩家 1」「玩家 2」，你顯示為「我」（防止直播狙擊）" },
+	},
 	{ v = "1.9.0",
 		de = { "Neu: Streamer-Modus - Flüstertexte versteckt (Maus drüber zum Hineinschauen), BattleTag-Nummern, Nachnamen und Web-Links verdeckt, rotes LIVE-Schild mit Panik-Knopf (/chatpilot stream)", "Neu: Namen nach @ lassen sich mit Initial schreiben (\"Frost W.\"), Idee aus dem Feedback", "Neu: Markdown-Farben für *fett*, _kursiv_ und `Code` (nur Anzeige, ausgeschaltet bis du es einschaltest)" },
 		en = { "New: streamer mode - whisper texts hidden (hover to peek), BattleTag numbers, last names and web links masked, red LIVE badge with a panic button (/chatpilot stream)", "New: names after @ can be written with an initial (\"Frost W.\"), idea from the feedback", "New: markdown colours for *bold*, _italic_ and `code` (display only, off until you switch it on)" },
