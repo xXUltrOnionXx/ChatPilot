@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.1
+- Neu: Online-Zeit hinter dem Namen von Gildenmitgliedern und Freunden: +5m = gerade eingeloggt, R5m = Relog, >2h = war schon online, bevor du kamst - so weißt du, ob du nochmal grüßen sollst (in den Einstellungen abschaltbar)
+
 ## 1.10.0
 - Neu: Pilot Link - ChatPilot-Nutzer finden sich über unsichtbare Nachrichten: im Namens-Tooltip und im Tab-Tooltip siehst du, wer ChatPilot nutzt, und der Punkt am Flüster-Tab wird blau, wenn dir jemand tippt
 - Neu: Fenster „ChatPilot-Nutzer in deiner Nähe“ (/chatpilot piloten) mit Version, Zone und Klick zum Anflüstern

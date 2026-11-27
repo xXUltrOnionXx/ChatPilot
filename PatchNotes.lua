@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.1",
+		de = { "Neu: Online-Zeit hinter dem Namen von Gildenmitgliedern und Freunden: +5m = gerade eingeloggt, R5m = Relog, >2h = war schon online, bevor du kamst - so weißt du, ob du nochmal grüßen sollst (in den Einstellungen abschaltbar)" },
+		en = { "New: online time behind the names of guild members and friends: +5m = just logged in, R5m = relogged, >2h = was already online before you came - so you know whether to greet again (can be switched off in the options)" },
+		fr = { "Nouveau : temps en ligne derrière les noms des membres de guilde et amis : +5m = vient de se connecter, R5m = reconnecté, >2h = déjà en ligne avant toi - pour savoir s'il faut resaluer (désactivable dans les options)" },
+		es = { "Nuevo: tiempo en línea tras los nombres de miembros de la hermandad y amigos: +5m = acaba de conectarse, R5m = reconectado, >2h = ya estaba en línea antes que tú - para saber si saludar otra vez (se puede desactivar en las opciones)" },
+		it = { "Novità: tempo online dopo i nomi di membri della gilda e amici: +5m = appena connesso, R5m = riconnesso, >2h = già online prima di te - così sai se salutare di nuovo (disattivabile nelle opzioni)" },
+		pt = { "Novo: tempo online após os nomes de membros da guilda e amigos: +5m = acabou de entrar, R5m = relogou, >2h = já estava online antes de você - assim você sabe se cumprimenta de novo (pode ser desligado nas opções)" },
+		ru = { "Новое: время онлайн после имён участников гильдии и друзей: +5m = только что зашёл, R5m = перезашёл, >2h = уже был в сети до вас - чтобы знать, здороваться ли ещё раз (можно отключить в настройках)" },
+		ko = { "신규: 길드원과 친구 이름 뒤에 접속 시간 표시: +5m = 방금 접속, R5m = 재접속, >2h = 내가 오기 전부터 온라인 - 다시 인사할지 알 수 있음 (설정에서 끌 수 있음)" },
+		zh = { "新增：在公会成员和好友的名字后显示在线时间：+5m = 刚上线，R5m = 重新上线，>2h = 在你之前就已在线 - 方便判断要不要再次问好（可在设置中关闭）" },
+		tw = { "新增：在公會成員和好友的名字後顯示線上時間：+5m = 剛上線，R5m = 重新上線，>2h = 在你之前就已在線 - 方便判斷要不要再次問好（可在設定中關閉）" },
+	},
 	{ v = "1.10.0",
 		de = { "Neu: Pilot Link - ChatPilot-Nutzer finden sich über unsichtbare Nachrichten: im Namens-Tooltip und im Tab-Tooltip siehst du, wer ChatPilot nutzt, und der Punkt am Flüster-Tab wird blau, wenn dir jemand tippt", "Neu: Fenster „ChatPilot-Nutzer in deiner Nähe“ (/chatpilot piloten) mit Version, Zone und Klick zum Anflüstern", "Neu: auf Wunsch die eigene Zone mit den ChatPilot-Nutzern deiner Gilde und Gruppe teilen (standardmäßig aus)" },
 		en = { "New: Pilot Link - ChatPilot users find each other through invisible messages: name and tab tooltips show who uses ChatPilot, and the dot on a whisper tab turns blue while someone is typing to you", "New: \"ChatPilot users around you\" window (/chatpilot pilots) with version, zone and click to whisper", "New: optionally share your zone with the ChatPilot users of your guild and group (off by default)" },

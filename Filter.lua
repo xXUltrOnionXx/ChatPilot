@@ -375,6 +375,10 @@ function ns.LinkEnter(frame, link)
 					if info.src.community then tags[#tags + 1] = L.SRC_COMMUNITY end
 					if #tags > 0 then GameTooltip:AddLine(table.concat(tags, " · "), 0.55, 0.85, 0.65) end
 				end
+				local ptxt, pkind = ns.PresenceText and ns.PresenceText(full)
+				if ptxt then
+					GameTooltip:AddLine(ptxt, pkind == "relog" and 1 or 0.3, pkind == "relog" and 0.66 or (pkind == "before" and 0.72 or 0.87), pkind == "before" and 1 or 0.5)
+				end
 				local pe = ns.PilotInfo and ns.PilotInfo(full)
 				if pe then
 					GameTooltip:AddLine(L.PL_USES:format(pe.v or "?") .. (pe.zone and (" · " .. pe.zone) or ""), 0.31, 0.79, 1)

@@ -270,6 +270,11 @@ local function AddLevels(text)
 				RequestGuildRoster() -- someone new: refresh the lists so the next line knows them
 			end
 		end
+		if S.presenceTag ~= false and ns.PresenceTag then
+			local nm = data:match("^([^:]+)")
+			local tag = nm and ns.PresenceTag(nm)
+			if tag then out = out .. " " .. tag end
+		end
 		if out == inner then return nil end
 		return open .. "[" .. out .. "]|h"
 	end))
@@ -314,7 +319,7 @@ function ns.InstallMainChatFrame(frame)
 				return orig(self, text, ...)
 			end
 			-- with the game's normal design the chat stays exactly as Blizzard writes it
-			if (ns.S.showLevels or ns.S.shortSurnames)
+			if (ns.S.showLevels or ns.S.shortSurnames or ns.S.presenceTag ~= false)
 				and (text:find("|Hplayer:", 1, true) or text:find("|HBNplayer:", 1, true)) then
 				local ok, out = pcall(AddLevels, text)
 				if ok and out then text = out end

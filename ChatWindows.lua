@@ -144,7 +144,7 @@ local function Format(event, msg, author, language, channelString, target, flags
 	local ok, head = pcall(string.format, prefix, link)
 	if not ok then head = link .. ": " end
 	local text = ts .. head .. lang .. msg
-	if (ns.S.showLevels or ns.S.shortSurnames) and ns.AddLevels then
+	if (ns.S.showLevels or ns.S.shortSurnames or ns.S.presenceTag ~= false) and ns.AddLevels then
 		local ok2, out = pcall(ns.AddLevels, text)
 		if ok2 and out then text = out end
 	end
@@ -1767,7 +1767,7 @@ local function Deliver(event, ...)
 						if chatType:find("_INFORM$") then
 							link = ("|Hplayer:%s:%s:%s:|h[%s]|h"):format(UnitName("player") or "", tostring(select(11, ...) or 0), "WHISPER", UI.Hex(C.accent) .. L.WH_YOU .. "|r")
 						end
-						if (ns.S.showLevels or ns.S.shortSurnames) and ns.AddLevels then
+						if (ns.S.showLevels or ns.S.shortSurnames or ns.S.presenceTag ~= false) and ns.AddLevels then
 							local okL, out = pcall(ns.AddLevels, link)
 							if okL and out then link = out end
 						end

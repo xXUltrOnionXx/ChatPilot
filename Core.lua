@@ -46,6 +46,7 @@ ns.defaults = {
 	keepHistory = true,
 	showLevels = true,
 	shortSurnames = true,
+	presenceTag = true,
 	playerInfo = true,
 	tabWheel = true,
 	notifyGlow = true,
