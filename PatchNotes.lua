@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.6",
+		de = { "Behoben: eigene Chat-Fenster zeichnen ihre Zeilen neu, wenn sie sichtbar werden oder ihre Größe ändern (Zeilen, die in einem versteckten Fenster ankamen, konnten unsichtbar bleiben). /chatpilot diag zeigt jetzt, wie viele Zeilen die Fenster angezeigt, gefiltert oder nicht anzeigen konnten" },
+		en = { "Fixed: custom chat windows redraw their lines when they become visible or change size (lines that arrived in a hidden window could stay invisible). /chatpilot diag now shows how many lines the windows showed, filtered or could not show" },
+		fr = { "Corrigé : les fenêtres de chat perso redessinent leurs lignes quand elles deviennent visibles ou changent de taille (des lignes arrivées dans une fenêtre masquée pouvaient rester invisibles). /chatpilot diag indique maintenant combien de lignes ont été affichées, filtrées ou impossibles à afficher" },
+		es = { "Corregido: las ventanas de chat propias vuelven a dibujar sus líneas al hacerse visibles o cambiar de tamaño (las líneas que llegaban a una ventana oculta podían quedar invisibles). /chatpilot diag ahora muestra cuántas líneas se mostraron, se filtraron o no se pudieron mostrar" },
+		it = { "Corretto: le finestre di chat personali ridisegnano le righe quando diventano visibili o cambiano dimensione (le righe arrivate in una finestra nascosta potevano restare invisibili). /chatpilot diag ora mostra quante righe sono state mostrate, filtrate o non mostrabili" },
+		pt = { "Corrigido: as janelas de chat próprias redesenham suas linhas ao ficarem visíveis ou mudarem de tamanho (linhas que chegavam a uma janela oculta podiam ficar invisíveis). /chatpilot diag agora mostra quantas linhas foram exibidas, filtradas ou não puderam ser exibidas" },
+		ru = { "Исправлено: собственные окна чата перерисовывают строки, когда становятся видимыми или меняют размер (строки, пришедшие в скрытое окно, могли оставаться невидимыми). /chatpilot diag теперь показывает, сколько строк показано, отфильтровано или не удалось показать" },
+		ko = { "수정: 사용자 채팅 창이 보이게 되거나 크기가 바뀔 때 줄을 다시 그립니다 (숨겨진 창에 도착한 줄이 보이지 않을 수 있던 문제). /chatpilot diag 가 이제 표시된 줄, 필터된 줄, 표시하지 못한 줄의 수를 보여줍니다" },
+		zh = { "修复：自定义聊天窗口在变为可见或改变大小时会重绘文本行（在隐藏窗口中收到的行可能一直不可见）。/chatpilot diag 现在会显示窗口显示、过滤和无法显示的行数" },
+		tw = { "修復：自訂聊天視窗在變為可見或改變大小時會重繪文字行（在隱藏視窗中收到的行可能一直不可見）。/chatpilot diag 現在會顯示視窗顯示、過濾和無法顯示的行數" },
+	},
 	{ v = "1.10.5",
 		de = { "Behoben: Fenster ließen sich in WoW Forever nicht auf andere Fenster andocken, weil das Spiel die Mausposition dort nicht meldet - ChatPilot prüft sie jetzt selbst" },
 		en = { "Fixed: windows could not be docked onto other windows in WoW Forever because the game does not report the mouse position there - ChatPilot now checks it itself" },

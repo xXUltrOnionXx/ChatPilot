@@ -1203,6 +1203,16 @@ SlashCmdList.CHATPILOT = function(input)
 				if n and C_AddOns.IsAddOnLoaded(n) and not tostring(n):find("^Blizzard_") then loaded[#loaded + 1] = n end
 			end
 		end
+		local st = ns.cwStats or {}
+		P("custom chats: shown %d, hidden by a filter %d, restricted text shown %d (failed %d), no window for event %d, caught errors %d",
+			st.shown or 0, st.filtered or 0, st.secret or 0, st.secretFail or 0, st.noTarget or 0, #(ns.errors or {}))
+		for i = math.max(1, #(ns.errors or {}) - 2), #(ns.errors or {}) do P("error: %s", ns.errors[i]) end
+		local nGroups, nShown = 0, 0
+		for _, g in ipairs(ns._cw and ns._cw.groups or {}) do
+			nGroups = nGroups + 1
+			if g.frame:IsVisible() then nShown = nShown + 1 end
+		end
+		P("custom windows: %d (visible %d)", nGroups, nShown)
 		P("other addons: %s", #loaded > 0 and table.concat(loaded, ", ") or "-")
 	elseif cmd == "pilots" or cmd == "piloten" or cmd == "users" then
 		ns:ShowPilots()

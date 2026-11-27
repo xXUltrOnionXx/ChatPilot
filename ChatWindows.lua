@@ -155,6 +155,8 @@ end
 -- State
 -------------------------------------------------------------------------------
 local wins, groups = {}, {}   -- runtime objects: wins[id], groups[list]
+local stats = { shown = 0, filtered = 0, secret = 0, secretFail = 0, noTarget = 0 }
+ns.cwStats = stats -- for /chatpilot diag
 local Data                    -- ns.db.cwin
 local menu                    -- filter menu (shared)
 local dragging                -- group being dragged
@@ -803,7 +805,7 @@ local function TabRow(parent)
 		self.drop:SetFrameLevel(self:GetFrameLevel() + 8)
 		local unreadHidden = false
 		if over and self.items then
-			for _, it in ipairs(self.items()) do if it.unread and not it.active then unreadHidden = true end end
+			for _, it in ipairs(self.items() or {}) do if it.unread and not it.active then unreadHidden = true end end
 		end
 		self.drop.dot:SetShown(unreadHidden)
 		DotGlow(self.drop, unreadHidden)
@@ -1269,6 +1271,10 @@ local function CreateMessageFrame(w)
 	if m.SetHyperlinksEnabled then m:SetHyperlinksEnabled(true) end
 	if ns.DecorateMessages then ns.DecorateMessages(m, function() return ns.S.chatStyle ~= false end) end
 	m:HookScript("OnMouseDown", function() if w.group then ns.cwLast = w.group end end)
+	-- lines that arrived while the window was hidden or not sized yet are drawn when it appears
+	local function Redraw(self) if self.RefreshDisplay then pcall(self.RefreshDisplay, self) end end
+	m:HookScript("OnShow", Redraw)
+	m:HookScript("OnSizeChanged", Redraw)
 	m:EnableMouseWheel(true)
 	m:SetScript("OnMouseWheel", function(self, delta)
 		if delta > 0 then
@@ -1562,6 +1568,7 @@ local function AddLine(w, text, r, g, b, save, cid, ph)
 	end
 	local away = w.msg.AtBottom and w.msg:AtBottom() == false
 	w.msg:AddMessage(text, r, g, b)
+	stats.shown = stats.shown + 1
 	-- the hint is an extra: whatever goes wrong there must never cost a message
 	if away then
 		local okH, errH = pcall(ShowNewHint, w)
@@ -1725,13 +1732,21 @@ local function Deliver(event, ...)
 			if ok then targets[#targets + 1] = w end
 		end
 	end
-	if #targets == 0 then return end
+	if #targets == 0 then stats.noTarget = stats.noTarget + 1 return end
 
 	local msg, author = ...
 	if not ns.Usable(msg, author) then
 		-- restricted (e.g. boss encounter): show the text as it is, untouched
 		local r, g, b = TypeColor(event:sub(10))
-		for _, w in ipairs(targets) do pcall(w.msg.AddMessage, w.msg, msg, r, g, b) end
+		for _, w in ipairs(targets) do
+			local okA, errA = pcall(w.msg.AddMessage, w.msg, msg, r, g, b)
+			if okA then
+				stats.secret = stats.secret + 1
+			else
+				stats.secretFail = stats.secretFail + 1
+				ns.ReportError("secret line", errA)
+			end
+		end
 		return
 	end
 
@@ -1756,6 +1771,7 @@ local function Deliver(event, ...)
 
 	for _, w in ipairs(targets) do
 		local args, n = RunFilters(w.msg, event, ...)
+		if not args then stats.filtered = stats.filtered + 1 end
 		if args then
 			if cid then args[1] = placeholder end
 			local ok, text, r, g, b
