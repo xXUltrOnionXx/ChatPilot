@@ -94,6 +94,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
   - **Online-Punkt in Flüsterfenstern:** grün = online, grau = offline oder unbekannt. Schreibst du jemandem, der nicht online ist, erscheint ein Hinweis im Fenster.
   - **Online-/Offline-Meldungen:** im Filter-Menü jedes Fensters einschaltbar – du siehst, wer gerade online gekommen oder offline gegangen ist.
   - **Enter und Shift-Klick:** Enter öffnet den zuletzt genutzten Chat mit demselben Ziel, Shift-Klick fügt Item-Links in das Eingabefeld des Fensters ein, und nach dem Senden springt der Chat nach unten. Neue Nachrichten beim Hochscrollen zeigt ein kleiner Hinweis.
+  - **Kanäle auswählen:** im Filter-Menü legst du fest, welche Kanäle und Communities ein Fenster zeigt.
   - **Archiv:** ältere Zeilen gehen nicht verloren, sondern wandern in ein durchsuchbares Archiv des Fensters (bis zu 3000 Zeilen).
   - Namen, Items und Links sind anklickbar, die letzten Nachrichten bleiben gespeichert.
   - **Leeren:** Trichter-Symbol → „Dieses Fenster leeren“.
@@ -240,6 +241,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
   - **Online dot in whisper windows:** green = online, grey = offline or unknown. If you write to someone who is not online, a notice appears in the window.
   - **Online/offline notices:** can be switched on in each window's filter menu – you see who just came online or went offline.
   - **Enter and Shift-click:** Enter opens the last used chat with the same target, Shift-click puts item links into the window's input box, and the chat jumps down after sending. A small hint shows new messages while you are scrolled up.
+  - **Choose channels:** in the filter menu you pick which channels and communities a window shows.
   - **Archive:** older lines are not lost – they move into a searchable archive of the window (up to 3000 lines).
   - Names, items and links are clickable, recent messages are saved.
   - **Empty it:** funnel icon → "Empty this window".

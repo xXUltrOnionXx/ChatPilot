@@ -1640,6 +1640,19 @@ local function PresenceOf(msg)
 	end
 end
 
+-- key of the channel / community a message came from (for "only these channels")
+local function ChanKey(event, ...)
+	local channelString, baseName = select(4, ...), select(9, ...)
+	if event == "CHAT_MSG_COMMUNITIES_CHANNEL" then
+		if type(channelString) == "string" and ns.Usable(channelString) then
+			local club = channelString:match("^Community:(%d+)")
+			if club then return "club:" .. club end
+		end
+	elseif type(baseName) == "string" and baseName ~= "" and ns.Usable(baseName) then
+		return "ch:" .. baseName:lower()
+	end
+end
+
 local function Deliver(event, ...)
 	if #groups == 0 then return end
 	local cat = EVENT_CAT[event]
@@ -1665,6 +1678,11 @@ local function Deliver(event, ...)
 					local author = select(2, ...)
 					ok = not event:find("^CHAT_MSG_BN_") and ns.Usable(author) and ns.Normalize(author) == p.key
 				end
+			end
+			-- a window limited to chosen channels / communities
+			if ok and (cat == "channels" or cat == "community") and w.data.chanOnly and next(w.data.chanOnly) then
+				local key = ChanKey(event, ...)
+				ok = key ~= nil and w.data.chanOnly[key] == true
 			end
 			if ok then targets[#targets + 1] = w end
 		end
@@ -1914,6 +1932,85 @@ end)
 -------------------------------------------------------------------------------
 -- Filter menu
 -------------------------------------------------------------------------------
+-- the channels and communities you can pick for a window
+local function PickList()
+	local list = {}
+	if GetChannelList then
+		local ok, t = pcall(function() return { GetChannelList() } end)
+		if ok then
+			for i = 1, #t, 3 do
+				local name = t[i + 1]
+				if type(name) == "string" and name ~= "" then list[#list + 1] = { "ch:" .. name:lower(), name } end
+			end
+		end
+	end
+	if C_Club and C_Club.GetSubscribedClubs and C_Club.GetClubInfo then
+		local ok, clubs = pcall(C_Club.GetSubscribedClubs)
+		for _, c in ipairs(ok and clubs or {}) do
+			if c.clubId and c.name then list[#list + 1] = { "club:" .. tostring(c.clubId), c.name } end
+		end
+	end
+	return list
+end
+
+local picker
+local function OpenPicker(g)
+	local w = g and wins[g.data.active]
+	if not w then return end
+	if not picker then
+		picker = CreateFrame("Frame", "ChatPilotChannelPicker", UIParent)
+		picker:SetFrameStrata("DIALOG")
+		picker:SetClampedToScreen(true)
+		picker:EnableMouse(true)
+		UI.Fill(picker, C.bg)
+		UI.Border(picker, C.border)
+		local title = UI.Text(picker, "GameFontHighlight")
+		title:SetPoint("TOPLEFT", 12, -10)
+		title:SetText(L.CW_CHANNELS)
+		picker.hint = UI.Text(picker, "GameFontHighlightSmall", C.muted)
+		picker.hint:SetWidth(246)
+		picker.hint:SetSpacing(2)
+		picker.hint:SetText(L.CW_CHANNELS_HINT)
+		picker.rows = {}
+		picker:Hide()
+		tinsert(UISpecialFrames, "ChatPilotChannelPicker")
+	end
+	picker.window = w
+	local list = PickList()
+	for _, r in ipairs(picker.rows) do r:Hide() end
+	for i, e in ipairs(list) do
+		local r = picker.rows[i]
+		if not r then
+			r = CreateFrame("Frame", nil, picker)
+			r:SetSize(246, 26)
+			r:SetPoint("TOPLEFT", 8, -32 - (i - 1) * 27)
+			r.label = UI.Text(r, "GameFontHighlight")
+			r.label:SetPoint("LEFT", 6, 0)
+			r.label:SetWidth(190)
+			r.label:SetJustifyH("LEFT")
+			r.toggle = UI.Toggle(r, function(v)
+				local win = picker.window
+				if not win or not r.key then return end
+				win.data.chanOnly = win.data.chanOnly or {}
+				win.data.chanOnly[r.key] = v and true or nil
+				if not next(win.data.chanOnly) then win.data.chanOnly = nil end
+			end)
+			r.toggle:SetPoint("RIGHT", -6, 0)
+			picker.rows[i] = r
+		end
+		r.key = e[1]
+		r.label:SetText(e[2])
+		r.toggle:SetValue(w.data.chanOnly and w.data.chanOnly[e[1]] or false)
+		r:Show()
+	end
+	picker.hint:ClearAllPoints()
+	picker.hint:SetPoint("TOPLEFT", 14, -32 - #list * 27 - 6)
+	picker:SetSize(262, 32 + #list * 27 + 56)
+	picker:ClearAllPoints()
+	picker:SetPoint("TOPRIGHT", menu or UIParent, menu and "TOPLEFT" or "CENTER", menu and -6 or 0, 0)
+	picker:Show()
+end
+
 local function BuildMenu()
 	menu = CreateFrame("Frame", "ChatPilotWindowMenu", UIParent)
 	menu:SetFrameStrata("DIALOG")
@@ -1959,7 +2056,10 @@ local function BuildMenu()
 	end)
 	clear:SetPoint("TOPLEFT", 13, -32 - #CATS * 27 - 62)
 	menu.clear = clear
-	menu:SetSize(236, 32 + #CATS * 27 + 62 + 34)
+	local chans = UI.Button(menu, L.CW_CHANNELS, 210, 24)
+	chans:SetPoint("TOPLEFT", 13, -32 - #CATS * 27 - 92)
+	chans:SetScript("OnClick", function() OpenPicker(menu.group) end)
+	menu:SetSize(236, 32 + #CATS * 27 + 92 + 34)
 	menu:Hide()
 	tinsert(UISpecialFrames, "ChatPilotWindowMenu")
 end

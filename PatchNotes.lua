@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.8.1",
+		de = { "Neu: im Filter-Menü jedes Fensters wählst du mit „Kanäle auswählen...“, welche Kanäle und Communities es zeigt (Idee aus dem Feedback)" },
+		en = { "New: in each window's filter menu, \"Choose channels...\" lets you pick which channels and communities it shows (idea from the feedback)" },
+		fr = { "Nouveau : dans le menu des filtres de chaque fenêtre, « Choisir les canaux... » permet de choisir les canaux et communautés affichés (idée issue des retours)" },
+		es = { "Nuevo: en el menú de filtros de cada ventana, «Elegir canales...» permite elegir qué canales y comunidades muestra (idea de los comentarios)" },
+		it = { "Novità: nel menu filtri di ogni finestra, «Scegli i canali...» permette di scegliere quali canali e community mostra (idea dai feedback)" },
+		pt = { "Novo: no menu de filtros de cada janela, \"Escolher canais...\" permite escolher quais canais e comunidades ela mostra (ideia vinda do feedback)" },
+		ru = { "Новое: в меню фильтров каждого окна пункт «Выбрать каналы...» позволяет выбрать, какие каналы и сообщества оно показывает (идея из отзывов)" },
+		ko = { "신규: 각 창의 필터 메뉴에서 \"채널 선택...\"으로 표시할 채널과 커뮤니티를 고를 수 있음 (피드백에서 나온 아이디어)" },
+		zh = { "新增：在每个窗口的过滤菜单中，通过“选择频道...”选择它显示哪些频道和社区（来自反馈的想法）" },
+		tw = { "新增：在每個視窗的過濾選單中，透過「選擇頻道...」選擇它顯示哪些頻道和社群（來自回饋的想法）" },
+	},
 	{ v = "1.8.0",
 		de = { "Neu: Warnung bei Links in Flüsternachrichten von Fremden (falsche Gegenstands-Links und Community-Einladungen werden markiert, verdächtige mit Werbung ausgeblendet)", "Neu: Suche in allen Chats (Spielfenster, eigene Fenster und Archive) unter Gut zu wissen oder mit /chatpilot suche", "Behoben: Fehler beim Rechtsklick auf einen Namen in den eigenen Chatfenstern", "Verbessert: Kurznamen und Erwähnungen funktionieren auch ohne Realm-Angaben, falls das Spiel sie später nicht mehr liefert" },
 		en = { "New: warning for links in whispers from strangers (fake item links and community invitations are marked, suspicious ones with advertising are hidden)", "New: search over all chats (game windows, your own windows and archives) under Good to know or with /chatpilot search", "Fixed: error when right-clicking a name in your own chat windows", "Improved: short names and mentions also work without realm information, in case the game stops providing it" },

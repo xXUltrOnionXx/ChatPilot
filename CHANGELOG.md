@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.1
+- Neu: im Filter-Menü jedes Fensters wählst du mit „Kanäle auswählen...“, welche Kanäle und Communities es zeigt (Idee aus dem Feedback)
+
 ## 1.8.0
 - Neu: Warnung bei Links in Flüsternachrichten von Fremden (falsche Gegenstands-Links und Community-Einladungen werden markiert, verdächtige mit Werbung ausgeblendet)
 - Neu: Suche in allen Chats (Spielfenster, eigene Fenster und Archive) unter Gut zu wissen oder mit /chatpilot suche
