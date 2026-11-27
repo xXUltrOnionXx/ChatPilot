@@ -933,7 +933,7 @@ function LayoutTabs(g)
 	if not g.tabRow then
 		g.tabRow = TabRow(g.header)
 		g.tabRow:SetPoint("BOTTOMLEFT", g.header, "BOTTOMLEFT", 4, 0)
-		g.tabRow:SetPoint("TOPRIGHT", g.bell, "TOPLEFT", -4, 0)
+		g.tabRow:SetPoint("TOPRIGHT", g.dbg or g.bell, "TOPLEFT", -4, 0)
 		g.tabRow.items = function()
 			local list = {}
 			for _, id in ipairs(g.data and g.data.order or {}) do
@@ -1128,6 +1128,16 @@ local function CreateGroupFrame(g)
 	g.bell.slash:SetPoint("CENTER")
 	g.bell.slash:SetRotation(math.rad(-45))
 	UI.Paint(g.bell.slash, C.muted)
+
+	-- debug: a report about this window (what it received, where it is, what it shows)
+	g.dbg = HeaderButton(g, L.CW_DEBUG_TIP, function() ns:CW_Debug(g) end)
+	g.dbg:SetPoint("RIGHT", g.bell, "LEFT", -1, 0)
+	g.dbg.icon = g.dbg:CreateTexture(nil, "ARTWORK")
+	g.dbg.icon:SetSize(14, 14)
+	g.dbg.icon:SetPoint("CENTER")
+	g.dbg.icon:SetTexture("Interface\\Icons\\INV_Misc_Bug_01")
+	g.dbg.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	g.dbg.icon:SetAlpha(0.7)
 
 	local body = CreateFrame("Frame", nil, f)
 	body:SetPoint("TOPLEFT", 6, -HEADER_H - 4)
@@ -1570,6 +1580,7 @@ local function AddLine(w, text, r, g, b, save, cid, ph)
 	local away = w.msg.AtBottom and w.msg:AtBottom() == false
 	w.msg:AddMessage(text, r, g, b)
 	stats.shown = stats.shown + 1
+	w.lastAddAt = time()
 	-- the hint is an extra: whatever goes wrong there must never cost a message
 	if away then
 		local okH, errH = pcall(ShowNewHint, w)
@@ -2689,6 +2700,53 @@ function ns:CW_ToggleAll()
 	end
 	if Data then Data.hidden = not show end
 	UpdateLaunchers()
+end
+
+-- Report for one window: ns:CW_Debug(g) opens a copyable text
+local function YN(v) return v == nil and "nil" or tostring(v) end
+function ns:CW_Debug(g)
+	local out = {}
+	local function Put(fmt, ...) out[#out + 1] = fmt:format(...) end
+	local ok, err = pcall(function()
+		local w = g and wins[g.data and g.data.active]
+		Put("ChatPilot %s, interface %s", tostring(ns.version), tostring(select(4, GetBuildInfo()) or "?"))
+		if not w then Put("no active window") return end
+		local d, gd = w.data, g.data
+		Put("window: %s (id %s)", tostring(WindowName(w)), tostring(d.id))
+		local cats = {}
+		for k, v in pairs(d.cats or {}) do if v then cats[#cats + 1] = tostring(k) end end
+		table.sort(cats)
+		Put("categories: %s", #cats > 0 and table.concat(cats, ",") or "none")
+		Put("partner=%s channelsOnly=%s bell=%s", d.partner and (d.partner.bn and "bnet" or tostring(d.partner.key)) or "nil",
+			YN(d.chanOnly and next(d.chanOnly) ~= nil or false), YN(d.bell))
+		Put("group: docked-in-main=%s open=%s active=%s tabs=%d hiddenAll=%s", YN(gd.main), YN(g.mainOpen), YN(gd.active), #(gd.order or {}), YN(Data and Data.hidden))
+		local f = g.frame
+		local par = f and f.GetParent and f:GetParent()
+		Put("group frame: shown=%s visible=%s alpha=%.2f size=%dx%d parent=%s parentVisible=%s strata=%s",
+			YN(f and f:IsShown()), YN(f and f:IsVisible()), f and f:GetAlpha() or 0, f and f:GetWidth() or 0, f and f:GetHeight() or 0,
+			par and tostring(par.GetName and par:GetName() or "?") or "nil", YN(par and par.IsVisible and par:IsVisible()),
+			f and YN((f:GetFrameStrata())) or "?")
+		local m = w.msg
+		Put("text frame: shown=%s visible=%s alpha=%.2f size=%dx%d atBottom=%s",
+			YN(m and m:IsShown()), YN(m and m:IsVisible()), m and m:GetAlpha() or 0, m and m:GetWidth() or 0, m and m:GetHeight() or 0,
+			YN(m and m.AtBottom and m:AtBottom()))
+		if m and m.GetNumMessages then Put("text frame holds %s lines, scroll offset %s", tostring(m:GetNumMessages()), tostring(m.GetScrollOffset and m:GetScrollOffset())) end
+		local saved = d.lines and #d.lines or 0
+		Put("lines: received this session=%s live=%d saved=%d unread=%s", tostring(w.count or 0), w.live and #w.live or 0, saved, YN(w.unread))
+		Put("last line arrived: %s", w.lastAddAt and (date("%H:%M:%S", w.lastAddAt) .. " (" .. (time() - w.lastAddAt) .. "s ago)") or "none this session")
+		local sel = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK)
+		Put("game dock selected: %s", sel and tostring(sel.GetName and sel:GetName()) or "nil")
+		local st = ns.cwStats or {}
+		Put("all windows this session: shown %d, filtered %d, restricted %d (failed %d), no window for event %d, kept open %d",
+			st.shown or 0, st.filtered or 0, st.secret or 0, st.secretFail or 0, st.noTarget or 0, st.keptOpen or 0)
+		Put("chat style=%s skin=%s conflict=%s", YN(ns.S.chatStyle), YN(ns.S.chatSkin), YN(ns.skinConflict))
+		local errs = ns.errors or {}
+		Put("caught errors: %d", #errs)
+		for i = math.max(1, #errs - 2), #errs do Put("  %s", tostring(errs[i])) end
+	end)
+	if not ok then out[#out + 1] = "error: " .. tostring(err) end
+	local text = table.concat(out, "\n")
+	if ns.ShowCopy then ns:ShowCopy(text, L.CW_DEBUG_TITLE, false) else ns.Print(text) end
 end
 
 local function Restore()

@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.8",
+		de = { "Neu: jedes eigene Chat-Fenster hat in der Titelleiste einen Debug-Button (Käfer-Symbol). Er zeigt einen kopierbaren Bericht zu genau diesem Fenster: Kategorien, Zustand von Fenster und Textfläche, empfangene und gespeicherte Zeilen, letzte Zeile, abgefangene Fehler" },
+		en = { "New: every custom chat window has a debug button (bug icon) in its title bar. It shows a copyable report about that window: categories, state of the window and its text area, received and saved lines, last line, caught errors" },
+		fr = { "Nouveau : chaque fenêtre de chat perso a un bouton de débogage (icône d'insecte) dans sa barre de titre. Il affiche un rapport copiable sur cette fenêtre : catégories, état de la fenêtre et de sa zone de texte, lignes reçues et enregistrées, dernière ligne, erreurs interceptées" },
+		es = { "Nuevo: cada ventana de chat propia tiene un botón de depuración (icono de insecto) en la barra de título. Muestra un informe copiable de esa ventana: categorías, estado de la ventana y su área de texto, líneas recibidas y guardadas, última línea, errores detectados" },
+		it = { "Novità: ogni finestra di chat personale ha un pulsante di debug (icona insetto) nella barra del titolo. Mostra un rapporto copiabile su quella finestra: categorie, stato della finestra e dell'area di testo, righe ricevute e salvate, ultima riga, errori intercettati" },
+		pt = { "Novo: cada janela de chat própria tem um botão de depuração (ícone de inseto) na barra de título. Mostra um relatório copiável dessa janela: categorias, estado da janela e da área de texto, linhas recebidas e guardadas, última linha, erros apanhados" },
+		ru = { "Новое: в заголовке каждого собственного окна чата есть кнопка отладки (значок жука). Она показывает отчёт об этом окне, который можно скопировать: категории, состояние окна и текстовой области, полученные и сохранённые строки, последняя строка, перехваченные ошибки" },
+		ko = { "신규: 모든 사용자 채팅 창의 제목 줄에 디버그 버튼(벌레 아이콘)이 생겼습니다. 해당 창에 대한 복사 가능한 보고서를 보여 줍니다: 카테고리, 창과 텍스트 영역의 상태, 받은 줄과 저장된 줄, 마지막 줄, 잡힌 오류" },
+		zh = { "新增：每个自定义聊天窗口的标题栏都有一个调试按钮（虫子图标）。它会显示该窗口的可复制报告：类别、窗口及文本区域的状态、已接收和已保存的行数、最后一行、捕获的错误" },
+		tw = { "新增：每個自訂聊天視窗的標題列都有一個除錯按鈕（蟲子圖示）。它會顯示該視窗的可複製報告：類別、視窗及文字區域的狀態、已接收和已儲存的行數、最後一行、捕獲的錯誤" },
+	},
 	{ v = "1.10.7",
 		de = { "Behoben: das im Hauptchat geöffnete eigene Chat-Fenster schließt sich nicht mehr mitten im Gespräch, wenn das Spiel selbst denselben Tab erneut auswählt (nur dein Klick oder dein Mausrad wechselt den Tab)" },
 		en = { "Fixed: the custom chat opened in the main chat no longer closes in the middle of a conversation when the game re-selects the same tab by itself (only your click or mouse wheel switches tabs)" },

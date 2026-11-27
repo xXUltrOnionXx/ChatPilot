@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.8
+- Neu: jedes eigene Chat-Fenster hat in der Titelleiste einen Debug-Button (Käfer-Symbol). Er zeigt einen kopierbaren Bericht zu genau diesem Fenster: Kategorien, Zustand von Fenster und Textfläche, empfangene und gespeicherte Zeilen, letzte Zeile, abgefangene Fehler
+
 ## 1.10.7
 - Behoben: das im Hauptchat geöffnete eigene Chat-Fenster schließt sich nicht mehr mitten im Gespräch, wenn das Spiel selbst denselben Tab erneut auswählt (nur dein Klick oder dein Mausrad wechselt den Tab)
 
