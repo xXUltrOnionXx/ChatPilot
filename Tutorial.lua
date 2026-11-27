@@ -7,9 +7,10 @@ local C = UI.C
 -- features and can be watched again any time (/chatpilot tutorial, or the
 -- button in the settings). It only shows information.
 
-local TUTORIAL_VERSION = 4 -- raise when the tour gets new steps: shows once more after the update
+local TUTORIAL_VERSION = 5 -- raise when the tour gets new steps: shows once more after the update
 local W, H = 540, 330
 local tut, spot, overlay
+local saved, Undock, Dock
 local index = 1
 
 -------------------------------------------------------------------------------
@@ -55,7 +56,9 @@ local function Lines(parent, color, list)
 	end
 end
 
-local PICTURES = {
+local PICTURES
+PICTURES = {
+	set_design = function(p) PICTURES.design(p) end,
 	welcome = function(p)
 		local b = UI.Badge(p, 64)
 		b:SetPoint("CENTER")
@@ -270,6 +273,104 @@ local PICTURES = {
 		UI.Border(b, C.orange)
 		Lines(b, C.orange, { { 12, 2, 0, 0, 45 }, { 12, 2, 0, 0, -45 } })
 	end,
+	search = function(p)
+		local box = CreateFrame("Frame", nil, p)
+		box:SetSize(112, 26)
+		box:SetPoint("CENTER", 0, 26)
+		UI.Fill(box, C.btn)
+		UI.Border(box, C.accent)
+		local fs = UI.Text(box, "GameFontHighlightSmall", C.text)
+		fs:SetPoint("LEFT", 8, 0)
+		fs:SetText("onyxia")
+		for i = 1, 3 do
+			local r = CreateFrame("Frame", nil, p)
+			r:SetSize(112, 12)
+			r:SetPoint("CENTER", 0, 26 - i * 22)
+			UI.Fill(r, i == 1 and C.accentDim or C.row)
+		end
+	end,
+	settings = function(p)
+		local f = CreateFrame("Frame", nil, p)
+		f:SetSize(104, 78)
+		f:SetPoint("CENTER")
+		UI.Fill(f, C.bg)
+		UI.Border(f, C.accent)
+		local side = f:CreateTexture(nil, "ARTWORK")
+		side:SetPoint("TOPLEFT", 1, -1)
+		side:SetPoint("BOTTOMLEFT", 1, 1)
+		side:SetWidth(30)
+		UI.Paint(side, C.panel)
+		for i = 1, 4 do
+			local b = f:CreateTexture(nil, "OVERLAY")
+			b:SetSize(20, 3)
+			b:SetPoint("TOPLEFT", 6, -10 - (i - 1) * 12)
+			UI.Paint(b, i == 1 and C.accent or C.muted)
+		end
+		for i = 1, 3 do
+			local r = f:CreateTexture(nil, "ARTWORK")
+			r:SetSize(58, 12)
+			r:SetPoint("TOPLEFT", 38, -8 - (i - 1) * 20)
+			UI.Paint(r, C.row)
+			local tg = f:CreateTexture(nil, "OVERLAY")
+			tg:SetSize(10, 6)
+			tg:SetPoint("TOPRIGHT", -10, -11 - (i - 1) * 20)
+			UI.Paint(tg, i ~= 3 and C.accent or C.border)
+		end
+	end,
+	set_names = function(p)
+		local line = CreateFrame("Frame", nil, p)
+		line:SetSize(128, 24)
+		line:SetPoint("CENTER", 0, 4)
+		UI.Fill(line, C.row)
+		local t = UI.Text(line, "GameFontHighlightSmall", C.text)
+		t:SetPoint("LEFT", 6, 0)
+		t:SetText("|cff3fc7eb[Frost W.|r |cff4ade80+5m|r|cff3fc7eb]|r")
+		local l2 = CreateFrame("Frame", nil, p)
+		l2:SetSize(128, 24)
+		l2:SetPoint("CENTER", 0, -26)
+		UI.Fill(l2, C.row)
+		local t2 = UI.Text(l2, "GameFontHighlightSmall", C.text)
+		t2:SetPoint("LEFT", 6, 0)
+		t2:SetText("|cff3fc7eb[Mira F.|r |cff7ab8ff>2h|r|cff3fc7eb]|r")
+	end,
+	set_safety = function(p)
+		local box = CreateFrame("Frame", nil, p)
+		box:SetSize(124, 40)
+		box:SetPoint("CENTER", 0, 6)
+		UI.Fill(box, C.row)
+		UI.Border(box, { 1, 0.42, 0.35, 1 })
+		local t = UI.Text(box, "GameFontHighlightSmall", { 1, 0.42, 0.35 })
+		t:SetPoint("CENTER")
+		t:SetText("[!] " .. (L.SCAM_FAKE or "fake link"))
+		t:SetWidth(112)
+		t:SetWordWrap(false)
+	end,
+	set_stream = function(p)
+		local live = CreateFrame("Frame", nil, p)
+		live:SetSize(84, 28)
+		live:SetPoint("CENTER", 0, 20)
+		local bg = live:CreateTexture(nil, "BACKGROUND")
+		bg:SetAllPoints()
+		bg:SetColorTexture(0.9, 0.2, 0.2, 1)
+		local t = UI.Text(live, "GameFontHighlight", { 1, 1, 1 })
+		t:SetPoint("CENTER")
+		t:SetText("\226\151\143 LIVE")
+		local h = UI.Text(p, "GameFontHighlightSmall", C.muted)
+		h:SetPoint("CENTER", 0, -22)
+		h:SetText("*****")
+	end,
+	set_pilot = function(p)
+		local a = UI.Badge(p, 34)
+		a:SetPoint("CENTER", -34, 0)
+		local b = UI.Badge(p, 34)
+		b:SetPoint("CENTER", 34, 0)
+		Lines(p, C.accent, { { 22, 2, 0, 0 } })
+		local dot = p:CreateTexture(nil, "OVERLAY")
+		dot:SetSize(10, 10)
+		dot:SetPoint("CENTER", 52, 18)
+		dot:SetTexture("Interface\\CHARACTERFRAME\\TempPortraitAlphaMask")
+		dot:SetVertexColor(0.35, 0.65, 1)
+	end,
 	done = function(p)
 		local ring = CreateFrame("Frame", nil, p)
 		ring:SetSize(60, 60)
@@ -356,22 +457,24 @@ end
 -- Steps
 -------------------------------------------------------------------------------
 local STEPS = {
-	{ key = "welcome" },
-	{ key = "typing" },
-	{ key = "sounds" },
-	{ key = "mentions", target = function() return ns.ChatBarButton and ns.ChatBarButton("mentions") end },
-	{ key = "whispers", target = function() return ns.ChatBarButton and ns.ChatBarButton("whispers") end },
-	{ key = "notes", target = function() return ns.ChatBarButton and ns.ChatBarButton("notes") end },
-	{ key = "names" },
-	{ key = "windows", target = function() return ns._cwPlus and ns._cwPlus() end },
-	{ key = "writing" },
-	{ key = "tabs" },
-	{ key = "enter" },
-	{ key = "scroll" },
-	{ key = "design", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
-	{ key = "tidy", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
-	{ key = "backup", target = function() return ns.ChatBarButton and ns.ChatBarButton("gear") end },
-	{ key = "done" },
+	{ key = "welcome", ch = "basics" },
+	{ key = "typing", ch = "basics" },
+	{ key = "sounds", ch = "basics" },
+	{ key = "mentions", ch = "alerts", target = function() return ns.ChatBarButton and ns.ChatBarButton("mentions") end },
+	{ key = "whispers", ch = "alerts", target = function() return ns.ChatBarButton and ns.ChatBarButton("whispers") end },
+	{ key = "notes", ch = "alerts", target = function() return ns.ChatBarButton and ns.ChatBarButton("notes") end },
+	{ key = "names", ch = "windows" },
+	{ key = "windows", ch = "windows", target = function() return ns._cwPlus and ns._cwPlus() end },
+	{ key = "writing", ch = "windows" },
+	{ key = "tabs", ch = "windows" },
+	{ key = "search", ch = "windows" },
+	{ key = "settings", ch = "settings", page = 1, row = "nav" },
+	{ key = "set_names", ch = "settings", page = 4, row = "presenceTag" },
+	{ key = "set_safety", ch = "settings", page = 4, row = "scamWarn" },
+	{ key = "set_stream", ch = "settings", page = 4, row = "stream" },
+	{ key = "set_pilot", ch = "settings", page = 4, row = "pilotLink" },
+	{ key = "set_design", ch = "settings", page = 5 },
+	{ key = "done", ch = "settings" },
 }
 ns.TUTORIAL_STEPS = STEPS
 
@@ -450,11 +553,49 @@ local function Build()
 	end)
 	tut.back:SetScript("OnClick", function() if index > 1 then ns:TutorialGo(index - 1) end end)
 	tut:HookScript("OnHide", function()
+		Undock()
 		overlay:Hide()
 		if spot then spot:Hide() end
 		if ns.tutorialPaused then return end -- closed by a fight: not done yet
 		if ns.db then ns.db.tutorial = TUTORIAL_VERSION end
 	end)
+end
+
+-- Settings steps: the settings window opens next to the tour (or above it on
+-- small screens) and everything goes back afterwards.
+function Undock()
+	if not saved then return end
+	local s = saved
+	saved = nil
+	local ow = ns.OptionsWindow and ns:OptionsWindow()
+	if ow then
+		if not s.wasShown then ow:Hide() end
+		if s.strata then ow:SetFrameStrata(s.strata) end
+		if s.opt and s.opt[1] then ow:ClearAllPoints(); ow:SetPoint(unpack(s.opt)) end
+	end
+	if tut and s.tour and s.tour[1] then tut:ClearAllPoints(); tut:SetPoint(unpack(s.tour)) end
+end
+
+function Dock(wasShown)
+	local ow = ns.OptionsWindow and ns:OptionsWindow()
+	if not ow then return end
+	if not saved then
+		saved = { wasShown = wasShown, strata = ow:GetFrameStrata(), opt = { ow:GetPoint() }, tour = { tut:GetPoint() } }
+	end
+	local sw = UIParent:GetWidth() or 0
+	local ow_w = ow:GetWidth() or 760
+	ow:ClearAllPoints()
+	tut:ClearAllPoints()
+	if sw >= ow_w + W + 60 then
+		ow:SetPoint("CENTER", UIParent, "CENTER", -(W + 20) / 2, 20)
+		tut:SetPoint("CENTER", UIParent, "CENTER", (ow_w + 20) / 2, 20)
+	else
+		ow:SetPoint("TOP", UIParent, "TOP", 0, -24)
+		tut:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 24)
+	end
+	ow:SetFrameStrata("FULLSCREEN_DIALOG")
+	ow:Raise()
+	tut:Raise()
 end
 
 local function LayoutDots()
@@ -493,11 +634,27 @@ function ns:TutorialGo(i)
 		page:SetPoint("TOPLEFT", 40 * (1 - p) * dir, 0)
 	end)
 
-	tut.count:SetText(L.TUT_STEP:format(index, #STEPS))
+	local chapter = L["TUT_CH_" .. (STEPS[index].ch or "")]
+	tut.count:SetText((chapter and (chapter .. "  |  ") or "") .. L.TUT_STEP:format(index, #STEPS))
 	tut.back:SetShown(index > 1)
 	tut.next.label:SetText(index == #STEPS and L.TUT_DONE or L.TUT_NEXT)
 	LayoutDots()
-	local target = STEPS[index].target and STEPS[index].target()
+	local step = STEPS[index]
+	local target
+	if step.page then
+		local before = ns.OptionsWindow and ns:OptionsWindow()
+		before = before and before:IsShown() and true or false
+		local ok, tg = pcall(function() return ns:OptionsFocus(step.page, step.row) end)
+		target = ok and tg or nil
+		Dock(before)
+		-- the page needs a moment to settle before the frame can be framed
+		C_Timer.After(0.12, function()
+			if tut and tut:IsShown() and STEPS[index] == step and step.page then ShowSpot(target) end
+		end)
+	else
+		Undock()
+		target = step.target and step.target()
+	end
 	ShowSpot(target)
 end
 

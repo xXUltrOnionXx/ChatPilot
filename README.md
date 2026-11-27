@@ -117,7 +117,7 @@ Im Spiel geht's am einfachsten: `/chatpilot feedback` → Nachricht schreiben �
 - Dazu kurz erklärt: normales WoW-Design, Verhalten in Bosskämpfen und die Blizzard-Regeln.
 
 ### Rundgang
-- Ein moderner Schritt-für-Schritt-Rundgang erklärt alle Funktionen und hebt den passenden Knopf hervor. Er erscheint einmal nach dem Update und lässt sich jederzeit wieder ansehen: Einstellungen → „Rundgang ansehen“ oder `/chatpilot tutorial`.
+- Ein moderner Rundgang in 4 Kapiteln erklärt alle Funktionen und hebt den passenden Knopf hervor. Im Kapitel „Einstellungen“ öffnet er das Einstellungsfenster und zeigt die wichtigsten Schalter (Namen und Online-Zeit, Spam- und Betrugsschutz, Streamer-Modus, Pilot Link, Design und Sichern). Er erscheint einmal nach dem Update und lässt sich jederzeit wieder ansehen: Einstellungen → „Rundgang ansehen“ oder `/chatpilot tutorial`.
 
 ## Bedienung
 - **Zahnrad** direkt rechts neben dem Chatfenster → Einstellungen (Knöpfe wahlweise auch über dem Chat)
@@ -271,7 +271,7 @@ Easiest way in game: `/chatpilot feedback` → write your message → **Send**. 
 - Plus short notes on the normal WoW design, boss fights and Blizzard's rules.
 
 #### Guided tour
-- A modern step-by-step tour explains every feature and highlights the matching button. It shows up once after the update and can be watched again any time: settings → "Watch the tour" or `/chatpilot tutorial`.
+- A modern tour in 4 chapters explains every feature and highlights the matching button. In the "Settings" chapter it opens the settings window and shows the most important switches (names and online time, spam and scam protection, streamer mode, Pilot Link, design and backup). It shows up once after the update and can be watched again any time: settings → "Watch the tour" or `/chatpilot tutorial`.
 
 ### How to use
 - **Gear** right next to the chat window → settings (buttons can also sit above the chat)

@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.2",
+		de = { "Neu: überarbeiteter Rundgang in 4 Kapiteln - öffnet jetzt die Einstellungen und zeigt Schritt für Schritt die wichtigsten Schalter (Namen und Online-Zeit, Spam- und Betrugsschutz, Streamer-Modus, Pilot Link, Design und Sichern), dazu ein Schritt für die Chat-Suche" },
+		en = { "New: reworked tour in 4 chapters - it now opens the settings and shows the most important switches step by step (names and online time, spam and scam protection, streamer mode, Pilot Link, design and backup), plus a step for the chat search" },
+		fr = { "Nouveau : visite guidée refaite en 4 chapitres - elle ouvre maintenant les réglages et montre pas à pas les interrupteurs importants (noms et temps en ligne, protection spam et arnaques, mode streamer, Pilot Link, design et sauvegarde), avec une étape pour la recherche dans le chat" },
+		es = { "Nuevo: recorrido renovado en 4 capítulos - ahora abre los ajustes y muestra paso a paso los interruptores más importantes (nombres y tiempo en línea, protección contra spam y estafas, modo streamer, Pilot Link, diseño y copia), más un paso para la búsqueda en el chat" },
+		it = { "Novità: tour rinnovato in 4 capitoli - ora apre le impostazioni e mostra passo dopo passo gli interruttori più importanti (nomi e tempo online, protezione da spam e truffe, modalità streamer, Pilot Link, design e backup), più un passo per la ricerca nella chat" },
+		pt = { "Novo: tour renovado em 4 capítulos - agora abre as configurações e mostra passo a passo os botões mais importantes (nomes e tempo online, proteção contra spam e golpes, modo streamer, Pilot Link, design e backup), além de um passo para a pesquisa no chat" },
+		ru = { "Новое: переработанный обзор в 4 главах - теперь он открывает настройки и шаг за шагом показывает важнейшие переключатели (имена и время в сети, защита от спама и обмана, режим стримера, Pilot Link, оформление и резервная копия), плюс шаг про поиск по чату" },
+		ko = { "신규: 4개 장으로 개편된 둘러보기 - 이제 설정을 열어 가장 중요한 스위치를 단계별로 보여줌 (이름과 접속 시간, 스팸·사기 방지, 스트리머 모드, Pilot Link, 디자인과 백업), 채팅 검색 단계 추가" },
+		zh = { "新增：重新设计的 4 章导览 - 现在会打开设置并逐步展示最重要的开关（名字与在线时间、垃圾信息与诈骗防护、主播模式、Pilot Link、设计与备份），并新增聊天搜索一步" },
+		tw = { "新增：重新設計的 4 章導覽 - 現在會開啟設定並逐步展示最重要的開關（名字與線上時間、垃圾訊息與詐騙防護、實況模式、Pilot Link、設計與備份），並新增聊天搜尋一步" },
+	},
 	{ v = "1.10.1",
 		de = { "Neu: Online-Zeit hinter dem Namen von Gildenmitgliedern und Freunden: +5m = gerade eingeloggt, R5m = Relog, >2h = war schon online, bevor du kamst - so weißt du, ob du nochmal grüßen sollst (in den Einstellungen abschaltbar)" },
 		en = { "New: online time behind the names of guild members and friends: +5m = just logged in, R5m = relogged, >2h = was already online before you came - so you know whether to greet again (can be switched off in the options)" },

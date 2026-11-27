@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.2
+- Neu: überarbeiteter Rundgang in 4 Kapiteln - öffnet jetzt die Einstellungen und zeigt Schritt für Schritt die wichtigsten Schalter (Namen und Online-Zeit, Spam- und Betrugsschutz, Streamer-Modus, Pilot Link, Design und Sichern), dazu ein Schritt für die Chat-Suche
+
 ## 1.10.1
 - Neu: Online-Zeit hinter dem Namen von Gildenmitgliedern und Freunden: +5m = gerade eingeloggt, R5m = Relog, >2h = war schon online, bevor du kamst - so weißt du, ob du nochmal grüßen sollst (in den Einstellungen abschaltbar)
 

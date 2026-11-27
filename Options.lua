@@ -1017,6 +1017,43 @@ function ns:OpenOptions(page)
 	win:Raise()
 end
 
+-- Used by the tour: opens the window on a page, scrolls to a row and returns
+-- the frame to highlight ("nav" = the whole sidebar).
+function ns:OptionsFocus(page, key)
+	if not win then Build() end
+	if SettingsPanel and SettingsPanel:IsShown() and HideUIPanel then HideUIPanel(SettingsPanel) end
+	page = page or 1
+	SelectPage(page)
+	win:Show()
+	RefreshRows()
+	RelayoutAll()
+	local sf = pages[page]
+	local target
+	if key == "nav" then
+		target = navButtons[1] and navButtons[1]:GetParent()
+	elseif key then
+		for _, r in ipairs(rows) do if r.key == key then target = r break end end
+	else
+		target = navButtons[page]
+	end
+	if sf and sf.child then
+		local function Scroll()
+			if not (sf.SetVerticalScroll and sf.GetVerticalScrollRange) then return end
+			local want = 0
+			local top, ctop = target and target.GetTop and target:GetTop(), sf.child.GetTop and sf.child:GetTop()
+			if type(top) == "number" and type(ctop) == "number" and key and key ~= "nav" then
+				want = math.max(0, math.min(ctop - top - 60, sf:GetVerticalScrollRange() or 0))
+			end
+			sf:SetVerticalScroll(want)
+		end
+		Scroll()
+		C_Timer.After(0.05, Scroll)
+	end
+	return target
+end
+
+function ns:OptionsWindow() return win end
+
 function ns:ToggleOptions()
 	if win and win:IsShown() then win:Hide() else self:OpenOptions() end
 end
