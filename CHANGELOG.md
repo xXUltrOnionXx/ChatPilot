@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.12
+- Behoben: ein Gruppen-Fenster zeigt jetzt auch den Chat, wenn die Gruppe zum Schlachtzug oder zur Instanzgruppe wird (das Spiel schreibt dann RAID bzw. INSTANCE_CHAT statt PARTY, und die Zeilen fehlten im Fenster, auch deine eigenen). Hat ein anderes Fenster die Kategorie Schlachtzug, bleibt es dort
+
 ## 1.10.11
 - Behoben: im Rundgang liegt der leuchtende Rahmen jetzt direkt in der gezeigten Einstellung. Er wird vom scrollenden Fenster abgeschnitten und liegt nie mehr hinter dem Einstellungsfenster oder scrollt außerhalb davon mit
 

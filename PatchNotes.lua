@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.12",
+		de = { "Behoben: ein Gruppen-Fenster zeigt jetzt auch den Chat, wenn die Gruppe zum Schlachtzug oder zur Instanzgruppe wird (das Spiel schreibt dann RAID bzw. INSTANCE_CHAT statt PARTY, und die Zeilen fehlten im Fenster, auch deine eigenen). Hat ein anderes Fenster die Kategorie Schlachtzug, bleibt es dort" },
+		en = { "Fixed: a group window now also shows the chat when the group turns into a raid or an instance group (the game then writes RAID or INSTANCE_CHAT instead of PARTY, and the lines were missing in the window, including your own). If another window has the raid category, the raid chat stays there" },
+		fr = { "Corrigé : une fenêtre de groupe affiche maintenant aussi le chat quand le groupe devient un raid ou un groupe d'instance (le jeu écrit alors RAID ou INSTANCE_CHAT au lieu de PARTY, et les lignes manquaient dans la fenêtre, y compris les tiennes). Si une autre fenêtre a la catégorie raid, le chat de raid y reste" },
+		es = { "Corregido: una ventana de grupo ahora también muestra el chat cuando el grupo pasa a ser banda o grupo de instancia (el juego escribe entonces RAID o INSTANCE_CHAT en vez de PARTY, y las líneas faltaban en la ventana, también las tuyas). Si otra ventana tiene la categoría de banda, el chat de banda se queda allí" },
+		it = { "Corretto: una finestra di gruppo ora mostra anche la chat quando il gruppo diventa un raid o un gruppo istanza (il gioco scrive allora RAID o INSTANCE_CHAT invece di PARTY, e le righe mancavano nella finestra, anche le tue). Se un'altra finestra ha la categoria raid, la chat di raid resta lì" },
+		pt = { "Corrigido: uma janela de grupo agora também mostra o chat quando o grupo passa a ser raide ou grupo de instância (o jogo escreve então RAID ou INSTANCE_CHAT em vez de PARTY, e as linhas faltavam na janela, incluindo as tuas). Se outra janela tiver a categoria de raide, o chat de raide fica lá" },
+		ru = { "Исправлено: окно группы теперь показывает чат и тогда, когда группа становится рейдом или группой подземелья (игра пишет RAID или INSTANCE_CHAT вместо PARTY, и строки в окне пропадали, в том числе твои). Если у другого окна есть категория рейда, чат рейда остаётся там" },
+		ko = { "수정: 파티가 공격대나 던전 파티로 바뀌어도 파티 창이 이제 대화를 표시합니다 (게임이 PARTY 대신 RAID 또는 INSTANCE_CHAT으로 기록해서 내 메시지를 포함한 줄이 창에 없었습니다). 다른 창에 공격대 카테고리가 있으면 공격대 대화는 그 창에 남습니다" },
+		zh = { "修复：当队伍变为团队或副本队伍时，队伍窗口现在也会显示聊天（游戏此时使用 RAID 或 INSTANCE_CHAT 而非 PARTY，窗口中缺少这些消息，包括你自己发送的）。如果其他窗口有团队类别，团队聊天仍保留在那里" },
+		tw = { "修復：當隊伍變為團隊或副本隊伍時，隊伍視窗現在也會顯示聊天（遊戲此時使用 RAID 或 INSTANCE_CHAT 而非 PARTY，視窗中缺少這些訊息，包括你自己發送的）。如果其他視窗有團隊類別，團隊聊天仍保留在那裡" },
+	},
 	{ v = "1.10.11",
 		de = { "Behoben: im Rundgang liegt der leuchtende Rahmen jetzt direkt in der gezeigten Einstellung. Er wird vom scrollenden Fenster abgeschnitten und liegt nie mehr hinter dem Einstellungsfenster oder scrollt außerhalb davon mit" },
 		en = { "Fixed: in the tour the glowing frame now sits right inside the setting being shown. The scrolling page clips it, so it is never behind the settings window or scrolls along outside of it" },

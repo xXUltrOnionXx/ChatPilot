@@ -1721,9 +1721,17 @@ local function Deliver(event, ...)
 	end
 	if not cat then return end
 
+	-- A group window also shows the group's chat after the group became a raid or an
+	-- instance group (the game then writes RAID / INSTANCE_CHAT instead of PARTY) -
+	-- unless there is a window of its own for raid chat.
+	local raidWindow = false
+	if cat == "raid" then
+		for _, w in pairs(wins) do if w.data.cats.raid and w.group then raidWindow = true break end end
+	end
 	local targets = {}
 	for _, w in pairs(wins) do
-		if (w.data.cats[cat] or (presence and w.data.cats.presence)) and w.group then
+		if (w.data.cats[cat] or (cat == "raid" and not raidWindow and w.data.cats.party)
+			or (presence and w.data.cats.presence)) and w.group then
 			-- a conversation window only takes whispers with its one person
 			local p = w.data.partner
 			local ok = true
