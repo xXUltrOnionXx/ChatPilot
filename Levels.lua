@@ -301,6 +301,11 @@ function ns.InstallMainChatFrame(frame)
 	local orig = frame.AddMessage
 
 	local function Write(self, text, ...)
+		-- streamer mode masks private details in every look
+		if ns.S and ns.S.stream and ns.StreamMask and type(text) == "string" and not ns.IsSecret(text) then
+			local okS, masked = pcall(ns.StreamMask, text)
+			if okS and type(masked) == "string" then text = masked end
+		end
 		-- never touch secret (restricted) messages
 		if ns.S and type(text) == "string" and not ns.IsSecret(text) and ns.MainChatModern and ns.MainChatModern() then
 			-- hidden messages stay exactly as the game writes them (its "Show" link redraws them)

@@ -1522,6 +1522,10 @@ local function Archive(w, line)
 end
 
 local function AddLine(w, text, r, g, b, save, cid, ph)
+	if ns.S and ns.S.stream and ns.StreamMask and type(text) == "string" and ns.Usable(text) then
+		local okS, masked = pcall(ns.StreamMask, text)
+		if okS and type(masked) == "string" then text = masked end
+	end
 	local away = w.msg.AtBottom and w.msg:AtBottom() == false
 	w.msg:AddMessage(text, r, g, b)
 	-- the hint is an extra: whatever goes wrong there must never cost a message

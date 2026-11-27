@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.0
+- Neu: Streamer-Modus - Flüstertexte versteckt (Maus drüber zum Hineinschauen), BattleTag-Nummern, Nachnamen und Web-Links verdeckt, rotes LIVE-Schild mit Panik-Knopf (/chatpilot stream)
+- Neu: Namen nach @ lassen sich mit Initial schreiben ("Frost W."), Idee aus dem Feedback
+- Neu: Markdown-Farben für *fett*, _kursiv_ und `Code` (nur Anzeige, ausgeschaltet bis du es einschaltest)
+
 ## 1.8.1
 - Neu: im Filter-Menü jedes Fensters wählst du mit „Kanäle auswählen...“, welche Kanäle und Communities es zeigt (Idee aus dem Feedback)
 

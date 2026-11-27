@@ -225,9 +225,32 @@ end
 -------------------------------------------------------------------------------
 -- The filter
 -------------------------------------------------------------------------------
+-- *bold*, _italic_, `code`, ~~strike~~ shown with colours (display only; the text that is sent stays as typed)
+local function Markdown(seg)
+	if not seg:find("[%*_`~]") then return seg, false end
+	local n = 0
+	local function sub(pat, color)
+		local c
+		seg, c = seg:gsub(pat, color .. "%1|r")
+		n = n + c
+	end
+	sub("`([^`]+)`", "|cffffd479")
+	sub("%*%*([^%*]+)%*%*", "|cffffffff")
+	sub("~~([^~]+)~~", "|cff777777")
+	sub("%f[%w_%*]%*([^%*%s][^%*]-)%*%f[^%w_%*]", "|cffb8c4ff")
+	sub("%f[%w_]_([^_%s][^_]-)_%f[^%w_]", "|cffb8c4ff")
+	return seg, n > 0
+end
+
 local function Filter(frame, event, msg, author, language, ...)
 	local S = ns.S
 	if not S or type(msg) ~= "string" or ns.IsSecret(msg) then return false end
+
+	-- streamer mode: whispers show only a notice (hover to peek)
+	if S.stream and ns.StreamHideWhisper then
+		local hidden = ns.StreamHideWhisper(event, msg)
+		if hidden then return false, hidden, author, language, ... end
+	end
 
 	if S.markForeign and IsForeign(language) then
 		if S.hideForeign then return true end
@@ -266,17 +289,19 @@ local function Filter(frame, event, msg, author, language, ...)
 	local doUrl = S.urls
 	local doHl = S.mentions and S.highlight
 	local doAbbr = S.abbrevTips
+	local doMd = S.markdown
 	if doHl and ns.Usable(author) and ns.Normalize(author) == ns.playerKey then doHl = false end
 	if doHl and not S.mentionPublic and ns.PUBLIC_EVENTS[event] then doHl = false end
-	if not doUrl and not doHl and not doAbbr and prefix == "" then return false end
+	if not doUrl and not doHl and not doAbbr and not doMd and prefix == "" then return false end
 
 	local parts = ns.SplitMessage(msg)
 	local changed = false
 	for _, part in ipairs(parts) do
 		if part[1] then
-			local c
+			local c, md
+			if doMd then part[2], md = Markdown(part[2]) end
 			part[2], c = ProcessPlain(part[2], doUrl, doHl, doAbbr)
-			changed = changed or c
+			changed = changed or c or md
 		end
 	end
 	if not changed and prefix == "" then return false end
@@ -319,6 +344,7 @@ function ns.LinkClick(link)
 end
 
 function ns.LinkEnter(frame, link)
+	if ns.StreamPeek and ns.StreamPeek(frame, link) then return true end
 	-- player card on mouse-over: full name, level, class, how you know them
 	if type(link) == "string" and ns.S and link:sub(1, 7) == "player:" and (ns.S.playerInfo or ns.S.shortSurnames) then
 		local full = link:match("^player:([^:]+)")

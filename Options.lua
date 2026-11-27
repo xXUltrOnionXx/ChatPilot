@@ -563,6 +563,15 @@ local function BuildChat(content)
 	ToggleRow(flow, "playerInfo")
 	local spamRow = ToggleRow(flow, "spamFilter")
 	ToggleRow(flow, "scamWarn")
+	ToggleRow(flow, "mentionInitial")
+	ToggleRow(flow, "markdown", nil, function() ns:RefreshMainChat() end)
+	local streamRow = ToggleRow(flow, "stream", nil, function(v)
+		if ns.SetStream then ns:SetStream(v) end
+	end)
+	ToggleRow(flow, "streamWhispers", streamRow)
+	ToggleRow(flow, "streamTags", streamRow)
+	ToggleRow(flow, "streamNames", streamRow)
+	ToggleRow(flow, "streamLinks", streamRow)
 	ToggleRow(flow, "keepHistory")
 	ToggleRow(flow, "urls")
 	local foreign = ToggleRow(flow, "markForeign")
@@ -1072,6 +1081,13 @@ SlashCmdList.CHATPILOT = function(input)
 	elseif cmd == "errors" or cmd == "fehler" then
 		if #ns.errors == 0 then ns.Print(L.ERR_NONE) end
 		for _, e in ipairs(ns.errors) do ns.Print(e) end
+	elseif cmd == "stream" or cmd == "streamer" or cmd == "live" then
+		local want
+		if rest == "on" then want = true elseif rest == "off" then want = false else want = not ns.S.stream end
+		ns:SetStream(want)
+	elseif cmd == "panic" then
+		if not ns.S.stream then ns:SetStream(true) end
+		ns:StreamPanic()
 	elseif cmd == "archive" or cmd == "archiv" then
 		ns:ShowArchive()
 	elseif cmd == "search" or cmd == "suche" or cmd == "find" or cmd == "history" or cmd == "verlauf" then

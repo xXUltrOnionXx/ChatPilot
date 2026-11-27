@@ -345,6 +345,10 @@ local function BuildText(st, index)
 		insert = item.key
 	else
 		local name = item.short
+		-- "Frost W." instead of just "Frost" (option)
+		if ns.S.mentionInitial and SecondName(item.key) and ns.ShortenName then
+			name = ns.ShortenName((item.key:gsub("%-", " "))) or name
+		end
 		-- same first name twice in the list? then insert the full name
 		for _, other in ipairs(st.items) do
 			if other ~= item and other.short == item.short and SecondName(item.key) then
