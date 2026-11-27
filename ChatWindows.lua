@@ -1192,6 +1192,7 @@ local function CreateGroupFrame(g)
 	eb:SetScript("OnTextChanged", function(self)
 		upd()
 		local text = self:GetText() or ""
+		if text == "" then self.cpLinks = nil end
 		-- ChatPilot users see that you are typing (whisper windows only)
 		if text ~= "" and text:sub(1, 1) ~= "/" and ns.CW_TypingName and ns.PilotSendTyping then
 			local nm = ns.CW_TypingName(g)
@@ -2329,6 +2330,8 @@ function ns:CW_Submit(g)
 	local text = eb:GetText() or ""
 	text = text:gsub("^%s+", ""):gsub("%s+$", "")
 	if text == "" then eb:ClearFocus() return end
+	text = ns.cwExpand(eb, text)
+	eb.cpLinks = nil
 	local w, t = Current(g)
 	if text:sub(1, 1) == "/" then
 		local ct, rest = ParseCommand(w, text, true)
@@ -2414,6 +2417,48 @@ HookFn(ChatFrameUtil, "OpenChat", EnterToWindow)
 -- Shift-click an item (bag, chat link ...): the game puts the link into ITS box.
 -- With one of our inputs in use, the link goes there instead.
 local lastInsert, lastInsertAt
+
+-- A link in our input box is shown as plain "[Name]" (the box would show the raw link
+-- as empty characters until it is sent) and turned back into the real link when sending.
+local LINK_FORMS = {
+	"|c%x%x%x%x%x%x%x%x|H.-|h.-|h|r",   -- classic colour escape
+	"|cn[%w_]+:|H.-|h.-|h|r",           -- named colour escape
+	"|H.-|h.-|h",                       -- bare link
+}
+function ns.cwChipify(eb, text)
+	if type(text) ~= "string" or not text:find("|H", 1, true) then return text end
+	if type(rawget(eb, "cpLinks")) ~= "table" then eb.cpLinks = {} end
+	for _, pat in ipairs(LINK_FORMS) do
+		text = text:gsub(pat, function(full)
+			local name = full:match("|h(.-)|h") or ""
+			name = name:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|cn[%w_]+:", ""):gsub("|r", "")
+			if name == "" then name = "link" end
+			if not name:find("^%[") then name = "[" .. name .. "]" end
+			local col = full:match("^|c(%x%x%x%x%x%x%x%x)")
+			local shown = col and ("|c" .. col .. name .. "|r") or name
+			eb.cpLinks[#eb.cpLinks + 1] = { shown = shown, full = full }
+			return shown
+		end)
+	end
+	return text
+end
+
+function ns.cwExpand(eb, text)
+	local list = eb and rawget(eb, "cpLinks")
+	if type(list) ~= "table" or #list == 0 or type(text) ~= "string" then return text end
+	local out, pos = {}, 1
+	for _, it in ipairs(list) do
+		local a, b = text:find(it.shown, pos, true)
+		if a then
+			out[#out + 1] = text:sub(pos, a - 1)
+			out[#out + 1] = it.full
+			pos = b + 1
+		end
+	end
+	out[#out + 1] = text:sub(pos)
+	return table.concat(out)
+end
+
 local function InsertToWindow(text)
 	local eb = ns.cwFocusEB
 	if not eb or type(text) ~= "string" or not ns.Usable(text) then return end
@@ -2431,7 +2476,11 @@ local function InsertToWindow(text)
 		end
 		eb:SetFocus()
 	end
-	eb:Insert(text)
+	eb:Insert(ns.cwChipify(eb, text))
+	-- the game's own box may grab the keyboard a moment later: take it back
+	C_Timer.After(0.05, function()
+		if not eb:HasFocus() and ns.cwFocusEB == eb and not Locked() then eb:SetFocus() end
+	end)
 end
 ns.cwInsert = InsertToWindow
 HookFn(_G, "ChatEdit_InsertLink", InsertToWindow)

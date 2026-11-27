@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.13
+- Behoben: Item- und andere Links im Eingabefeld der eigenen Chat-Fenster. Sie werden beim Schreiben als lesbares [Name] angezeigt (statt leerer Zeichen) und beim Abschicken in den echten Link verwandelt; das Fenster verliert dabei nicht mehr den Fokus. Funktioniert mit Namen in allen Sprachen
+
 ## 1.10.12
 - Behoben: ein Gruppen-Fenster zeigt jetzt auch den Chat, wenn die Gruppe zum Schlachtzug oder zur Instanzgruppe wird (das Spiel schreibt dann RAID bzw. INSTANCE_CHAT statt PARTY, und die Zeilen fehlten im Fenster, auch deine eigenen). Hat ein anderes Fenster die Kategorie Schlachtzug, bleibt es dort
 

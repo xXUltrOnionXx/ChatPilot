@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.13",
+		de = { "Behoben: Item- und andere Links im Eingabefeld der eigenen Chat-Fenster. Sie werden beim Schreiben als lesbares [Name] angezeigt (statt leerer Zeichen) und beim Abschicken in den echten Link verwandelt; das Fenster verliert dabei nicht mehr den Fokus. Funktioniert mit Namen in allen Sprachen" },
+		en = { "Fixed: item and other links in the input box of custom chat windows. While typing they show as a readable [Name] (instead of empty characters) and turn into the real link when sent; the window no longer loses focus. Works with names in all languages" },
+		fr = { "Corrigé : les liens d'objets et autres dans le champ de saisie des fenêtres de chat perso. Pendant la saisie ils apparaissent sous la forme lisible [Nom] (au lieu de caractères vides) et deviennent le vrai lien à l'envoi ; la fenêtre ne perd plus le focus. Fonctionne avec des noms dans toutes les langues" },
+		es = { "Corregido: los enlaces de objetos y otros en el campo de entrada de las ventanas de chat propias. Al escribir se muestran como un [Nombre] legible (en vez de caracteres vacíos) y se convierten en el enlace real al enviar; la ventana ya no pierde el foco. Funciona con nombres en todos los idiomas" },
+		it = { "Corretto: i link di oggetti e altri nel campo di input delle finestre di chat personali. Durante la digitazione appaiono come [Nome] leggibile (invece di caratteri vuoti) e diventano il vero link all'invio; la finestra non perde più il focus. Funziona con nomi in tutte le lingue" },
+		pt = { "Corrigido: as ligações de itens e outras no campo de entrada das janelas de chat próprias. Ao escrever aparecem como um [Nome] legível (em vez de carateres vazios) e transformam-se na ligação real ao enviar; a janela já não perde o foco. Funciona com nomes em todos os idiomas" },
+		ru = { "Исправлено: ссылки на предметы и другие ссылки в поле ввода собственных окон чата. При наборе они показываются читаемым [Название] (вместо пустых символов) и превращаются в настоящую ссылку при отправке; окно больше не теряет фокус. Работает с названиями на всех языках" },
+		ko = { "수정: 사용자 채팅 창 입력란의 아이템 등 링크. 입력하는 동안 빈 문자 대신 읽을 수 있는 [이름]으로 표시되고 보낼 때 실제 링크로 바뀝니다. 창이 더 이상 포커스를 잃지 않습니다. 모든 언어의 이름에서 작동합니다" },
+		zh = { "修复：自定义聊天窗口输入框中的物品等链接。输入时显示为可读的 [名称]（而不是空白字符），发送时变回真正的链接；窗口不再失去焦点。适用于所有语言的名称" },
+		tw = { "修復：自訂聊天視窗輸入框中的物品等連結。輸入時顯示為可讀的 [名稱]（而不是空白字元），發送時變回真正的連結；視窗不再失去焦點。適用於所有語言的名稱" },
+	},
 	{ v = "1.10.12",
 		de = { "Behoben: ein Gruppen-Fenster zeigt jetzt auch den Chat, wenn die Gruppe zum Schlachtzug oder zur Instanzgruppe wird (das Spiel schreibt dann RAID bzw. INSTANCE_CHAT statt PARTY, und die Zeilen fehlten im Fenster, auch deine eigenen). Hat ein anderes Fenster die Kategorie Schlachtzug, bleibt es dort" },
 		en = { "Fixed: a group window now also shows the chat when the group turns into a raid or an instance group (the game then writes RAID or INSTANCE_CHAT instead of PARTY, and the lines were missing in the window, including your own). If another window has the raid category, the raid chat stays there" },
