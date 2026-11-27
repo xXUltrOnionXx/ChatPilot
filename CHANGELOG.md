@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.5
+- Behoben: Fenster ließen sich in WoW Forever nicht auf andere Fenster andocken, weil das Spiel die Mausposition dort nicht meldet - ChatPilot prüft sie jetzt selbst
+
 ## 1.10.4
 - Neu: /chatpilot diag (und diag hover) zeigt einen kurzen Bericht zu Chat-Look und Andocken (für Fehlermeldungen), /chatpilot skin force erzwingt den modernen Chat-Look, auch wenn ein anderes Chat-Addon erkannt wird
 

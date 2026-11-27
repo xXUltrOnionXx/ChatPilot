@@ -1167,11 +1167,11 @@ SlashCmdList.CHATPILOT = function(input)
 			P("cursor %s, %s", R(cx), R(cy))
 			local a = MouseIsOver and select(2, pcall(MouseIsOver, main))
 			local b = MouseIsOver and select(2, pcall(MouseIsOver, main, 34, -8, -6, 6))
-			P("MouseIsOver plain=%s with margins=%s, ChatPilot OverMainChat=%s", tostring(a), tostring(b), tostring(ns:OverMainChat()))
+			P("MouseIsOver plain=%s with margins=%s, ChatPilot own check=%s", tostring(a), tostring(b), tostring(ns:OverMainChat()))
 			local over = {}
 			for _, g in ipairs(ns._cw and ns._cw.groups or {}) do
 				if g.frame and g.frame:IsVisible() then
-					over[#over + 1] = (g.data and g.data.main and "main" or "free") .. ":" .. tostring(MouseIsOver and MouseIsOver(g.header) or "?")
+					over[#over + 1] = (g.data and g.data.main and "main" or "free") .. ":" .. tostring(ns.CW_Over and ns.CW_Over(g.header))
 				end
 			end
 			P("ChatPilot windows (title bar under mouse): %s", #over > 0 and table.concat(over, " ") or "none open")

@@ -195,6 +195,26 @@ end
 
 ns.CW_MainChat = MainChat -- also for /chatpilot diag
 
+-- Is the mouse over this frame? MouseIsOver returns nil in WoW Forever, so ask the
+-- game first and then compare the cursor with the frame's corners ourselves.
+-- Offsets work like MouseIsOver's: top/right grow outwards when positive,
+-- bottom/left when negative.
+local function Over(frame, top, bottom, left, right)
+	if not frame or not frame.GetLeft then return false end
+	if MouseIsOver then
+		local ok, res = pcall(MouseIsOver, frame, top, bottom, left, right)
+		if ok and res == true then return true end
+	end
+	local l, r, b, t = frame:GetLeft(), frame:GetRight(), frame:GetBottom(), frame:GetTop()
+	if type(l) ~= "number" or type(r) ~= "number" or type(b) ~= "number" or type(t) ~= "number" then return false end
+	local s = (frame.GetEffectiveScale and frame:GetEffectiveScale()) or 1
+	local x, y = GetCursorPosition()
+	if not x or not y then return false end
+	return x >= (l + (left or 0)) * s and x <= (r + (right or 0)) * s
+		and y >= (b + (bottom or 0)) * s and y <= (t + (top or 0)) * s
+end
+ns.CW_Over = Over
+
 local UpdateLaunchers -- forward (tabs of windows docked into the main chat)
 
 local function Place(g)
@@ -1343,7 +1363,7 @@ dragFrame:Hide()
 
 local function DropTarget(g)
 	for _, o in ipairs(groups) do
-		if o ~= g and o.frame:IsVisible() and MouseIsOver and MouseIsOver(o.header) then return o end
+		if o ~= g and o.frame:IsVisible() and Over(o.header) then return o end
 	end
 end
 
@@ -2699,21 +2719,10 @@ local mainDrop
 function ns:OverMainChat()
 	local main = MainChat()
 	if not main or not main.IsVisible or not main:IsVisible() or not main:GetLeft() then return false end
-	-- ask the game first (works whatever the chat's scale is), incl. the tab row above it
-	if MouseIsOver then
-		local ok, over = pcall(MouseIsOver, main, 34, -8, -6, 6)
-		if ok and over then return true end
-		local tab = rawget(main, "tab") or (main.GetName and _G[(main:GetName() or "") .. "Tab"])
-		if tab and tab.IsVisible and tab:IsVisible() then
-			local ok2, overTab = pcall(MouseIsOver, tab)
-			if ok2 and overTab then return true end
-		end
-	end
-	-- fallback: compare in real screen pixels
-	local s = (main.GetEffectiveScale and main:GetEffectiveScale()) or 1
-	local x, y = GetCursorPosition()
-	return x >= main:GetLeft() * s and x <= main:GetRight() * s
-		and y >= main:GetBottom() * s and y <= (main:GetTop() + 34) * s
+	-- the chat itself plus the tab row above it
+	if Over(main, 34, -8, -6, 6) then return true end
+	local tab = rawget(main, "tab") or (main.GetName and _G[(main:GetName() or "") .. "Tab"])
+	return tab and tab.IsVisible and tab:IsVisible() and Over(tab) or false
 end
 
 function ns:ShowMainDrop(on)

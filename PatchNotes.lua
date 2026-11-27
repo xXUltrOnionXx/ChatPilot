@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.5",
+		de = { "Behoben: Fenster ließen sich in WoW Forever nicht auf andere Fenster andocken, weil das Spiel die Mausposition dort nicht meldet - ChatPilot prüft sie jetzt selbst" },
+		en = { "Fixed: windows could not be docked onto other windows in WoW Forever because the game does not report the mouse position there - ChatPilot now checks it itself" },
+		fr = { "Corrigé : les fenêtres ne pouvaient pas être ancrées sur d'autres fenêtres dans WoW Forever, car le jeu n'y signale pas la position de la souris - ChatPilot la vérifie maintenant lui-même" },
+		es = { "Corregido: las ventanas no se podían acoplar a otras ventanas en WoW Forever porque el juego no informa de la posición del ratón - ChatPilot ahora la comprueba por sí mismo" },
+		it = { "Corretto: le finestre non potevano essere agganciate ad altre finestre in WoW Forever perché il gioco non segnala la posizione del mouse - ora ChatPilot la controlla da solo" },
+		pt = { "Corrigido: as janelas não podiam ser acopladas a outras janelas no WoW Forever porque o jogo não informa a posição do mouse - o ChatPilot agora verifica por conta própria" },
+		ru = { "Исправлено: окна нельзя было закрепить на других окнах в WoW Forever, так как игра не сообщает положение мыши - теперь ChatPilot проверяет его сам" },
+		ko = { "수정: WoW Forever에서 게임이 마우스 위치를 알려주지 않아 창을 다른 창에 도킹할 수 없던 문제 - 이제 ChatPilot이 직접 확인합니다" },
+		zh = { "修复：在 WoW Forever 中游戏不报告鼠标位置，导致窗口无法停靠到其他窗口 - 现在 ChatPilot 自行检测" },
+		tw = { "修復：在 WoW Forever 中遊戲不回報滑鼠位置，導致視窗無法停靠到其他視窗 - 現在 ChatPilot 自行偵測" },
+	},
 	{ v = "1.10.4",
 		de = { "Neu: /chatpilot diag (und diag hover) zeigt einen kurzen Bericht zu Chat-Look und Andocken (für Fehlermeldungen), /chatpilot skin force erzwingt den modernen Chat-Look, auch wenn ein anderes Chat-Addon erkannt wird" },
 		en = { "New: /chatpilot diag prints a short report about the chat look and docking (for bug reports), /chatpilot skin force applies the modern chat look even if another chat addon is detected" },
