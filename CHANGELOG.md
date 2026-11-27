@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.3
+- Neu: /chatpilot diag zeigt einen kurzen Bericht zu Chat-Look und Andocken (für Fehlermeldungen), /chatpilot skin force erzwingt den modernen Chat-Look, auch wenn ein anderes Chat-Addon erkannt wird
+
 ## 1.10.2
 - Neu: überarbeiteter Rundgang in 4 Kapiteln - öffnet jetzt die Einstellungen und zeigt Schritt für Schritt die wichtigsten Schalter (Namen und Online-Zeit, Spam- und Betrugsschutz, Streamer-Modus, Pilot Link, Design und Sichern), dazu ein Schritt für die Chat-Suche
 

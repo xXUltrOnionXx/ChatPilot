@@ -206,6 +206,7 @@ local SKIN_ADDONS = { "prat", "chatter", "elvui", "glass", "primechat", "gudacha
 	"foreverchatbox", "luxchat", "tukui", "basicchatmods" }
 
 function ns:ChatSkinConflict()
+	if ns.S and ns.S.skinForce then return nil end -- /chatpilot skin force: style the chat anyway
 	local get = (C_AddOns and C_AddOns.GetNumAddOns) or GetNumAddOns
 	local info = (C_AddOns and C_AddOns.GetAddOnInfo) or GetAddOnInfo
 	local loaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
@@ -228,6 +229,7 @@ function ns:SkinAllChats()
 	if other then
 		self.skinConflict = other
 		ns.Print(L.CHATSKIN_CONFLICT, other)
+		ns.Print("/chatpilot skin force  -  apply the modern look anyway")
 		return
 	end
 	if not active and next(saved) then

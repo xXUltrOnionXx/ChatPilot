@@ -193,6 +193,8 @@ local function MainChat()
 	return DEFAULT_CHAT_FRAME or ChatFrame1
 end
 
+ns.CW_MainChat = MainChat -- also for /chatpilot diag
+
 local UpdateLaunchers -- forward (tabs of windows docked into the main chat)
 
 local function Place(g)

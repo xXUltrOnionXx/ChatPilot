@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.3",
+		de = { "Neu: /chatpilot diag zeigt einen kurzen Bericht zu Chat-Look und Andocken (für Fehlermeldungen), /chatpilot skin force erzwingt den modernen Chat-Look, auch wenn ein anderes Chat-Addon erkannt wird" },
+		en = { "New: /chatpilot diag prints a short report about the chat look and docking (for bug reports), /chatpilot skin force applies the modern chat look even if another chat addon is detected" },
+		fr = { "Nouveau : /chatpilot diag affiche un court rapport sur le style du chat et l'ancrage (pour les rapports de bug), /chatpilot skin force applique le style moderne même si un autre addon de chat est détecté" },
+		es = { "Nuevo: /chatpilot diag muestra un breve informe sobre el aspecto del chat y el acoplado (para informes de errores), /chatpilot skin force aplica el aspecto moderno aunque se detecte otro addon de chat" },
+		it = { "Novità: /chatpilot diag mostra un breve rapporto su aspetto della chat e aggancio (per segnalare bug), /chatpilot skin force applica l'aspetto moderno anche se viene rilevato un altro addon di chat" },
+		pt = { "Novo: /chatpilot diag mostra um relatório curto sobre o visual do chat e o acoplamento (para relatar erros), /chatpilot skin force aplica o visual moderno mesmo se outro addon de chat for detectado" },
+		ru = { "Новое: /chatpilot diag выводит краткий отчёт о виде чата и закреплении окон (для сообщений об ошибках), /chatpilot skin force включает современный вид чата, даже если найден другой аддон чата" },
+		ko = { "신규: /chatpilot diag 로 채팅 모양과 도킹에 대한 짧은 보고서 표시 (버그 신고용), /chatpilot skin force 로 다른 채팅 애드온이 감지되어도 모던 채팅 모양 강제 적용" },
+		zh = { "新增：/chatpilot diag 输出关于聊天外观和停靠的简短报告（用于反馈问题），/chatpilot skin force 即使检测到其他聊天插件也强制应用现代聊天外观" },
+		tw = { "新增：/chatpilot diag 輸出關於聊天外觀和停靠的簡短報告（用於回報問題），/chatpilot skin force 即使偵測到其他聊天插件也強制套用現代聊天外觀" },
+	},
 	{ v = "1.10.2",
 		de = { "Neu: überarbeiteter Rundgang in 4 Kapiteln - öffnet jetzt die Einstellungen und zeigt Schritt für Schritt die wichtigsten Schalter (Namen und Online-Zeit, Spam- und Betrugsschutz, Streamer-Modus, Pilot Link, Design und Sichern), dazu ein Schritt für die Chat-Suche" },
 		en = { "New: reworked tour in 4 chapters - it now opens the settings and shows the most important switches step by step (names and online time, spam and scam protection, streamer mode, Pilot Link, design and backup), plus a step for the chat search" },

@@ -1136,6 +1136,50 @@ SlashCmdList.CHATPILOT = function(input)
 	elseif cmd == "panic" then
 		if not ns.S.stream then ns:SetStream(true) end
 		ns:StreamPanic()
+	elseif cmd == "skin" then
+		-- /chatpilot skin force = apply the modern chat look even if another chat addon is found
+		if rest == "force" then
+			ns.S.skinForce = true
+			ns.skinConflict = nil
+			ns.S.chatSkin = true
+			ns:SkinAllChats()
+			ns:InstallMainChatHooks()
+			ns:RefreshMainChat()
+			ns.Print("Modern chat look: forced on (/chatpilot skin auto = back to automatic).")
+		elseif rest == "auto" then
+			ns.S.skinForce = nil
+			ns.Print("Modern chat look: automatic again (takes effect after /reload).")
+		else
+			ns.Print("/chatpilot skin force  |  /chatpilot skin auto")
+		end
+	elseif cmd == "diag" or cmd == "diagnose" then
+		-- a short report for bug reports (what the chat look and docking see right now)
+		local function P(fmt, ...) ns.Print("[diag] " .. fmt, ...) end
+		local skinned = 0
+		for _ in pairs(ns._skinned or {}) do skinned = skinned + 1 end
+		local main = ns.CW_MainChat and ns.CW_MainChat()
+		local dockSel = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK)
+		P("%s, interface %s", tostring(ns.version), tostring(select(4, GetBuildInfo()) or "?"))
+		P("chatSkin=%s chatStyle=%s conflict=%s hooks=%s skinnedFrames=%d",
+			tostring(ns.S.chatSkin), tostring(ns.S.chatStyle), tostring(ns.skinConflict), tostring(ns.mainHooks), skinned)
+		P("mainChat=%s visible=%s dockSelected=%s", main and tostring(main.GetName and main:GetName()) or "nil",
+			tostring(main and main.IsVisible and main:IsVisible()), dockSel and tostring(dockSel.GetName and dockSel:GetName()) or "nil")
+		local names = {}
+		for i = 1, (NUM_CHAT_WINDOWS or 0) do
+			local f = _G["ChatFrame" .. i]
+			if f then names[#names + 1] = i .. (f:IsShown() and "" or "(hidden)") .. (rawget(f, "cpDeco") and "*" or "") end
+		end
+		P("chatFrames: %s  (* = ChatPilot look active)", table.concat(names, " "))
+		local ok, over = pcall(function() return ns:OverMainChat() end)
+		P("mouse over the main chat right now: %s (hold the mouse over it and run again)", ok and tostring(over) or "error")
+		local loaded = {}
+		if C_AddOns and C_AddOns.GetNumAddOns then
+			for i = 1, C_AddOns.GetNumAddOns() do
+				local n = C_AddOns.GetAddOnInfo(i)
+				if n and C_AddOns.IsAddOnLoaded(n) and not tostring(n):find("^Blizzard_") then loaded[#loaded + 1] = n end
+			end
+		end
+		P("other addons: %s", #loaded > 0 and table.concat(loaded, ", ") or "-")
 	elseif cmd == "pilots" or cmd == "piloten" or cmd == "users" then
 		ns:ShowPilots()
 	elseif cmd == "archive" or cmd == "archiv" then
