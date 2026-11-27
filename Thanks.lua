@@ -8,6 +8,7 @@ local C = UI.C
 -- Can be opened again any time from the "Patch notes" page or /chatpilot thanks.
 
 local WIDTH, HEIGHT = 500, 440
+local MAXLINES = 14
 
 -- "1.7.10" is newer than "1.7.9"
 function ns.VersionNewer(a, b)
@@ -177,17 +178,59 @@ local function Build()
 	badge.text:SetPoint("CENTER")
 	f.badge = badge
 
+	-- the notes scroll (mouse wheel + slim bar) so long texts are never cut off
+	local sf = CreateFrame("ScrollFrame", nil, f)
+	sf:SetPoint("TOPLEFT", f, "TOPLEFT", 28, -204)
+	sf:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -40, 66)
+	local child = CreateFrame("Frame", nil, sf)
+	child:SetSize(WIDTH - 80, 10)
+	sf:SetScrollChild(child)
+	sf:EnableMouseWheel(true)
+	f.scroll, f.child = sf, child
+
+	local bar = f:CreateTexture(nil, "ARTWORK")
+	bar:SetTexture("Interface\\Buttons\\WHITE8X8")
+	bar:SetWidth(4)
+	bar:SetPoint("TOPRIGHT", f, "TOPRIGHT", -28, -204)
+	bar:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -28, 66)
+	bar:SetVertexColor(1, 1, 1, 0.08)
+	local thumb = f:CreateTexture(nil, "OVERLAY")
+	thumb:SetTexture("Interface\\Buttons\\WHITE8X8")
+	thumb:SetWidth(4)
+	f.thumb = thumb
+	f.bar = bar
+	local function Sync()
+		local range = sf:GetVerticalScrollRange() or 0
+		local h = sf:GetHeight() or 1
+		if range <= 0 then thumb:Hide() bar:Hide() return end
+		bar:Show() thumb:Show()
+		local th = math.max(24, h * h / (h + range))
+		local y = (sf:GetVerticalScroll() / range) * (h - th)
+		thumb:SetHeight(th)
+		thumb:ClearAllPoints()
+		thumb:SetPoint("TOPRIGHT", f, "TOPRIGHT", -28, -204 - y)
+	end
+	f.SyncScroll = Sync
+	sf:SetScript("OnMouseWheel", function(self, delta)
+		local v = self:GetVerticalScroll() - delta * 30
+		v = math.max(0, math.min(v, self:GetVerticalScrollRange() or 0))
+		self:SetVerticalScroll(v)
+		Sync()
+	end)
+	sf:SetScript("OnScrollRangeChanged", Sync)
+
 	f.lines = {}
-	for i = 1, 5 do
-		local dot = f:CreateTexture(nil, "ARTWORK")
+	for i = 1, MAXLINES do
+		local dot = child:CreateTexture(nil, "ARTWORK")
 		dot:SetTexture(DOT)
 		dot:SetSize(7, 7)
-		local t = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		local t = child:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		t:SetJustifyH("LEFT")
-		t:SetWidth(WIDTH - 80)
+		t:SetWordWrap(true)
+		t:SetWidth(WIDTH - 80 - 36)
 		t:SetSpacing(2)
 		if i == 1 then
-			t:SetPoint("TOPLEFT", badge, "BOTTOMLEFT", 18, -14)
+			t:SetPoint("TOPLEFT", child, "TOPLEFT", 18, -4)
 		else
 			t:SetPoint("TOPLEFT", f.lines[i - 1].text, "BOTTOMLEFT", 0, -9)
 		end
@@ -253,15 +296,15 @@ function ns:ShowThanks()
 	Paint(frame)
 	frame.badge.text:SetText(L.THX_NEW:format(ns.version or ""))
 	frame.badge:SetWidth(math.max(150, (frame.badge.text:GetStringWidth() or 120) + 24))
-	-- everything that is new since the version you saw last (newest first, up to 5 lines)
+	-- everything that is new since the version you saw last (newest first, up to MAXLINES lines)
 	local lines = {}
 	local since = self.db and self.db.seenVersion
 	for _, e in ipairs(ns.PATCHNOTES or {}) do
 		if since and not ns.VersionNewer(e.v, since) then break end
 		for _, l in ipairs(ns:PatchLines(e)) do
-			if #lines < 5 then lines[#lines + 1] = l end
+			if #lines < MAXLINES then lines[#lines + 1] = l end
 		end
-		if not since or #lines >= 5 then break end
+		if not since or #lines >= MAXLINES then break end
 	end
 	if #lines == 0 and ns.PATCHNOTES and ns.PATCHNOTES[1] then lines = ns:PatchLines(ns.PATCHNOTES[1]) end -- opened again by hand
 	for i, l in ipairs(frame.lines) do
@@ -270,6 +313,18 @@ function ns:ShowThanks()
 		l.text:SetShown(s ~= nil)
 		l.dot:SetShown(s ~= nil)
 	end
+	-- size the scroll child to the text (heights are known after the next layout pass)
+	local function Fit()
+		local h = 8
+		for i, l in ipairs(frame.lines) do
+			if lines[i] then h = h + (l.text:GetStringHeight() or 14) + 9 end
+		end
+		frame.child:SetHeight(h)
+		frame.scroll:SetVerticalScroll(0)
+		frame.SyncScroll()
+	end
+	Fit()
+	if C_Timer and C_Timer.After then C_Timer.After(0.1, Fit) end
 	frame.pop = 0
 	frame:SetAlpha(0)
 	frame:Show()
