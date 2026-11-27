@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.7
+- Behoben: das im Hauptchat geöffnete eigene Chat-Fenster schließt sich nicht mehr mitten im Gespräch, wenn das Spiel selbst denselben Tab erneut auswählt (nur dein Klick oder dein Mausrad wechselt den Tab)
+
 ## 1.10.6
 - Behoben: eigene Chat-Fenster zeichnen ihre Zeilen neu, wenn sie sichtbar werden oder ihre Größe ändern (Zeilen, die in einem versteckten Fenster ankamen, konnten unsichtbar bleiben). /chatpilot diag zeigt jetzt, wie viele Zeilen die Fenster angezeigt, gefiltert oder nicht anzeigen konnten. Das im Hauptchat geöffnete eigene Chat-Fenster öffnet sich nach einem Reload wieder von selbst
 

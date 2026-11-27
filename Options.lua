@@ -1204,8 +1204,8 @@ SlashCmdList.CHATPILOT = function(input)
 			end
 		end
 		local st = ns.cwStats or {}
-		P("custom chats: shown %d, hidden by a filter %d, restricted text shown %d (failed %d), no window for event %d, caught errors %d",
-			st.shown or 0, st.filtered or 0, st.secret or 0, st.secretFail or 0, st.noTarget or 0, #(ns.errors or {}))
+		P("custom chats: shown %d, hidden by a filter %d, restricted text shown %d (failed %d), no window for event %d, kept open %d, caught errors %d",
+			st.shown or 0, st.filtered or 0, st.secret or 0, st.secretFail or 0, st.noTarget or 0, st.keptOpen or 0, #(ns.errors or {}))
 		for i = math.max(1, #(ns.errors or {}) - 2), #(ns.errors or {}) do P("error: %s", ns.errors[i]) end
 		local nGroups, nShown = 0, 0
 		for _, g in ipairs(ns._cw and ns._cw.groups or {}) do

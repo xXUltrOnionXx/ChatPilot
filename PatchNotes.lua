@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.10.7",
+		de = { "Behoben: das im Hauptchat geöffnete eigene Chat-Fenster schließt sich nicht mehr mitten im Gespräch, wenn das Spiel selbst denselben Tab erneut auswählt (nur dein Klick oder dein Mausrad wechselt den Tab)" },
+		en = { "Fixed: the custom chat opened in the main chat no longer closes in the middle of a conversation when the game re-selects the same tab by itself (only your click or mouse wheel switches tabs)" },
+		fr = { "Corrigé : le chat perso ouvert dans le chat principal ne se ferme plus en pleine conversation quand le jeu resélectionne lui-même le même onglet (seuls ton clic ou la molette changent d'onglet)" },
+		es = { "Corregido: el chat propio abierto en el chat principal ya no se cierra en plena conversación cuando el juego vuelve a seleccionar la misma pestaña (solo tu clic o la rueda cambian de pestaña)" },
+		it = { "Corretto: la chat personale aperta nella chat principale non si chiude più nel mezzo di una conversazione quando il gioco riseleziona da solo la stessa scheda (solo il tuo clic o la rotella cambiano scheda)" },
+		pt = { "Corrigido: o chat próprio aberto no chat principal já não fecha a meio de uma conversa quando o jogo volta a selecionar o mesmo separador (só o teu clique ou a roda mudam de separador)" },
+		ru = { "Исправлено: собственный чат, открытый в основном чате, больше не закрывается посреди разговора, когда игра сама заново выбирает ту же вкладку (вкладки меняет только твой клик или колесо мыши)" },
+		ko = { "수정: 게임이 같은 탭을 스스로 다시 선택해도 메인 채팅에서 열려 있던 사용자 채팅이 대화 도중 닫히지 않습니다 (클릭이나 마우스 휠로만 탭이 바뀝니다)" },
+		zh = { "修复：当游戏自行重新选择同一标签页时，在主聊天中打开的自定义聊天不再在对话中途关闭（只有你的点击或鼠标滚轮才会切换标签页）" },
+		tw = { "修復：當遊戲自行重新選擇同一分頁時，在主聊天中開啟的自訂聊天不再在對話中途關閉（只有你的點擊或滑鼠滾輪才會切換分頁）" },
+	},
 	{ v = "1.10.6",
 		de = { "Behoben: eigene Chat-Fenster zeichnen ihre Zeilen neu, wenn sie sichtbar werden oder ihre Größe ändern (Zeilen, die in einem versteckten Fenster ankamen, konnten unsichtbar bleiben). /chatpilot diag zeigt jetzt, wie viele Zeilen die Fenster angezeigt, gefiltert oder nicht anzeigen konnten. Das im Hauptchat geöffnete eigene Chat-Fenster öffnet sich nach einem Reload wieder von selbst" },
 		en = { "Fixed: custom chat windows redraw their lines when they become visible or change size (lines that arrived in a hidden window could stay invisible). /chatpilot diag now shows how many lines the windows showed, filtered or could not show. The custom chat that was open in the main chat opens again by itself after a reload" },

@@ -2793,6 +2793,7 @@ function ns:CW_OpenMain(g, w)
 	if not g or not g.data then return end
 	CloseMainOverlays(g)
 	g.mainOpen = true
+	ns._lastGameSel = GENERAL_CHAT_DOCK and FCFDock_GetSelectedWindow and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK) or ns._lastGameSel
 	if Data then Data.hidden = false; Data.openMain = (w or wins[g.data.active]).data.id end
 	Place(g)
 	g.frame:Show()
@@ -2975,7 +2976,22 @@ local function OnGameTabSelected()
 	UpdateLaunchers()
 	C_Timer.After(0, UpdateLaunchers)
 end
-if type(FCF_SelectDockFrame) == "function" then hooksecurefunc("FCF_SelectDockFrame", OnGameTabSelected) end
+-- The game also selects tabs by itself (login, replying, a new whisper, closing a tab).
+-- Such a re-selection of the tab that was already selected must not close our window in
+-- the middle of a conversation; only a real pick (mouse button down) or a different tab does.
+if type(FCF_SelectDockFrame) == "function" then
+	hooksecurefunc("FCF_SelectDockFrame", function(frame)
+		local same = frame ~= nil and frame == ns._lastGameSel
+		ns._lastGameSel = frame
+		local anyOpen = false
+		for _, g in ipairs(groups) do if g.data and g.data.main and g.mainOpen then anyOpen = true end end
+		if same and anyOpen and not (IsMouseButtonDown and IsMouseButtonDown()) then
+			stats.keptOpen = (stats.keptOpen or 0) + 1
+			return
+		end
+		OnGameTabSelected()
+	end)
+end
 if type(FCF_Tab_OnClick) == "function" then
 	hooksecurefunc("FCF_Tab_OnClick", function(_, button) if button ~= "RightButton" then OnGameTabSelected() end end)
 end
