@@ -3,8 +3,8 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
-	{ v = "1.10.3",
-		de = { "Neu: /chatpilot diag zeigt einen kurzen Bericht zu Chat-Look und Andocken (für Fehlermeldungen), /chatpilot skin force erzwingt den modernen Chat-Look, auch wenn ein anderes Chat-Addon erkannt wird" },
+	{ v = "1.10.4",
+		de = { "Neu: /chatpilot diag (und diag hover) zeigt einen kurzen Bericht zu Chat-Look und Andocken (für Fehlermeldungen), /chatpilot skin force erzwingt den modernen Chat-Look, auch wenn ein anderes Chat-Addon erkannt wird" },
 		en = { "New: /chatpilot diag prints a short report about the chat look and docking (for bug reports), /chatpilot skin force applies the modern chat look even if another chat addon is detected" },
 		fr = { "Nouveau : /chatpilot diag affiche un court rapport sur le style du chat et l'ancrage (pour les rapports de bug), /chatpilot skin force applique le style moderne même si un autre addon de chat est détecté" },
 		es = { "Nuevo: /chatpilot diag muestra un breve informe sobre el aspecto del chat y el acoplado (para informes de errores), /chatpilot skin force aplica el aspecto moderno aunque se detecte otro addon de chat" },
