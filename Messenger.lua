@@ -11,8 +11,9 @@ local L = ns.L
 local TEX = "Interface\\AddOns\\ChatPilot\\textures\\messenger.tga"
 local MAX_BIRDS = 3      -- in the air at the same time
 local MAX_SPARKS = 72    -- particle pool size
-local FLAP_FPS = 11
-local SEQ = { 1, 2, 3, 4, 5, 6, 5, 4, 3, 2 } -- wing frames, up ... down ... up
+local BIRD = 46      -- size of the bird body on screen (UI units) at 100 %
+local FLAP_FPS = 36
+local SEQ = { 1, 3, 5, 7, 8, 6, 4, 2 } -- wing frames: up ... down ... up (about 4.5 beats a second)
 
 -- chat types that can send a bird (same keys as the chat window categories)
 ns.MSG_TYPES = { "whisper", "guild", "party", "raid", "say", "yell", "emote", "general", "trade", "channels", "community" }
@@ -32,8 +33,8 @@ local COLOR = {
 
 -- sprite sheet: 4 x 4 cells
 local CELLS = {
-	wing = { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 }, { 0, 1 }, { 1, 1 } },
-	body = { 2, 1 }, orb = { 3, 1 }, star = { 0, 2 }, dot = { 1, 2 }, ring = { 2, 2 }, streak = { 3, 2 },
+	wing = { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 }, { 3, 1 } },
+	body = { 0, 2 }, orb = { 1, 2 }, star = { 2, 2 }, dot = { 3, 2 }, ring = { 0, 3 }, streak = { 1, 3 },
 }
 local function Coords(cell, flip)
 	local u0, v0 = cell[1] * 0.25, cell[2] * 0.25
@@ -200,14 +201,14 @@ end
 local function Ease(t) return 1 - (1 - t) ^ 1.8 end
 
 local function Draw(b, x, y, tilt, face, fade, scale, cfg, wingSpeed)
-	local S = 64 * cfg.size * scale
+	local S = BIRD * cfg.size * scale
 	local rot = face > 0 and tilt or -tilt
 	local cs, sn = math.cos(rot), math.sin(rot)
 	-- wing roots sit on the shoulder; a wing sprite is centred on its root
 	local ox, oy = -4 / 128 * S * face, 10 / 128 * S
 	local rx, ry = ox * cs - oy * sn, ox * sn + oy * cs
 	local idx = SEQ[(math.floor(b.phase) % #SEQ) + 1]
-	local idxB = SEQ[(math.floor(b.phase + 3) % #SEQ) + 1]
+	local idxB = SEQ[(math.floor(b.phase + 1.5) % #SEQ) + 1]
 	local flip = face < 0
 	local a = cfg.alpha * fade
 	local r, g, bl = b.r, b.g, b.b
@@ -217,7 +218,7 @@ local function Draw(b, x, y, tilt, face, fade, scale, cfg, wingSpeed)
 	SetCell(b.wingB, CELLS.wing[idxB], flip)
 	Place(b.wingB, x + rx, y + ry + 2, S * 1.7, rot)
 	b.wingB:SetVertexColor(r * 0.8, g * 0.8, bl * 0.8)
-	b.wingB:SetAlpha(a * 0.55)
+	b.wingB:SetAlpha(a * 0.4)
 	SetCell(b.body, CELLS.body, flip)
 	Place(b.body, x, y, S, rot)
 	b.body:SetVertexColor(r * 0.6 + 0.4, g * 0.6 + 0.4, bl * 0.6 + 0.4)
@@ -225,7 +226,7 @@ local function Draw(b, x, y, tilt, face, fade, scale, cfg, wingSpeed)
 	SetCell(b.wingF, CELLS.wing[idx], flip)
 	Place(b.wingF, x + rx, y + ry, S * 1.7, rot)
 	b.wingF:SetVertexColor(r, g, bl)
-	b.wingF:SetAlpha(a * 0.85)
+	b.wingF:SetAlpha(a * 0.75)
 	-- where the tail ends (for the trail)
 	local tx, ty = -52 / 128 * S * face, -10 / 128 * S
 	return x + tx * cs - ty * sn, y + tx * sn + ty * cs, S
@@ -278,7 +279,7 @@ local function UpdateBirds(e, cfg)
 			if b.t >= 1 then
 				b.state = "dissolve"
 				b.dt = 0
-				Burst(x, y, math.floor(14 * cfg.particles + 0.5), b.r, b.g, b.b, 95 * cfg.size, 64 * cfg.size * 0.3)
+				Burst(x, y, math.floor(14 * cfg.particles + 0.5), b.r, b.g, b.b, 95 * cfg.size, BIRD * cfg.size * 0.3)
 				if cfg.particles > 0 then
 					Spark("ring", tx, ty, 0, 0, 0.55, 18 * cfg.size, 96 * cfg.size, b.r, b.g, b.b, 0.8, 0)
 				end
@@ -345,7 +346,7 @@ function ns:MessengerFly(dest, r, g, b, opts)
 	bd.frame:Show()
 	liveBirds[#liveBirds + 1] = bd
 	-- summoned out of a little spell flash
-	Burst(sx, sy, math.floor(7 * cfg.particles + 0.5), r, g, b, 55 * cfg.size, 64 * cfg.size * 0.28)
+	Burst(sx, sy, math.floor(7 * cfg.particles + 0.5), r, g, b, 55 * cfg.size, BIRD * cfg.size * 0.28)
 	layer:Show()
 	return true
 end

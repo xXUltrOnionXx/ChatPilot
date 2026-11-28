@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.11.1",
+		de = { "Magical Messenger: schönere, geschwungene Flügel aus feinen leuchtenden Federn (8 Flügelphasen), deutlich schnelleres Flattern und ein kleinerer Vogel" },
+		en = { "Magical Messenger: more beautiful, sweeping wings made of fine glowing feathers (8 wing frames), much faster flapping and a smaller bird" },
+		fr = { "Magical Messenger : ailes plus belles et courbes, faites de fines plumes lumineuses (8 phases d'aile), battements nettement plus rapides et oiseau plus petit" },
+		es = { "Magical Messenger: alas más bonitas y curvas, hechas de finas plumas luminosas (8 fases de ala), aleteo mucho más rápido y pájaro más pequeño" },
+		it = { "Magical Messenger: ali più belle e curve, fatte di piume luminose sottili (8 fasi d'ala), battito molto più veloce e uccello più piccolo" },
+		pt = { "Magical Messenger: asas mais bonitas e curvas, feitas de penas luminosas finas (8 fases de asa), bater de asas bem mais rápido e pássaro menor" },
+		ru = { "Magical Messenger: более красивые изогнутые крылья из тонких светящихся перьев (8 фаз крыла), заметно более быстрые взмахи и птица поменьше" },
+		ko = { "Magical Messenger: 가늘게 빛나는 깃털로 이루어진 더 아름답고 부드러운 날개 (날개 8단계), 훨씬 빠른 날갯짓, 더 작아진 새" },
+		zh = { "Magical Messenger：由细小发光羽毛组成的更美观、更流畅的翅膀（8 个翅膀帧），振翅明显更快，鸟也更小" },
+		tw = { "Magical Messenger：由細小發光羽毛組成的更美觀、更流暢的翅膀（8 個翅膀影格），振翅明顯更快，鳥也更小" },
+	},
 	{ v = "1.11.0",
 		de = { "Neu: Magical Messenger. Ein kleiner, leuchtender Zauber-Vogel fliegt bei jeder eingehenden Nachricht zum passenden Chatfenster (auch zu verschobenen oder angedockten Fenstern bzw. dem Tab im Hauptchat), mit Flügelschlag, magischer Spur und sanfter Auflösung. Die Farbe richtet sich nach dem Chat: Flüstern violett, Gilde smaragdgrün, Gruppe blau, Schlachtzug gold-orange, Allgemein weiß-golden, Handel golden, andere Kanäle in ihrer Chat-Farbe. Eigene Nachrichten lösen nichts aus. Neue Seite „Magical Messenger“ in den Einstellungen: global und pro Chat-Typ ein/aus, Größe, Geschwindigkeit, Deckkraft, Partikel, Pause zwischen Vögeln, nicht im Kampf, nur bei ungelesenen Nachrichten, Vorschau und Standardwerte (auch /chatpilot messenger test)" },
 		en = { "New: Magical Messenger. A small glowing summoned bird flies to the matching chat window for every incoming message (also to moved or docked windows, or the tab in the main chat), with wing beats, a magical trail and a soft dissolve. The colour follows the chat: whispers violet, guild emerald, group blue, raid gold-orange, General white-gold, Trade gold, other channels in their chat colour. Your own messages never trigger it. New \"Magical Messenger\" page in the settings: on/off globally and per chat type, size, speed, opacity, particles, pause between birds, not in combat, only for unread messages, preview and restore defaults (also /chatpilot messenger test)" },

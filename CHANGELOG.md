@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.11.1
+- Magical Messenger: schönere, geschwungene Flügel aus feinen leuchtenden Federn (8 Flügelphasen), deutlich schnelleres Flattern und ein kleinerer Vogel
+
 ## 1.11.0
 - Neu: Magical Messenger. Ein kleiner, leuchtender Zauber-Vogel fliegt bei jeder eingehenden Nachricht zum passenden Chatfenster (auch zu verschobenen oder angedockten Fenstern bzw. dem Tab im Hauptchat), mit Flügelschlag, magischer Spur und sanfter Auflösung. Die Farbe richtet sich nach dem Chat: Flüstern violett, Gilde smaragdgrün, Gruppe blau, Schlachtzug gold-orange, Allgemein weiß-golden, Handel golden, andere Kanäle in ihrer Chat-Farbe. Eigene Nachrichten lösen nichts aus. Neue Seite „Magical Messenger“ in den Einstellungen: global und pro Chat-Typ ein/aus, Größe, Geschwindigkeit, Deckkraft, Partikel, Pause zwischen Vögeln, nicht im Kampf, nur bei ungelesenen Nachrichten, Vorschau und Standardwerte (auch /chatpilot messenger test)
 
