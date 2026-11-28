@@ -26,7 +26,7 @@ local function Set(name, realm, level)
 end
 
 local function FromUnit(unit)
-	if not UnitExists(unit) or not UnitIsPlayer(unit) then return end
+	if not ns.SafeBool(UnitExists(unit)) or not ns.SafeBool(UnitIsPlayer(unit)) then return end
 	local name, realm = UnitName(unit)
 	local level = UnitLevel(unit)
 	if ns.Usable(name, realm, level) then Set(name, realm, level) end
@@ -44,7 +44,7 @@ local function LiveLevel(key)
 		end
 	end
 	for _, n in ipairs({ key, short }) do
-		if UnitExists(n) and UnitIsPlayer(n) then
+		if ns.SafeBool(UnitExists(n)) and ns.SafeBool(UnitIsPlayer(n)) then
 			local lv = UnitLevel(n)
 			if ns.Usable(lv) and type(lv) == "number" and lv > 0 then return lv end
 		end

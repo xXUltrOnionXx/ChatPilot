@@ -167,7 +167,7 @@ function ns:RefreshLive(force)
 		local prefix = IsInRaid() and "raid" or "party"
 		for i = 1, n do
 			local unit = prefix .. i
-			if UnitExists(unit) and not UnitIsUnit(unit, "player") then
+			if ns.SafeBool(UnitExists(unit)) and not ns.SafeBool(UnitIsUnit(unit, "player")) then
 				local name, realm = UnitName(unit)
 				local _, classFile = UnitClass(unit)
 				AddLive(t, ns.Normalize(name, realm), classFile, "group")
@@ -177,7 +177,7 @@ function ns:RefreshLive(force)
 
 	-- target
 	pcall(function()
-		if UnitExists("target") and UnitIsPlayer("target") and not UnitIsUnit("target", "player") then
+		if ns.SafeBool(UnitExists("target")) and ns.SafeBool(UnitIsPlayer("target")) and not ns.SafeBool(UnitIsUnit("target", "player")) then
 			local name, realm = UnitName("target")
 			local _, classFile = UnitClass("target")
 			AddLive(t, ns.Normalize(name, realm), classFile, "target")
@@ -189,7 +189,7 @@ function ns:RefreshLive(force)
 		local units = { "mouseover", "focus" }
 		for i = 1, 40 do units[#units + 1] = "nameplate" .. i end
 		for _, unit in ipairs(units) do
-			if UnitExists(unit) and UnitIsPlayer(unit) and not UnitIsUnit(unit, "player") then
+			if ns.SafeBool(UnitExists(unit)) and ns.SafeBool(UnitIsPlayer(unit)) and not ns.SafeBool(UnitIsUnit(unit, "player")) then
 				local name, realm = UnitName(unit)
 				if ns.Usable(name, realm) and name then
 					local _, classFile = UnitClass(unit)

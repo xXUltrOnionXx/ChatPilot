@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.11.3
+- Behoben: mögliche Fehler bei Spieler-Infos (Level, Gruppe, Ziel, Mouseover, Namensplaketten), wenn das Spiel Einheiten-Angaben gerade einschränkt; solche Werte werden jetzt sicher behandelt
+
 ## 1.11.2
 - Behoben: Fehler „boolean test on a secret boolean value“ bei Flüstern, wenn das Spiel Spielerstatus (AFK/Kampf) gerade einschränkt; solche Werte werden jetzt sicher behandelt (auch beim Magical Messenger und den Instanz-Prüfungen)
 

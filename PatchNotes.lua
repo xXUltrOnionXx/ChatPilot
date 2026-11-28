@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.11.3",
+		de = { "Behoben: mögliche Fehler bei Spieler-Infos (Level, Gruppe, Ziel, Mouseover, Namensplaketten), wenn das Spiel Einheiten-Angaben gerade einschränkt; solche Werte werden jetzt sicher behandelt" },
+		en = { "Fixed: possible errors in player info (level, group, target, mouse-over, name plates) when the game is restricting unit data; such values are now handled safely" },
+		fr = { "Corrigé : erreurs possibles dans les infos joueur (niveau, groupe, cible, survol, barres de nom) quand le jeu restreint les données d'unité ; ces valeurs sont désormais traitées en sécurité" },
+		es = { "Corregido: posibles errores en la información de jugadores (nivel, grupo, objetivo, ratón encima, placas de nombre) cuando el juego restringe los datos de unidad; esos valores ahora se tratan de forma segura" },
+		it = { "Corretto: possibili errori nelle info giocatore (livello, gruppo, bersaglio, mouse-over, targhette) quando il gioco limita i dati dell'unità; questi valori ora sono gestiti in sicurezza" },
+		pt = { "Corrigido: possíveis erros nas informações de jogadores (nível, grupo, alvo, mouse-over, placas de nome) quando o jogo restringe dados de unidade; esses valores agora são tratados com segurança" },
+		ru = { "Исправлено: возможные ошибки в данных об игроках (уровень, группа, цель, наведение, таблички имён), когда игра ограничивает данные юнитов; такие значения теперь обрабатываются безопасно" },
+		ko = { "수정: 게임이 유닛 정보를 제한할 때 플레이어 정보(레벨, 파티, 대상, 마우스오버, 이름표)에서 발생할 수 있던 오류. 이런 값은 이제 안전하게 처리됩니다" },
+		zh = { "修复：当游戏限制单位数据时，玩家信息（等级、队伍、目标、鼠标悬停、姓名板）中可能出现的错误；此类值现在会被安全处理" },
+		tw = { "修復：當遊戲限制單位資料時，玩家資訊（等級、隊伍、目標、滑鼠懸停、名條）中可能出現的錯誤；此類值現在會被安全處理" },
+	},
 	{ v = "1.11.2",
 		de = { "Behoben: Fehler „boolean test on a secret boolean value“ bei Flüstern, wenn das Spiel Spielerstatus (AFK/Kampf) gerade einschränkt; solche Werte werden jetzt sicher behandelt (auch beim Magical Messenger und den Instanz-Prüfungen)" },
 		en = { "Fixed: error \"boolean test on a secret boolean value\" in whispers when the game is restricting player status (AFK/combat); such values are now handled safely (also in the Magical Messenger and the instance checks)" },
