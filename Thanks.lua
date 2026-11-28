@@ -244,7 +244,7 @@ local function Build()
 	f.go = go
 	local all = UI.Button(f, L.THX_ALL, 170, 32)
 	all:SetPoint("BOTTOMLEFT", 24, 22)
-	all:SetScript("OnClick", function() f:Hide(); ns:OpenOptions(7) end)
+	all:SetScript("OnClick", function() f:Hide(); ns:OpenOptions(8) end)
 
 	local close = CreateFrame("Button", nil, f)
 	close:SetSize(22, 22)

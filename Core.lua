@@ -61,6 +61,17 @@ ns.defaults = {
 	hideRepeats = true,
 	maxRows = 8,
 	keywords = {},
+	-- Magical Messenger
+	messenger = true,
+	msgNoCombat = true,
+	msgUnread = false,
+	msgSize = 100,
+	msgSpeed = 100,
+	msgAlpha = 85,
+	msgParticles = 100,
+	msgCooldown = 2,
+	msg_whisper = true, msg_guild = true, msg_party = true, msg_raid = true, msg_say = true, msg_yell = true,
+	msg_emote = true, msg_general = true, msg_trade = true, msg_channels = true, msg_community = true,
 }
 
 -- Chat events we read (only to learn names and detect mentions; nothing is ever sent).

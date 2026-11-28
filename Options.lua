@@ -732,6 +732,127 @@ local function BuildDesign(content)
 	return sf
 end
 
+-------------------------------------------------------------------------------
+-- Magical Messenger
+-------------------------------------------------------------------------------
+-- "- value +" row for a number setting
+local function StepperRow(flow, parentRow, key, label, values, fmt)
+	local r = CreateFrame("Frame", nil, flow.child)
+	r:SetHeight(46)
+	UI.Fill(r, C.row)
+	local bar = r:CreateTexture(nil, "ARTWORK")
+	bar:SetColorTexture(unpack(C.accent))
+	bar:SetAlpha(0.6)
+	bar:SetPoint("TOPLEFT")
+	bar:SetPoint("BOTTOMLEFT")
+	bar:SetWidth(2)
+	local t = UI.Text(r, "GameFontHighlight")
+	t:SetPoint("LEFT", 14, 0)
+	t:SetText(label)
+	local plus = UI.Button(r, "+", 28, 24)
+	plus:SetPoint("RIGHT", -14, 0)
+	local val = UI.Text(r, "GameFontHighlight", C.accent)
+	val:SetPoint("RIGHT", plus, "LEFT", -8, 0)
+	val:SetWidth(64)
+	val:SetJustifyH("CENTER")
+	local minus = UI.Button(r, "-", 28, 24)
+	minus:SetPoint("RIGHT", val, "LEFT", -8, 0)
+	local function Index()
+		local cur = tonumber(ns.S[key]) or values[1]
+		local best, bd = 1, math.huge
+		for i, v in ipairs(values) do
+			local d = math.abs(v - cur)
+			if d < bd then best, bd = i, d end
+		end
+		return best
+	end
+	function r.Update()
+		val:SetText(fmt:format(values[Index()]))
+	end
+	local function Step(delta)
+		local i = math.max(1, math.min(#values, Index() + delta))
+		ns.S[key] = values[i]
+		r.Update()
+	end
+	minus:SetScript("OnClick", function() Step(-1) end)
+	plus:SetScript("OnClick", function() Step(1) end)
+	r:SetScript("OnShow", r.Update)
+	r.Update()
+	FlowAdd(flow, r, parentRow)
+	return r
+end
+
+local function BuildMessenger(content)
+	local sf, c = NewPage(content)
+	local flow = NewFlow(c, PageHeader(c, L.PAGE_MSG, L.PAGE_MSG_SUB))
+	local master = ToggleRow(flow, "messenger")
+	ToggleRow(flow, "msgNoCombat", master)
+	ToggleRow(flow, "msgUnread", master)
+
+	-- which chat types send a bird
+	local chips = {}
+	local box = CreateFrame("Frame", nil, flow.child)
+	local types = ns.MSG_TYPES or {}
+	local n = #types
+	box:SetHeight(40 + math.ceil(n / 3) * 30)
+	UI.Fill(box, C.row)
+	local bar = box:CreateTexture(nil, "ARTWORK")
+	bar:SetColorTexture(unpack(C.accent))
+	bar:SetAlpha(0.6)
+	bar:SetPoint("TOPLEFT")
+	bar:SetPoint("BOTTOMLEFT")
+	bar:SetWidth(2)
+	local head = UI.Text(box, "GameFontHighlight")
+	head:SetPoint("TOPLEFT", 14, -12)
+	head:SetText(L.MSG_TYPES)
+	local function MarkChips()
+		for k, b in pairs(chips) do UI.Ink(b.label, ns.S["msg_" .. k] ~= false and C.accent or C.muted) end
+	end
+	for i, k in ipairs(types) do
+		local b = UI.Button(box, L["CAT_" .. k], 156, 24)
+		local col, row = (i - 1) % 3, math.floor((i - 1) / 3)
+		b:SetPoint("TOPLEFT", box, "TOPLEFT", 14 + col * 160, -36 - row * 30)
+		b:SetScript("OnClick", function()
+			ns.S["msg_" .. k] = ns.S["msg_" .. k] == false
+			MarkChips()
+		end)
+		chips[k] = b
+	end
+	box:SetScript("OnShow", MarkChips)
+	MarkChips()
+	FlowAdd(flow, box, master)
+	MakeExpandable(master, master.toggle, -14)
+
+	local steppers = {
+		StepperRow(flow, master, "msgSize", L.MSG_SIZE, { 50, 70, 85, 100, 120, 150, 200 }, "%d %%"),
+		StepperRow(flow, master, "msgSpeed", L.MSG_SPEED, { 50, 75, 100, 150, 200 }, "%d %%"),
+		StepperRow(flow, master, "msgAlpha", L.MSG_ALPHA, { 30, 50, 70, 85, 100 }, "%d %%"),
+		StepperRow(flow, master, "msgParticles", L.MSG_PARTICLES, { 0, 25, 50, 100, 150, 200 }, "%d %%"),
+		StepperRow(flow, master, "msgCooldown", L.MSG_COOLDOWN, { 0.5, 1, 2, 3, 5, 10 }, L.MSG_SECONDS),
+	}
+	MakeExpandable(master, master.toggle, -14)
+
+	local act = CreateFrame("Frame", nil, flow.child)
+	act:SetHeight(52)
+	UI.Fill(act, C.row)
+	local prev = UI.Button(act, L.MSG_PREVIEW, 190, 28, "accent")
+	prev:SetPoint("LEFT", 14, 0)
+	prev:SetScript("OnClick", function() if ns.MessengerPreview then ns:MessengerPreview() end end)
+	local reset = UI.Button(act, L.MSG_RESET, 190, 28)
+	reset:SetPoint("LEFT", prev, "RIGHT", 8, 0)
+	reset:SetScript("OnClick", function()
+		if ns.MessengerReset then ns:MessengerReset() end
+		MarkChips()
+		for _, s in ipairs(steppers) do s.Update() end
+		RefreshRows()
+		ns.Print(L.MSG_RESET_DONE)
+	end)
+	FlowAdd(flow, act)
+
+	sf:SetScript("OnShow", function() Relayout(flow); RefreshRows() end)
+	return sf
+end
+
 -- "Good to know": what ChatPilot keeps, how to empty it, and a few plain facts
 local function InfoBox(flow, c, title, text, extra)
 	local box = CreateFrame("Frame", nil, c)
@@ -1017,6 +1138,7 @@ local function Build()
 	BuildWhispers(content)
 	BuildChat(content)
 	BuildDesign(content)
+	BuildMessenger(content)
 	BuildInfo(content)
 	BuildPatch(content)
 	BuildAbout(content)
@@ -1025,9 +1147,10 @@ local function Build()
 	NavButton(sidebar, 3, L.PAGE_WHISPERS)
 	NavButton(sidebar, 4, L.PAGE_CHAT)
 	NavButton(sidebar, 5, L.PAGE_DESIGN)
-	NavButton(sidebar, 6, L.PAGE_INFO)
-	NavButton(sidebar, 7, L.PAGE_PATCH)
-	NavButton(sidebar, 8, L.PAGE_ABOUT)
+	NavButton(sidebar, 6, L.PAGE_MSG)
+	NavButton(sidebar, 7, L.PAGE_INFO)
+	NavButton(sidebar, 8, L.PAGE_PATCH)
+	NavButton(sidebar, 9, L.PAGE_ABOUT)
 
 	local tourBtn = UI.Button(sidebar, L.TUT_OPEN, 150, 28)
 	tourBtn:SetPoint("BOTTOMLEFT", 20, 58)
@@ -1197,6 +1320,11 @@ function ns:DebugReport()
 	end
 	table.sort(flags)
 	P("settings: %s", #flags > 0 and table.concat(flags, " ") or "-")
+	do
+		local ms = ns.messengerStats or {}
+		local live = ns.MessengerState and select(1, ns:MessengerState()) or 0
+		P("messenger: sent %d, skipped by cooldown %d, in the air %d", ms.sent or 0, ms.skipped or 0, live)
+	end
 	-- custom windows one by one
 	for _, g in ipairs(ns._cw and ns._cw.groups or {}) do
 		local names = {}
@@ -1265,7 +1393,9 @@ SlashCmdList.CHATPILOT = function(input)
 		end
 		ns.Print(L.CLEARED, L.CLEAR_MAIN)
 	elseif cmd == "info" then
-		ns:OpenOptions(6)
+		ns:OpenOptions(7)
+	elseif cmd == "messenger" or cmd == "bird" or cmd == "vogel" then
+		if rest:lower() == "test" and ns.MessengerPreview then ns:MessengerPreview() else ns:OpenOptions(6) end
 	elseif cmd == "errors" or cmd == "fehler" then
 		if rest:lower() == "clear" or rest:lower() == "leeren" then
 			ns.ErrorClear()

@@ -1711,16 +1711,34 @@ local function ChanKey(event, ...)
 	end
 end
 
+-- Where an incoming message of a window shows up for the Magical Messenger: the frame to fly
+-- to and whether the window is read (visible and scrolled to the newest line).
+function ns.CW_Destination(w)
+	local g = w and w.group
+	local f = g and g.frame
+	if not f then return end
+	if f:IsVisible() and g.data and g.data.active == w.data.id then
+		local atBottom = true
+		if w.msg and w.msg.AtBottom then atBottom = w.msg:AtBottom() and true or false end
+		return f, atBottom and not w.unread
+	end
+	if g.data and g.data.main and w.launch and w.launch:IsVisible() then return w.launch, false end
+	if f:IsVisible() then return f, false end
+end
+
 local function Deliver(event, ...)
-	if #groups == 0 then return end
 	local cat = EVENT_CAT[event]
 	-- online / offline notices also go to windows that picked them
-	local presence = event == "CHAT_MSG_SYSTEM" and ns.Usable((...)) and PresenceOf((...)) and true or false
+	local presence = #groups > 0 and event == "CHAT_MSG_SYSTEM" and ns.Usable((...)) and PresenceOf((...)) and true or false
 	if event == "CHAT_MSG_CHANNEL" then
 		local zoneChannelID, channelNumber = select(7, ...)
 		if ns.Usable(zoneChannelID, channelNumber) then cat = ChannelCat(zoneChannelID, channelNumber) else cat = "channels" end
 	end
 	if not cat then return end
+	if #groups == 0 then
+		if ns.MessengerNotify then pcall(ns.MessengerNotify, event, cat, nil, ...) end
+		return
+	end
 
 	-- A group window also shows the group's chat after the group became a raid or an
 	-- instance group (the game then writes RAID / INSTANCE_CHAT instead of PARTY) -
@@ -1753,6 +1771,8 @@ local function Deliver(event, ...)
 			if ok then targets[#targets + 1] = w end
 		end
 	end
+	-- the Magical Messenger flies to the window (or to the game's chat when no window takes it)
+	if ns.MessengerNotify then pcall(ns.MessengerNotify, event, cat, targets, ...) end
 	if #targets == 0 then stats.noTarget = stats.noTarget + 1 return end
 
 	local msg, author = ...
