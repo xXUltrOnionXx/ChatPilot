@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.11.2",
+		de = { "Behoben: Fehler „boolean test on a secret boolean value“ bei Flüstern, wenn das Spiel Spielerstatus (AFK/Kampf) gerade einschränkt; solche Werte werden jetzt sicher behandelt (auch beim Magical Messenger und den Instanz-Prüfungen)" },
+		en = { "Fixed: error \"boolean test on a secret boolean value\" in whispers when the game is restricting player status (AFK/combat); such values are now handled safely (also in the Magical Messenger and the instance checks)" },
+		fr = { "Corrigé : erreur « boolean test on a secret boolean value » pour les chuchotements quand le jeu restreint l'état du joueur (AFK/combat) ; ces valeurs sont désormais traitées en sécurité (aussi dans le Magical Messenger et les contrôles d'instance)" },
+		es = { "Corregido: error «boolean test on a secret boolean value» en los susurros cuando el juego restringe el estado del jugador (AFK/combate); esos valores ahora se tratan de forma segura (también en el Magical Messenger y las comprobaciones de instancia)" },
+		it = { "Corretto: errore «boolean test on a secret boolean value» nei sussurri quando il gioco limita lo stato del giocatore (AFK/combattimento); questi valori ora sono gestiti in sicurezza (anche nel Magical Messenger e nei controlli istanza)" },
+		pt = { "Corrigido: erro «boolean test on a secret boolean value» nos sussurros quando o jogo restringe o estado do jogador (AFK/combate); esses valores agora são tratados com segurança (também no Magical Messenger e nas verificações de instância)" },
+		ru = { "Исправлено: ошибка «boolean test on a secret boolean value» в шёпоте, когда игра ограничивает состояние игрока (AFK/бой); такие значения теперь обрабатываются безопасно (также в Magical Messenger и проверках подземелий)" },
+		ko = { "수정: 게임이 플레이어 상태(자리비움/전투)를 제한할 때 귓속말에서 발생하던 \"boolean test on a secret boolean value\" 오류. 이런 값은 이제 안전하게 처리됩니다 (Magical Messenger와 인스턴스 검사 포함)" },
+		zh = { "修复：当游戏限制玩家状态（暂离/战斗）时，密语中出现的“boolean test on a secret boolean value”错误；此类值现在会被安全处理（Magical Messenger 和副本检查中也一样）" },
+		tw = { "修復：當遊戲限制玩家狀態（暫離/戰鬥）時，密語中出現的「boolean test on a secret boolean value」錯誤；此類值現在會被安全處理（Magical Messenger 和副本檢查中也一樣）" },
+	},
 	{ v = "1.11.1",
 		de = { "Magical Messenger: schönere, geschwungene Flügel aus feinen leuchtenden Federn (8 Flügelphasen), deutlich schnelleres Flattern und ein kleinerer Vogel" },
 		en = { "Magical Messenger: more beautiful, sweeping wings made of fine glowing feathers (8 wing frames), much faster flapping and a smaller bird" },

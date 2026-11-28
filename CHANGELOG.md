@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.11.2
+- Behoben: Fehler „boolean test on a secret boolean value“ bei Flüstern, wenn das Spiel Spielerstatus (AFK/Kampf) gerade einschränkt; solche Werte werden jetzt sicher behandelt (auch beim Magical Messenger und den Instanz-Prüfungen)
+
 ## 1.11.1
 - Magical Messenger: schönere, geschwungene Flügel aus feinen leuchtenden Federn (8 Flügelphasen), deutlich schnelleres Flattern und ein kleinerer Vogel
 

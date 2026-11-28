@@ -18,7 +18,7 @@ end
 local function Send(channel)
 	if not ns.S or not ns.S.versionCheck then return end
 	if not C_ChatInfo or not C_ChatInfo.SendAddonMessage then return end
-	if IsInInstance and IsInInstance() then return end -- addon comms are restricted there
+	if IsInInstance and ns.SafeBool((IsInInstance()), true) then return end -- addon comms are restricted there
 	local now = GetTime()
 	if lastSent[channel] and now - lastSent[channel] < THROTTLE then return end
 	lastSent[channel] = now

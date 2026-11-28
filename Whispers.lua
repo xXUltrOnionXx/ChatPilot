@@ -13,7 +13,8 @@ local win
 local function Store() return ns.db.whispers end
 
 local function IsAway()
-	return (UnitIsAFK and UnitIsAFK("player")) or (InCombatLockdown and InCombatLockdown())
+	-- restricted (secret) answers count as "away": that is when text is restricted anyway
+	return ns.SafeBool(UnitIsAFK and UnitIsAFK("player"), true) or ns.SafeBool(InCombatLockdown and InCombatLockdown(), true)
 end
 
 function ns:WhisperUnread()

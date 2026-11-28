@@ -21,7 +21,7 @@ local function On() return ns.S ~= nil and ns.S.pilotLink ~= false end
 local function CanSend()
 	if not On() then return false end
 	if not (C_ChatInfo and C_ChatInfo.SendAddonMessage) then return false end
-	if IsInInstance and IsInInstance() then return false end
+	if IsInInstance and ns.SafeBool((IsInInstance()), true) then return false end
 	if C_ChatInfo.InChatMessagingLockdown and C_ChatInfo.InChatMessagingLockdown() then return false end
 	return true
 end

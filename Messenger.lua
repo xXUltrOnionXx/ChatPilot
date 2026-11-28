@@ -366,7 +366,7 @@ local function ColorFor(cat, event, ...)
 end
 
 local function InCombat()
-	return (InCombatLockdown and InCombatLockdown()) or (UnitAffectingCombat and UnitAffectingCombat("player")) or false
+	return ns.SafeBool(InCombatLockdown and InCombatLockdown(), true) or ns.SafeBool(UnitAffectingCombat and UnitAffectingCombat("player"), true)
 end
 
 -- Called for every incoming chat message of the supported types.

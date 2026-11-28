@@ -134,6 +134,13 @@ function ns.Usable(...)
 	return true
 end
 
+-- A yes/no value from the game that may be restricted ("secret") at the moment: a secret
+-- value cannot be tested, so the caller says what to assume then.
+function ns.SafeBool(v, whenSecret)
+	if issecret(v) then return whenSecret and true or false end
+	return v and true or false
+end
+
 function ns.Print(fmt, ...)
 	local msg = select("#", ...) > 0 and fmt:format(...) or fmt
 	DEFAULT_CHAT_FRAME:AddMessage("|cff4ec9ffChatPilot Forever|r: " .. msg)
