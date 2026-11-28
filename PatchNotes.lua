@@ -3,6 +3,18 @@ local _, ns = ...
 -- All updates in short, in every language of the game client (newest first).
 -- The first entry is what the thank-you window shows after an update.
 ns.PATCHNOTES = {
+	{ v = "1.11.4",
+		de = { "Magical Messenger: deutlich performanter – alles wird kurz nach dem Login vorbereitet, der erste Vogel ruckelt nicht mehr, die Chatzeile erscheint immer zuerst, weniger Speicherabfall und ein sparsamerer Funkenschweif" },
+		en = { "Magical Messenger: much more efficient - everything is prepared shortly after login, the first bird no longer stutters, the chat line always appears first, less memory garbage and a lighter spark trail" },
+		fr = { "Magical Messenger : bien plus performant - tout est préparé peu après la connexion, le premier oiseau ne saccade plus, la ligne de chat s'affiche toujours en premier, moins de déchets mémoire et une traînée d'étincelles plus légère" },
+		es = { "Magical Messenger: mucho más eficiente - todo se prepara poco después de iniciar sesión, el primer pájaro ya no va a tirones, la línea de chat siempre aparece primero, menos basura de memoria y una estela de chispas más ligera" },
+		it = { "Magical Messenger: molto più efficiente - tutto viene preparato subito dopo l'accesso, il primo uccello non scatta più, la riga di chat appare sempre per prima, meno rifiuti di memoria e una scia di scintille più leggera" },
+		pt = { "Magical Messenger: muito mais eficiente - tudo é preparado logo após o login, o primeiro pássaro não engasga mais, a linha do chat sempre aparece primeiro, menos lixo de memória e um rastro de faíscas mais leve" },
+		ru = { "Magical Messenger: заметно эффективнее - всё готовится вскоре после входа, первая птица больше не подтормаживает, строка чата всегда появляется первой, меньше мусора в памяти и более лёгкий шлейф искр" },
+		ko = { "Magical Messenger: 훨씬 효율적으로 개선 - 로그인 직후 모든 것을 미리 준비해 첫 새가 더 이상 끊기지 않고, 채팅 줄이 항상 먼저 표시되며, 메모리 낭비와 불꽃 꼬리 부담이 줄었습니다" },
+		zh = { "Magical Messenger：性能大幅提升——登录后不久即预先准备好所有内容，第一只鸟不再卡顿，聊天行总是先显示，减少内存垃圾，火花尾迹也更轻量" },
+		tw = { "Magical Messenger：效能大幅提升——登入後不久即預先準備好所有內容，第一隻鳥不再卡頓，聊天行總是先顯示，減少記憶體垃圾，火花尾跡也更輕量" },
+	},
 	{ v = "1.11.3",
 		de = { "Behoben: mögliche Fehler bei Spieler-Infos (Level, Gruppe, Ziel, Mouseover, Namensplaketten), wenn das Spiel Einheiten-Angaben gerade einschränkt; solche Werte werden jetzt sicher behandelt" },
 		en = { "Fixed: possible errors in player info (level, group, target, mouse-over, name plates) when the game is restricting unit data; such values are now handled safely" },

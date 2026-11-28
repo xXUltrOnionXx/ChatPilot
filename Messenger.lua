@@ -59,14 +59,15 @@ local lastAt = -100
 local stats = { sent = 0, skipped = 0 }
 ns.messengerStats = stats
 
+-- one shared table, refilled in place (no garbage every frame)
+local CFG = { size = 1, speed = 1, alpha = 0.85, particles = 1 }
 local function Settings()
 	local S = ns.S or {}
-	return {
-		size = Clamp(Num(S.msgSize, 100), 30, 300) / 100,
-		speed = Clamp(Num(S.msgSpeed, 100), 30, 300) / 100,
-		alpha = Clamp(Num(S.msgAlpha, 85), 10, 100) / 100,
-		particles = Clamp(Num(S.msgParticles, 100), 0, 300) / 100,
-	}
+	CFG.size = Clamp(Num(S.msgSize, 100), 30, 300) / 100
+	CFG.speed = Clamp(Num(S.msgSpeed, 100), 30, 300) / 100
+	CFG.alpha = Clamp(Num(S.msgAlpha, 85), 10, 100) / 100
+	CFG.particles = Clamp(Num(S.msgParticles, 100), 0, 300) / 100
+	return CFG
 end
 
 local function ScreenSize()
@@ -136,7 +137,6 @@ local function UpdateSparks(e, alpha)
 			sp.y = sp.y + sp.vy * e
 			sp.vy = sp.vy - 16 * e
 			local s = sp.s0 + (sp.s1 - sp.s0) * f
-			sp.tex:ClearAllPoints()
 			sp.tex:SetPoint("CENTER", UIParent, "BOTTOMLEFT", sp.x, sp.y)
 			sp.tex:SetSize(s, s)
 			if sp.spin ~= 0 then sp.tex:SetRotation(sp.rot + sp.spin * sp.age) end
@@ -168,7 +168,6 @@ local function NewBird()
 end
 
 local function Place(tex, x, y, size, rot)
-	tex:ClearAllPoints()
 	tex:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
 	tex:SetSize(size, size)
 	tex:SetRotation(rot)
@@ -267,7 +266,7 @@ local function UpdateBirds(e, cfg)
 			local fade = Clamp(b.age / 0.3, 0, 1)
 			local tailX, tailY, S = Draw(b, x, y, tilt, face, fade, 1, cfg)
 			-- magical trail
-			b.trail = b.trail + e * 46 * cfg.particles
+			b.trail = b.trail + e * 32 * cfg.particles
 			while b.trail >= 1 do
 				b.trail = b.trail - 1
 				local kind = math.random() < 0.22 and "star" or "dot"
@@ -315,6 +314,52 @@ local function EnsureLayer()
 	layer:SetScript("OnUpdate", Tick)
 	layer:Hide()
 end
+
+-- Everything is built (and the texture loaded) shortly after login, so the first bird
+-- never makes the game stutter while a message comes in.
+local function Prewarm()
+	if ns.messengerWarm or not ns.S or not ns.S.messenger then return end
+	ns.messengerWarm = true
+	EnsureLayer()
+	local fresh = {}
+	for i = 1, MAX_BIRDS do
+		fresh[i] = NewBird()
+		fresh[i].frame:Hide()
+	end
+	for i = 1, MAX_BIRDS do freeBirds[#freeBirds + 1] = fresh[i] end
+	local made = 0
+	local function Batch()
+		for _ = 1, 12 do
+			if made >= MAX_SPARKS then return end
+			made = made + 1
+			local t = layer:CreateTexture(nil, "OVERLAY")
+			t:SetTexture(TEX)
+			t:SetBlendMode("ADD")
+			t:Hide()
+			freeSparks[#freeSparks + 1] = { tex = t }
+		end
+		C_Timer.After(0.05, Batch)
+	end
+	Batch()
+	-- show the sheet once, almost invisible, so the game loads it now
+	local probe = layer:CreateTexture(nil, "BACKGROUND")
+	probe:SetTexture(TEX)
+	probe:SetSize(2, 2)
+	probe:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
+	probe:SetAlpha(0.01)
+	layer:Show()
+	C_Timer.After(0.3, function()
+		probe:Hide()
+		if #liveBirds == 0 and #liveSparks == 0 then layer:Hide() end
+	end)
+end
+ns.MessengerPrewarm = Prewarm
+local warmFrame = CreateFrame("Frame")
+warmFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+warmFrame:SetScript("OnEvent", function()
+	C_Timer.After(4, function() pcall(Prewarm) end)
+end)
+
 
 -------------------------------------------------------------------------------
 -- Sending a bird
@@ -406,10 +451,11 @@ function ns.MessengerNotify(event, cat, targets, ...)
 	if S.msgUnread and read then return end
 
 	local r, g, b = ColorFor(cat, event, ...)
-	if ns:MessengerFly(dest, r, g, b) then
-		lastAt = now
-		stats.sent = stats.sent + 1
-	end
+	-- reserve the slot now, fly one frame later: the chat line is written first
+	lastAt = now
+	C_Timer.After(0, function()
+		if ns:MessengerFly(dest, r, g, b) then stats.sent = stats.sent + 1 end
+	end)
 end
 
 -- Preview (settings page): two birds in different colours to the chat, ignoring the rules above

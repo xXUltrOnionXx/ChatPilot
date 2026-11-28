@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.11.4
+- Magical Messenger: deutlich performanter – alles wird kurz nach dem Login vorbereitet, der erste Vogel ruckelt nicht mehr, die Chatzeile erscheint immer zuerst, weniger Speicherabfall und ein sparsamerer Funkenschweif
+
 ## 1.11.3
 - Behoben: mögliche Fehler bei Spieler-Infos (Level, Gruppe, Ziel, Mouseover, Namensplaketten), wenn das Spiel Einheiten-Angaben gerade einschränkt; solche Werte werden jetzt sicher behandelt
 
